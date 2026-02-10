@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/build/*",
+    "/assets/*"
+  ],
+  "routes": [
+    {
+      "src": "/footer/**",
+      "dest": "/footer/**"
+    },
+    {
+      "src": "/Group_1.svg",
+      "dest": "/Group_1.svg"
+    },
+    {
+      "src": "/bella-bot.png",
+      "dest": "/bella-bot.png"
+    },
+    {
+      "src": "/img/**",
+      "dest": "/img/**"
+    },
+    {
+      "src": "/**/*.svg",
+      "dest": "/**/*.svg"
+    }
+  ]
+}
