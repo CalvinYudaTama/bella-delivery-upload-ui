@@ -596,41 +596,46 @@ body::-webkit-scrollbar {
 /* Mega Menu Styles - Simple fade in/out (no slide animation) */
 .mega-menu {
   position: absolute;
-  top: calc(100% - 23px);
-  left: 50%;
-  transform: translateX(-50%);
+  top: 100%;
+  left: 0;
+  right: 0;
+  transform: none;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition: opacity var(--mega-menu-animation-speed, 0.4s) ease, visibility var(--mega-menu-animation-speed, 0.4s) ease;
   z-index: 1000;
   width: 100%;
-  max-width: var(--mega-menu-width, 1180px);
-  padding-top: 20px;
+  padding-top: 0;
 }
 
 .mega-menu.active {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%);
+  transform: none;
   pointer-events: all;
-  top: calc(100% - 23px);
+  top: 90%;
 }
 
 .mega-menu-container {
-  max-width: var(--mega-menu-width, 1180px);
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(var(--mega-menu-blur, 20px)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--mega-menu-blur, 20px)) saturate(180%);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: var(--mega-menu-padding, 40px);
-  border: 1px solid var(--border-primary, #E9EAEB);
+  width: 1000px;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 1);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 0;
+  border-top: none;
 }
 
-/* Services Menu - smaller width (1080px, 100px less than default) */
+/* Services Menu - fixed width with adjusted padding */
 .mega-menu-container--services {
-  max-width: 1080px !important;
+  width: 1000px;
+  max-width: 1000px;
+  padding: 20px;
 }
 
 /* Fallback for browsers without backdrop-filter support */
@@ -689,18 +694,15 @@ body::-webkit-scrollbar {
 
 /* Category Link Styling - Match Case Studies */
 .mega-category-link {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: block;
   padding: 12px 16px;
   text-decoration: none;
   color: #666;
   font-family: Inter, sans-serif;
   font-size: 15px;
   font-style: normal;
+  white-space: normal;
+  word-wrap: break-word;
   font-weight: 400;
   line-height: var(--Line-height-text-md, 24px); /* 160% */
   transition: all 0.2s ease;
@@ -4046,8 +4048,8 @@ body::-webkit-scrollbar {
 .delivery-layout-main {
   max-width: 1440px;
   padding-top: 0;
-  padding-left: clamp(20px, 6.94vw, 100px); /* Fluid padding: 20px-100px based on viewport */
-  padding-right: clamp(20px, 6.94vw, 100px); /* Fluid padding: 20px-100px based on viewport */
+  padding-left: 0px; /* Fluid padding: 20px-100px based on viewport */
+  padding-right: 0px; /* Fluid padding: 20px-100px based on viewport */
   box-sizing: border-box;
   margin-left: auto;
   margin-right: auto;
@@ -4299,22 +4301,15 @@ body::-webkit-scrollbar {
   height: 100%;
 }
 
-/* Status icon overlay must not be stretched - keep top-right with 12px padding */
-.delivery-gallery-image-item > div.delivery-status-icon-overlay,
-.completed-gallery-section figure > div.delivery-status-icon-overlay {
-  width: auto !important;
-  height: auto !important;
-}
-
-/* Copy/Download icons wrapper - bottom-right, 12px from image bottom and right (do not stretch) */
+/* Action icons wrapper — bottom-right 10px, gap 6px (consistent with Latest Revision page) */
 .delivery-gallery-image-item > div.delivery-gallery-action-icons-wrapper,
 .completed-gallery-section figure > div.delivery-gallery-action-icons-wrapper {
   width: auto !important;
   height: auto !important;
-  bottom: 12px !important;
-  right: 12px !important;
+  bottom: 10px !important;
+  right: 10px !important;
   padding: 0 !important;
-  gap: 12px !important;
+  gap: 6px !important;
 }
 
 /* Section Title - Desktop */
@@ -4462,10 +4457,10 @@ body::-webkit-scrollbar {
   display: inline-block;
 }
 
-/* Status Icon Overlay - top-right with 12px padding */
+/* Status Icon Overlay - legacy class, no longer used (replaced by inline absolute div) */
 .delivery-status-icon-overlay {
   position: absolute;
-  top: 12px;
+  top: 8px;
   right: 12px;
   z-index: 4;
   display: flex;
@@ -4844,8 +4839,7 @@ body::-webkit-scrollbar {
     width: 14px !important;
     height: 14px !important;
   }
-  /* Copy/Download wrapper - Mobile: smaller gap, position bottom-right 6px from image edges */
-  /* Must override Tailwind gap-4 class and ensure proper positioning */
+  /* Action icons wrapper - Mobile: bottom-right 6px, gap 4px */
   .delivery-gallery-action-icons-wrapper,
   div.delivery-gallery-action-icons-wrapper,
   .delivery-gallery-image-item > div.delivery-gallery-action-icons-wrapper,
@@ -4854,7 +4848,7 @@ body::-webkit-scrollbar {
   .delivery-gallery-image-item .delivery-gallery-action-icons-wrapper,
   figure .delivery-gallery-action-icons-wrapper {
     display: flex !important;
-    gap: 2px !important; /* Small gap between icons */
+    gap: 4px !important;
     bottom: 6px !important;
     right: 6px !important;
     position: absolute !important;

@@ -4,8 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+// Header and Footer now in app/layout.tsx - no need to import here
 import RevisionDropdown, { RevisionTab } from '@/components/Projects/RevisionDropdown';
 // import AuthGuard from '@/components/Auth/AuthGuard';
 
@@ -441,38 +440,9 @@ function ProjectsPageContent() {
   };
 
   return (
-    // <AuthGuard>
-      <div className="w-full min-h-screen" style={{ background: '#FFF' }}>
-        <Header />
-        
-        {/* Add top spacing to account for fixed header (announcement bar 40px + header ~122px) */}
-        <div
-          className="projects-content-wrapper"
-          style={{ paddingTop: '162px' }} // 40px (announcement) + 122px (header) = 162px
-        >
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0px',
-            width: '100%'
-          }}>
-            {/* Project navigation tabs */}
-            {projectId && (
-              <div className="delivery-revision-tabs-wrapper w-full mx-auto px-[100px]" style={{ maxWidth: '1440px' }}>
-                {renderTabs()}
-              </div>
-            )}
-            
-            <div className="w-full">
-            {renderContent()}
-            </div>
-          </div>
-        </div>
-        
-        <Footer />
-      </div>
-    // </AuthGuard>
+    <div style={{ width: '100%', minHeight: '100%' }}>
+      {renderContent()}
+    </div>
   );
 }
 

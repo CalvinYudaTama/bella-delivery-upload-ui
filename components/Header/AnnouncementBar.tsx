@@ -1,49 +1,55 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
 
 interface AnnouncementBarProps {
   text?: string;
   icon?: React.ReactNode;
-  bgColor?: string;
+  backgroundColor?: string;
   textColor?: string;
-  fontSize?: number;
-  fontWeight?: number;
+  onClose?: () => void;
+  closeable?: boolean;
 }
 
 /**
  * Announcement Bar Component
- * 
- * Fixed top bar that displays promotional text.
- * Matches Shopify Header Code structure.
+ * Top banner for announcements - copied from Shopify theme
+ * Includes close button functionality
  */
 const AnnouncementBar: React.FC<AnnouncementBarProps> = ({
-  text = 'Transform Empty Rooms into Dream Homes | 24-48 Hour Turnaround ✨',
+  text = 'Virtual Staging that Sells Better | 6–12 Hr Turnaround ✨',
   icon,
-  bgColor = '#212121',
-  textColor = '#FFFFFF',
-  fontSize = 16,
-  fontWeight = 400,
+  backgroundColor = '#121212',
+  textColor = '#ffffff',
+  onClose,
+  closeable = true,
 }) => {
+  const [isVisible, setIsVisible] = useState(true);
+
+  const handleClose = () => {
+    setIsVisible(false);
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  if (!isVisible) {
+    return null;
+  }
+
   return (
     <div
       className="announcement-bar"
       style={{
-        position: 'fixed',
+        position: 'relative',
         top: 0,
         left: 0,
         right: 0,
         width: '100%',
-        zIndex: 1000,
-        background: bgColor,
+        backgroundColor,
         color: textColor,
-        fontSize: `${fontSize}px`,
-        fontWeight: fontWeight,
-        textAlign: 'center',
-        padding: '10px 20px',
-        transition: 'transform 0.3s ease, opacity 0.3s ease',
         minHeight: '40px',
-        height: 'auto',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -52,40 +58,65 @@ const AnnouncementBar: React.FC<AnnouncementBarProps> = ({
       <div
         className="announcement-bar-inner"
         style={{
-          maxWidth: '100%',
-          width: '100%',
-          margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           gap: '8px',
+          padding: '8px 20px',
+          width: '100%',
         }}
       >
         {icon && (
           <div
             className="announcement-icon"
             style={{
-              width: '16px',
-              height: '16px',
+              fontSize: '18px',
               flexShrink: 0,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
             }}
           >
             {icon}
           </div>
         )}
-        
+
         <div
           className="announcement-text"
           style={{
-            lineHeight: 1.3,
-            flex: 1,
+            fontSize: '12px',
+            fontWeight: 500,
+            lineHeight: 1.5,
+            textAlign: 'center',
           }}
-        >
-          <p style={{ margin: 0, display: 'inline' }}>{text}</p>
-        </div>
+          dangerouslySetInnerHTML={{ __html: text }}
+        />
+
+        {closeable && (
+          <button
+            onClick={handleClose}
+            className="announcement-close"
+            aria-label="Close announcement"
+            type="button"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: textColor,
+              padding: '4px',
+              marginLeft: '8px',
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '4px',
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.7')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+          >
+            <X style={{ width: '16px', height: '16px' }} />
+          </button>
+        )}
       </div>
     </div>
   );

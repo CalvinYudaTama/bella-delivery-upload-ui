@@ -19,11 +19,11 @@ const Header: React.FC = () => {
   // Use mega menu hook for managing menu state
   const { activeMenu, toggleMenu, closeAllMenus } = useMegaMenu();
 
-  const handleWishlistToggle = () => {
+  const handleInspirationToggle = () => {
     setIsWishlistOpen(!isWishlistOpen);
   };
 
-  const handleWishlistClose = () => {
+  const handleInspirationClose = () => {
     setIsWishlistOpen(false);
   };
 
@@ -37,104 +37,203 @@ const Header: React.FC = () => {
 
   return (
     <>
-      {/* Announcement Bar */}
-      <AnnouncementBar />
-      
-      {/* Main Header */}
-      <header 
-        ref={headerRef} 
-        className="fixed left-0 right-0 shadow-lg transition-all duration-300 bg-white text-gray-900"
-        style={{
-          top: '40px', // Position below announcement bar
-          zIndex: 1001, // Below WishlistModal but above AnnouncementBar
-        }}
-      >
-        <div 
-          className="flex items-center justify-center"
+      {/* Header Wrapper - Contains Announcement Bar + Main Header */}
+      <div className="header-wrapper" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
+        {/* Announcement Bar */}
+        <AnnouncementBar />
+
+        {/* Main Header */}
+        <header
+          ref={headerRef}
+          className="main-header bg-white text-gray-900 shadow-lg"
           style={{
-            height: 'var(--header-height, 122px)',
-            paddingTop: '20px',
-            paddingBottom: '20px',
+            position: 'relative',
+            width: '100%',
+            transition: 'all 0.3s ease',
+            marginBottom: 0,
+            paddingBottom: 0,
           }}
         >
-        <div className="mx-auto px-[100px] max-[990px]:px-4 max-[431px]:px-3" style={{ width: '1440px', maxWidth: '1440px', position: 'relative' }}>
-          <div 
-            className="flex items-center justify-between w-full"
+          {/* Header Content Container */}
+          <div
+            className="header-content"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              position: 'relative',
+              width: '100%',
+              maxWidth: '100%',
+              margin: '0 auto',
+              padding: '0',
             }}
           >
-            {/* Mobile Menu Toggle Button - Left side on mobile */}
-            <button
-              onClick={handleMobileDrawerToggle}
-              className="md:hidden mobile-menu-toggle"
-              type="button"
-              aria-label="Open menu"
+            {/* Header Inner Flex Container */}
+            <div
+              className="header-inner"
               style={{
-                display: 'none',
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                margin: 0,
-                cursor: 'pointer',
-                color: '#333',
-                width: '40px',
-                height: '40px',
+                display: 'flex',
+                flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-                WebkitTapHighlightColor: 'transparent',
+                justifyContent: 'space-between',
+                gap: '40px',
+                position: 'relative',
+                width: '100%',
               }}
             >
-              <Menu className="w-6 h-6" />
-            </button>
+              {/* Mobile Menu Toggle Button */}
+              <button
+                onClick={handleMobileDrawerToggle}
+                className="mobile-menu-toggle"
+                type="button"
+                aria-label="Open menu"
+                style={{
+                  display: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  color: '#333',
+                  width: '40px',
+                  height: '40px',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <Menu className="w-6 h-6" />
+              </button>
 
-            {/* Logo - Center on mobile, left on desktop */}
-            <div className="md:flex-1 flex justify-center md:justify-start header-logo-wrapper" style={{ flex: 1, minWidth: 0 }}>
-              <HeaderLogo />
-            </div>
+              {/* Logo */}
+              <div className="header-logo-wrapper" style={{ flexShrink: 0, minWidth: 'fit-content' }}>
+                <HeaderLogo />
+              </div>
 
-            {/* Center Section - Navigation (Desktop only) - Absolutely centered */}
-            <div 
-              className="hidden md:block"
-              style={{
+              {/* Navigation - Desktop only - Centered */}
+              <div className="header-nav-wrapper" style={{
                 position: 'absolute',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                zIndex: 1,
-              }}
-            >
-              <Navigation 
-                activeMenu={activeMenu}
-                onMenuToggle={toggleMenu}
-              />
+                display: 'flex',
+                justifyContent: 'center',
+              }}>
+                <Navigation
+                  activeMenu={activeMenu}
+                  onMenuToggle={toggleMenu}
+                />
+              </div>
+
+              {/* Icons */}
+              <div className="header-icons-wrapper" style={{ marginLeft: 'auto', flexShrink: 0 }}>
+                <HeaderIcons
+                  onInspirationClick={handleInspirationToggle}
+                  shopifyAccountUrl="https://www.bellavirtual.com/account"
+                />
+              </div>
             </div>
 
-            {/* Right Section - User Actions */}
-            <HeaderIcons 
-              onWishlistToggle={handleWishlistToggle}
+            {/* Mega Menu */}
+            <MegaMenu
+              activeMenu={activeMenu}
+              onClose={closeAllMenus}
             />
           </div>
-
-          {/* Mega Menu */}
-          <MegaMenu 
-            activeMenu={activeMenu}
-            onClose={closeAllMenus}
-          />
-        </div>
+        </header>
       </div>
-      </header>
       
-      {/* Wishlist Modal */}
-      <WishlistModal isOpen={isWishlistOpen} onClose={handleWishlistClose} />
+      {/* Inspiration Modal (renamed from Wishlist) */}
+      <WishlistModal isOpen={isWishlistOpen} onClose={handleInspirationClose} />
       
       {/* Mobile Drawer */}
       <MobileDrawer isOpen={isMobileDrawerOpen} onClose={handleMobileDrawerClose} />
+
+      {/* Responsive Styles */}
+      <style jsx>{`
+        .header-content {
+          max-width: auto !important;
+          width: 100%;
+          padding: 0 !important;
+        }
+
+        .header-inner {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          gap: 40px;
+          width: 100%;
+          padding: 10px 20px;
+          margin-bottom: 0;
+          background-color: #ffffff;
+        }
+
+        .mobile-menu-toggle {
+          display: none !important;
+        }
+
+        .header-nav-wrapper {
+          display: flex;
+          flex-direction: row;
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        /* Tablet - max-width: 990px */
+        @media (max-width: 990px) {
+          .header-content {
+            padding: 0 !important;
+          }
+
+          .header-inner {
+            gap: 24px !important;
+            padding: 10px 20px;
+          }
+        }
+
+        /* Mobile - max-width: 768px */
+        @media (max-width: 768px) {
+          .header-content {
+            padding: 0 !important;
+          }
+
+          .header-inner {
+            gap: 16px !important;
+            padding: 12px 16px;
+          }
+
+          .mobile-menu-toggle {
+            display: flex !important;
+            order: 1;
+          }
+
+          .header-logo-wrapper {
+            order: 2;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+          }
+
+          .header-nav-wrapper {
+            display: none !important;
+          }
+
+          .header-icons-wrapper {
+            order: 3;
+          }
+        }
+
+        /* Small Mobile - max-width: 480px */
+        @media (max-width: 480px) {
+          .header-content {
+            padding: 0 !important;
+          }
+
+          .header-inner {
+            gap: 12px !important;
+            padding: 12px 12px;
+          }
+        }
+      `}</style>
     </>
   );
 };
 
-export default Header; 
+export default Header;
+ 

@@ -85,9 +85,9 @@ const ServicesMenu: React.FC<ServicesMenuProps> = ({ isActive, data }) => {
 
   return (
     <MegaMenuContainer className="mega-menu-container--services">
-      <div className="mega-menu-content" style={{ display: 'flex', gap: '40px' }}>
+      <div className="mega-menu-content" style={{ display: 'flex', gap: '20px' }}>
         {/* Left Sidebar - Categories */}
-        <div className="mega-menu-sidebar" style={{ width: '300px', flexShrink: 0 }}>
+        <div className="mega-menu-sidebar" style={{ width: '200px', flexShrink: 0 }}>
           <ul className="mega-menu-categories" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
             {menuData.categories.map((category) => (
               <li key={category.id} className="mega-category-item" style={{ marginBottom: '4px' }}>
@@ -121,8 +121,8 @@ const ServicesMenu: React.FC<ServicesMenuProps> = ({ isActive, data }) => {
                 data-category-content={category.handle}
                 style={{
                   display: isVisible ? 'grid' : 'none',
-                  gridTemplateColumns: isSingleCard ? '1fr' : 'repeat(2, minmax(280px, 1fr))',
-                  gap: '20px',
+                  gridTemplateColumns: isSingleCard ? '1fr' : 'repeat(2, 1fr)',
+                  gap: '16px',
                   width: '100%',
                 }}
               >

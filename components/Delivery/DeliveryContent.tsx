@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDeliveryContext, DeliveryImage } from './context/DeliveryContext';
-import ImageDisplay from '@/components/ImageView/ImageDisplay';
 // import { DeliveryStatistics } from './DeliveryStatistics';
 import { DeliveryGallery } from './DeliveryGallery';
 import { CompletedGallery } from './CompletedGallery';
@@ -31,6 +30,31 @@ export const DeliveryContent: React.FC = () => {
   const [latestRevisionNumber, setLatestRevisionNumber] = useState<number | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const [isTabletOrMobile, setIsTabletOrMobile] = useState(false);
+
+  // ─── Carousel state (independent index, same pattern as Latest Revision) ──────
+  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
+
+  // ─── Design placeholder assets (saved to public/images/delivery/) ─────────────
+  // TODO (Riley): replace these with real hosted image URLs from API when available
+  const FIGMA_MAIN_IMAGE_URL  = '/images/delivery/main-living-room.png'; // living room wide (hero)
+  const FIGMA_IMG_BEDROOM     = '/images/delivery/bedroom.png';           // bedroom
+  const FIGMA_IMG_LIVING_ROOM = '/images/delivery/living-room.png';       // living room
+  const FIGMA_IMG_DINING_ROOM = '/images/delivery/dining-room.png';       // dining room
+
+  // ─── Carousel images — same dummy set as Latest Revision page ─────────────────
+  // TODO (Riley): replace with real images from state.images when API is ready
+  const allCarouselImages = useMemo(() => [
+    { id: 'c1', url: FIGMA_MAIN_IMAGE_URL },
+    { id: 'c2', url: FIGMA_IMG_LIVING_ROOM },
+    { id: 'c3', url: FIGMA_IMG_DINING_ROOM },
+    { id: 'c4', url: FIGMA_IMG_BEDROOM },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], []);
+
+  // Safe index — guards against out-of-range if image count changes
+  const safeCarouselIndex = allCarouselImages.length > 0
+    ? currentCarouselIndex % allCarouselImages.length
+    : 0;
 
   useEffect(() => {
     const checkViewport = () => setIsTabletOrMobile(typeof window !== 'undefined' && window.innerWidth <= 761);
@@ -79,29 +103,13 @@ export const DeliveryContent: React.FC = () => {
     }
   }, [isFirstDelivery]);
 
-  // Navigation handlers for image pagination
+  // Navigation handlers for carousel — same pattern as Latest Revision page
   const handlePreviousImage = () => {
-    if (!state.selectedImage || state.images.length === 0) return;
-    
-    const currentIndex = state.images.findIndex(img => img.id === state.selectedImage?.id);
-    if (currentIndex > 0) {
-      setSelectedImage(state.images[currentIndex - 1]);
-    } else {
-      // Loop to last image
-      setSelectedImage(state.images[state.images.length - 1]);
-    }
+    setCurrentCarouselIndex((prev) => (prev > 0 ? prev - 1 : allCarouselImages.length - 1));
   };
 
   const handleNextImage = () => {
-    if (!state.selectedImage || state.images.length === 0) return;
-    
-    const currentIndex = state.images.findIndex(img => img.id === state.selectedImage?.id);
-    if (currentIndex < state.images.length - 1) {
-      setSelectedImage(state.images[currentIndex + 1]);
-    } else {
-      // Loop to first image
-      setSelectedImage(state.images[0]);
-    }
+    setCurrentCarouselIndex((prev) => (prev < allCarouselImages.length - 1 ? prev + 1 : 0));
   };
 
   // Helper function to check if buttons should be shown
@@ -218,9 +226,8 @@ export const DeliveryContent: React.FC = () => {
     );
   }
 
-  const imageUrl =
-    state.selectedImage?.url ||
-    'https://storage.googleapis.com/bella-staging-upload/furniture_store/Sundays/furniture_set/BDR-SUNDAYS-150.jpg';
+  // Current main image URL (carousel) + title
+  const imageUrl   = allCarouselImages[safeCarouselIndex]?.url ?? FIGMA_MAIN_IMAGE_URL;
   const imageTitle = state.selectedImage?.title || 'Delivery Highlight Room';
 
   const handleAccept = () => {
@@ -535,21 +542,13 @@ export const DeliveryContent: React.FC = () => {
     setModalType('approveAll');
   };
 
-  // Determine header text based on revision number and shop mode
-  // If revisionRound is null or 0, it's Photo Delivery (first delivery)
-  // If revisionRound >= 1, it's a revision
-  const isRevision = state.revisionRound !== null && state.revisionRound >= 1;
-  const headerText = isShopMode 
-    ? 'Preview: Shop with Virtual Look'
-    : (isRevision ? 'Revision Review' : 'Preview');
-
   // Check if current image is the first image (for showing shop button)
   const isFirstImage = state.images.length > 0 && 
                        state.selectedImage && 
                        state.images[0]?.id === state.selectedImage.id;
 
   return (
-    <div 
+    <div
       className="delivery-content-container"
       style={{ position: 'relative' }}
     >
@@ -566,57 +565,213 @@ export const DeliveryContent: React.FC = () => {
         />
       )}
 
-      {/* Statistics Cards */}
-      {/* <DeliveryStatistics /> */}
-
-      {/* Preview Header - dynamically changes based on revision status */}
+      {/* ─── DELIVERY PAGE HEADER ─────────────────────────────────────────────
+          Shows: Title (left) + Order number (right)
+          TODO (Riley): Replace dummy values with real data from API
+          ─────────────────────────────────────────────────────────────────── */}
       <div
-        className="delivery-preview-header"
+        className="delivery-page-header"
         style={{
-          marginTop: '0px',
-          marginBottom: '0px',
-          color: 'var(--900, #000B14)',
-          fontFamily: '"Tenor Sans"',
-          fontSize: '38px',
-          fontStyle: 'normal',
-          fontWeight: 400,
-          lineHeight: '140%', /* 53.2px */
-          textTransform: 'uppercase',
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          marginBottom: '16px',
         }}
       >
-        {headerText}
+        {/* Page Title */}
+        <h1
+          style={{
+            color: '#000B14',
+            fontFamily: 'Inter',
+            fontSize: '24px',
+            fontStyle: 'normal',
+            fontWeight: 600,
+            lineHeight: '32px',
+            margin: 0,
+          }}
+        >
+          Virtual Staging Delivery
+        </h1>
+
+        {/* Order Number - TODO (Riley): replace with real order ID from state.resultsOrderId */}
+        <span
+          style={{
+            color: '#535862',
+            fontFamily: 'Inter',
+            fontSize: '14px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            lineHeight: '20px',
+          }}
+        >
+          Order # {state.resultsOrderId || state.projectId || '—'}
+        </span>
+      </div>
+
+      {/* ─── STATS BAR ────────────────────────────────────────────────────────
+          Shows: Photos count + File size + Approve All + Download All buttons
+          TODO (Riley): Wire up real counts from state:
+            - photosDelivered  → state.images.length (or inProgressImages.length)
+            - totalFileSize    → from API response (not yet in state)
+          ─────────────────────────────────────────────────────────────────── */}
+      <div
+        className="delivery-stats-bar"
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: '24px',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          border: '1px solid #E9EAEB',
+          background: '#FFFFFF',
+          marginBottom: '20px',
+          width: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Stat: Photos Delivered */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+          {/* Green check circle icon */}
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="16" fill="#DCFCE7" />
+            <path d="M10.667 16L14.0003 19.3333L21.3337 12" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+            {/* TODO (Riley): replace hardcoded "8" with real count → state.images.length or inProgressImages.length */}
+            <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+              {inProgressImages.length} Photos Delivered
+            </span>
+            <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
+              Ready for review
+            </span>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ width: '1px', height: '36px', background: '#E9EAEB', flexShrink: 0 }} />
+
+        {/* Stat: Total File Size */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+          {/* Download/file icon */}
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="16" fill="#EFF6FF" />
+            <path d="M16 10V18M16 18L13 15M16 18L19 15" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M11 20H21" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+            {/* TODO (Riley): replace "2.4GB" with real total file size from API */}
+            <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+              2.4GB Total
+            </span>
+            <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
+              Available to download
+            </span>
+          </div>
+        </div>
+
+        {/* Spacer pushes buttons to the right */}
+        <div style={{ flex: 1 }} />
+
+        {/* Approve All Button — TODO (Riley): wire up handleApproveAll to backend */}
+        {hasApprovableImages() && (
+          <button
+            type="button"
+            onClick={handleApproveAll}
+            disabled={isDownloading || !hasApprovableImages()}
+            style={{
+              display: 'flex',
+              height: '36px',
+              padding: '0 16px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '8px',
+              borderRadius: '6px',
+              background: (isDownloading || !hasApprovableImages()) ? '#C1C2C3' : '#00A63E',
+              border: 'none',
+              color: '#FFFFFF',
+              fontFamily: 'Inter',
+              fontSize: '14px',
+              fontWeight: 600,
+              lineHeight: '20px',
+              whiteSpace: 'nowrap',
+              cursor: (isDownloading || !hasApprovableImages()) ? 'not-allowed' : 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            {/* Approve All icon — thumbs up (Icon-Approve-All.svg) */}
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4.66602 6.66602V14.666" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M10.0007 3.92065L9.33398 6.66732H13.2207C13.4276 6.66732 13.6318 6.71551 13.8169 6.80808C14.0021 6.90065 14.1631 7.03506 14.2873 7.20065C14.4115 7.36625 14.4954 7.55848 14.5325 7.76214C14.5695 7.96579 14.5586 8.17527 14.5007 8.37398L12.9473 13.7073C12.8665 13.9843 12.6981 14.2276 12.4673 14.4007C12.2365 14.5737 11.9558 14.6673 11.6673 14.6673H2.66732C2.3137 14.6673 1.97456 14.5268 1.72451 14.2768C1.47446 14.0267 1.33398 13.6876 1.33398 13.334V8.00065C1.33398 7.64703 1.47446 7.30789 1.72451 7.05784C1.97456 6.80779 2.3137 6.66732 2.66732 6.66732H4.50732C4.75537 6.66719 4.99848 6.59786 5.20929 6.46713C5.4201 6.3364 5.59027 6.14946 5.70065 5.92732L8.00065 1.33398C8.31504 1.33788 8.62448 1.41276 8.90585 1.55305C9.18723 1.69333 9.43327 1.89539 9.62559 2.14412C9.81791 2.39285 9.95153 2.68182 10.0165 2.98945C10.0814 3.29708 10.076 3.61541 10.0007 3.92065Z" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Approve All
+          </button>
+        )}
+
+        {/* Download All Button */}
+        <button
+          type="button"
+          onClick={handleDownloadAll}
+          disabled={isDownloading || inProgressImages.length === 0}
+          style={{
+            display: 'flex',
+            height: '36px',
+            padding: '0 16px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '8px',
+            borderRadius: '6px',
+            border: '1.5px solid #4F46E5',
+            background: '#FFFFFF',
+            color: '#4F46E5',
+            fontFamily: 'Inter',
+            fontSize: '14px',
+            fontWeight: 600,
+            lineHeight: '20px',
+            whiteSpace: 'nowrap',
+            cursor: (isDownloading || inProgressImages.length === 0) ? 'not-allowed' : 'pointer',
+            opacity: (isDownloading || inProgressImages.length === 0) ? 0.5 : 1,
+            flexShrink: 0,
+          }}
+        >
+          {/* Download icon — color matches button text #4F46E5 */}
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 3V10M8 10L5.5 7.5M8 10L10.5 7.5" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M3 13H13" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+          {isDownloading ? 'Downloading...' : 'Download All'}
+        </button>
       </div>
 
       {/* Main delivery preview */}
-      <div className="w-full delivery-preview-container" style={{ marginTop: '0' }}>
+      <div style={{ width: '100%', marginTop: '0', position: 'relative' }}>
         <div
-          className="delivery-preview-image-container relative flex-shrink-0 rounded-2xl shadow-lg overflow-hidden"
           style={{
-            display: 'flex',
-            width: '1239px',
+            width: '100%',
             height: '622px',
-            padding: '10px',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            gap: '8.71px',
-            boxSizing: 'border-box',
+            borderRadius: '16px',
+            position: 'relative',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+            backgroundColor: '#E9EAEB',
+            marginBottom: '24px',
+            flexShrink: 0,
+            isolation: 'isolate',
           }}
         >
           {/* Main Image */}
-          <div className="absolute inset-0 w-full h-full">
-            <ImageDisplay
-              src={imageUrl}
-              alt={imageTitle}
-              objectFit="cover"
-              className="w-full h-full"
-              lazy={false}
-              showLoadingState={true}
-              showErrorState={true}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1239px"
-            />
-          </div>
+          <img
+            src={imageUrl}
+            alt={imageTitle}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block',
+              borderRadius: '16px',
+            }}
+          />
 
           {/* Shop Button - Center - Only show on first image and first delivery (not revision) */}
           {isFirstImage && isFirstDelivery && (
@@ -734,153 +889,132 @@ export const DeliveryContent: React.FC = () => {
             )
           )}
 
-          {/* Navigation Buttons - Left and Right */}
-          {state.images.length > 1 && (
+          {/* Navigation Buttons - Left and Right — same style as Latest Revision page */}
+          {allCarouselImages.length > 1 && (
             <>
               {/* Previous Button - Left */}
               <button
                 onClick={handlePreviousImage}
-                style={{
-                  display: 'flex',
-                  width: '50px',
-                  height: '50px',
-                  padding: '13px',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '10px',
-                  borderRadius: '25px',
-                  background: 'rgba(255, 255, 255, 0.80)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  position: 'absolute',
-                  left: '20px',
-                  top: '50%',
-                  transform: 'translateY(-50%) rotate(0deg)',
-                  zIndex: 10,
-                }}
                 aria-label="Previous image"
+                style={{
+                  position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)',
+                  width: '50px', height: '50px', borderRadius: '25px', border: 'none',
+                  background: 'rgba(255,255,255,0.80)', cursor: 'pointer', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  padding: '13px', gap: '10px', zIndex: 10,
+                  transition: 'background 0.15s, box-shadow 0.15s',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,1)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.18)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.80)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+                }}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="10"
-                  viewBox="0 0 7 12"
-                  fill="none"
-                  style={{
-                    strokeWidth: '2px',
-                    stroke: '#000',
-                  }}
-                >
-                  <path
-                    d="M6 1L1 6L6 11"
-                    stroke="black"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="10" viewBox="0 0 7 12" fill="none">
+                  <path d="M6 1L1 6L6 11" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
 
               {/* Next Button - Right */}
               <button
                 onClick={handleNextImage}
-                style={{
-                  display: 'flex',
-                  width: '50px',
-                  height: '50px',
-                  padding: '13px',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '10px',
-                  borderRadius: '25px',
-                  background: 'rgba(255, 255, 255, 0.80)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  position: 'absolute',
-                  right: '20px',
-                  top: '50%',
-                  transform: 'translateY(-50%) rotate(180deg)',
-                  zIndex: 10,
-                }}
                 aria-label="Next image"
+                style={{
+                  position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%) rotate(180deg)',
+                  width: '50px', height: '50px', borderRadius: '25px', border: 'none',
+                  background: 'rgba(255,255,255,0.80)', cursor: 'pointer', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  padding: '13px', gap: '10px', zIndex: 10,
+                  transition: 'background 0.15s, box-shadow 0.15s',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,1)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.18)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.80)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+                }}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="10"
-                  viewBox="0 0 7 12"
-                  fill="none"
-                  style={{
-                    strokeWidth: '2px',
-                    stroke: '#000',
-                  }}
-                >
-                  <path
-                    d="M6 1L1 6L6 11"
-                    stroke="black"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="10" viewBox="0 0 7 12" fill="none">
+                  <path d="M6 1L1 6L6 11" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
             </>
           )}
 
-          {/* Accept and Reject Buttons - Only show if image status allows */}
-          {shouldShowButtons(state.selectedImage) && (
-            <div className="delivery-accept-reject-wrapper absolute z-10 flex items-center gap-2" style={{ top: 12, right: 12 }}>
-              {/* Accept Button (Smile Icon) */}
-              <button
-                onClick={handleAccept}
-                className="delivery-accept-reject-button p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white hover:shadow-lg transition-all duration-200"
-                aria-label="Accept image"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-green-500"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                  <line x1="9" y1="9" x2="9.01" y2="9" />
-                  <line x1="15" y1="9" x2="15.01" y2="9" />
-                </svg>
-              </button>
+        </div>
 
-              {/* Reject Button (Sad Icon) */}
-              <button
-                onClick={handleReject}
-                className="delivery-accept-reject-button p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white hover:shadow-lg transition-all duration-200"
-                aria-label="Reject image"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-red-500"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M16 16s-1.5-2-4-2-4 2-4 2" />
-                  <line x1="9" y1="9" x2="9.01" y2="9" />
-                  <line x1="15" y1="9" x2="15.01" y2="9" />
-                </svg>
-              </button>
-            </div>
-          )}
+        {/* Face happy / sad icons — overlaid on top-right of image, outside inner container
+            to avoid being affected by any CSS globals on .delivery-preview-image-container */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px',
+            zIndex: 20,
+            pointerEvents: 'auto',
+          }}
+        >
+          {/* Approve button — face happy */}
+          <button
+            onClick={handleAccept}
+            aria-label="Accept image"
+            style={{
+              width: '48px', height: '48px', padding: '4px',
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'transform 0.15s, filter 0.15s',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.transform = 'scale(1.12)';
+              (e.currentTarget as HTMLElement).style.filter = 'drop-shadow(0 2px 6px rgba(0,0,0,0.25))';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+              (e.currentTarget as HTMLElement).style.filter = 'none';
+            }}
+          >
+            <img
+              src="/images/delivery/face-happy.svg"
+              alt="approve"
+              style={{ width: '40px', height: '40px' }}
+            />
+          </button>
+
+          {/* Reject button — face sad */}
+          <button
+            onClick={handleReject}
+            aria-label="Reject image"
+            style={{
+              width: '48px', height: '48px', padding: '4px',
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'transform 0.15s, filter 0.15s',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.transform = 'scale(1.12)';
+              (e.currentTarget as HTMLElement).style.filter = 'drop-shadow(0 2px 6px rgba(0,0,0,0.25))';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+              (e.currentTarget as HTMLElement).style.filter = 'none';
+            }}
+          >
+            <img
+              src="/images/delivery/face-sad.svg"
+              alt="reject"
+              style={{ width: '40px', height: '40px' }}
+            />
+          </button>
         </div>
       </div>
 
@@ -925,7 +1059,7 @@ export const DeliveryContent: React.FC = () => {
                   lineHeight: 'var(--Line-height-text-md, 24px)',
                 }}
               >
-                Photo In Progress
+                Photos in review
               </div>
               
               {/* Image count badge */}
@@ -968,137 +1102,6 @@ export const DeliveryContent: React.FC = () => {
         {/* Image Gallery - In Progress */}
         <div className="delivery-photo-in-review-gallery-container" style={{ marginTop: '0' }}>
           <DeliveryGallery filter="in-progress" />
-        </div>
-      </div>
-
-      {/* Download All and Approve All Buttons - positioned below In Progress gallery */}
-      <div
-        className="delivery-action-buttons-wrapper"
-        style={{
-          padding: '32px 20px',
-          width: '100%',
-          boxSizing: 'border-box',
-        }}
-      >
-        <div
-          className={`delivery-action-buttons-container ${hasApprovableImages() ? 'delivery-buttons-two' : 'delivery-buttons-one'}`}
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            gap: '17px',
-          }}
-        >
-          {/* Download All Button */}
-          <button
-          type="button"
-          onClick={handleDownloadAll}
-          disabled={isDownloading || inProgressImages.length === 0}
-          className="delivery-action-button delivery-download-button disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            display: 'flex',
-            width: '149px',
-            height: '38px',
-            padding: '12px 32px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            borderRadius: '6px',
-            border: '2px solid var(--Bella-Tech-Primary, #4F46E5)',
-            background: 'var(--Brand-White-white, #FFFDFF)',
-            color: 'var(--Bella-Tech-Primary, #4F46E5)',
-            fontFamily: 'Inter',
-            fontSize: '12px',
-            fontStyle: 'normal',
-            fontWeight: 700,
-            lineHeight: '20px',
-            letterSpacing: '0.12px',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {isDownloading ? 'Downloading...' : 'Download all'}
-        </button>
-
-        {/* Approve All Button */}
-        {hasApprovableImages() && (
-          <div 
-            style={{ position: 'relative' }}
-            onMouseEnter={() => isHistoryTab && setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-          >
-            <button
-              type="button"
-              onClick={handleApproveAll}
-              disabled={isDownloading || !hasApprovableImages() || isHistoryTab}
-              className="delivery-action-button delivery-approve-button disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                display: 'flex',
-                width: '149px',
-                height: '38px',
-                padding: '12px 32px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '10px',
-                borderRadius: '6px',
-                background: (isDownloading || !hasApprovableImages() || isHistoryTab) ? '#C1C2C3' : '#2BC556',
-                color: 'var(--Neutral-Light0, #FFF)',
-                fontFamily: 'Inter',
-                fontSize: '12px',
-                fontStyle: 'normal',
-                fontWeight: 700,
-                lineHeight: '20px',
-                letterSpacing: '0.12px',
-                whiteSpace: 'nowrap',
-                border: 'none',
-                cursor: (isDownloading || !hasApprovableImages() || isHistoryTab) ? 'not-allowed' : 'pointer',
-              }}
-            >
-              Approve all
-            </button>
-            
-            {/* Tooltip for history tab - multi-line on tablet/mobile via CSS class */}
-            {showTooltip && isHistoryTab && (
-              <div
-                className="delivery-approve-all-tooltip"
-                style={{
-                  position: 'absolute',
-                  bottom: '100%',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  marginBottom: '8px',
-                  padding: '8px 12px',
-                  backgroundColor: '#000B14',
-                  color: '#FFF',
-                  borderRadius: '6px',
-                  fontSize: '12px',
-                  fontFamily: 'Inter',
-                  fontWeight: 400,
-                  lineHeight: '16px',
-                  zIndex: 1000,
-                  boxShadow: '0 4px 14px 0 rgba(0, 0, 0, 0.15)',
-                  pointerEvents: 'none',
-                }}
-              >
-                You don&apos;t need to approve old versions. Newer versions have already been delivered.
-                {/* Arrow pointing down */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: 0,
-                    height: 0,
-                    borderLeft: '6px solid transparent',
-                    borderRight: '6px solid transparent',
-                    borderTop: '6px solid #000B14',
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        )}
         </div>
       </div>
 

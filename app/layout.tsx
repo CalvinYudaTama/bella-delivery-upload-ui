@@ -3,6 +3,8 @@ import { Inter, Montserrat, Tenor_Sans } from "next/font/google";
 import "./globals.css";
 import { CollectionProvider } from "@/contexts/CollectionContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -48,7 +50,21 @@ export default function RootLayout({
       <body className={`${inter.variable} ${montserrat.variable} ${tenorSans.variable} font-sans antialiased`}>
         <AuthProvider>
           <CollectionProvider>
-            {children}
+            {/* Header - Fixed at top, present on all pages */}
+            <Header />
+
+            {/* Main Content - Dynamic per page */}
+            <main
+              style={{
+                minHeight: '100vh',
+                paddingTop: '132px', // Announcement bar (40px) + Header (92px actual measured height)
+              }}
+            >
+              {children}
+            </main>
+
+            {/* Footer - Present on all pages */}
+            <Footer />
           </CollectionProvider>
         </AuthProvider>
       </body>

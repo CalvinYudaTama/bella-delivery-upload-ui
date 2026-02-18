@@ -30,13 +30,9 @@ export const DeliveryLayout: React.FC<DeliveryLayoutProps> = ({
 }) => {
   return (
     <DeliveryProvider projectId={projectId} revisionNumber={revisionNumber}>
-      <main className="delivery-layout-main mx-auto w-full pb-10" style={{ maxWidth: '1440px', paddingTop: '0' }}>
-        {/* Delivery Header with status and tabs */}
-        {/* <DeliveryHeader /> */}
-
-        {/* Delivery content */}
+      <div className="delivery-layout-main w-full" style={{ paddingTop: '0', backgroundColor: '#F9FAFB' }}>
         {children || <DeliveryContent />}
-      </main>
+      </div>
     </DeliveryProvider>
   );
 };

@@ -44,14 +44,15 @@ const Navigation: React.FC<NavigationProps> = ({ activeMenu, onMenuToggle }) => 
   ];
 
   return (
-    <nav 
-      className="hidden md:flex items-center" 
-      style={{ 
+    <nav
+      className="hidden md:flex items-center"
+      style={{
         display: 'flex',
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         gap: '40px',
-        whiteSpace: 'nowrap'
+        whiteSpace: 'nowrap',
       }}
     >
       {navItems.map((item) => {

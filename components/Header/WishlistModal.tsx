@@ -220,27 +220,26 @@ const WishlistModal: React.FC<WishlistModalProps> = ({ isOpen, onClose }) => {
   //   return roomType.charAt(0).toUpperCase() + roomType.slice(1).toLowerCase();
   // };
 
+  if (!isOpen) return null;
+
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="wishlist-modal-overlay fixed inset-0 bg-black/50 transition-opacity duration-300"
-        style={{ 
+        style={{
           zIndex: 1003,
-          opacity: isOpen ? 1 : 0,
-          visibility: isOpen ? 'visible' : 'hidden',
-          pointerEvents: isOpen ? 'all' : 'none',
+          opacity: 1,
+          pointerEvents: 'all',
         }}
         onClick={onClose}
       />
-      
+
       {/* Modal */}
-      <div 
-        className="wishlist-modal fixed right-0 top-0 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out"
-        style={{ 
+      <div
+        className="wishlist-modal fixed right-0 top-0 bg-white shadow-2xl"
+        style={{
           zIndex: 1004,
-          transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-          visibility: isOpen ? 'visible' : 'hidden',
           display: 'flex',
           width: '691px',
           height: '100vh',
