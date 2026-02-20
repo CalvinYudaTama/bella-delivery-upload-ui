@@ -44,11 +44,9 @@ const ChevronDownIcon = () => (
 
 // ─── Instagram Icon ───────────────────────────────────────────────────────────
 const InstagramIcon = () => (
-  <div style={{
-    width: '40px', height: '40px', borderRadius: '10px',
-    background: 'linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCAF45 100%)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-  }}>
+  <div className="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
+    style={{ background: 'linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCAF45 100%)' }}
+  >
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="2" y="2" width="20" height="20" rx="5" stroke="white" strokeWidth="1.8"/>
       <circle cx="12" cy="12" r="4.5" stroke="white" strokeWidth="1.8"/>
@@ -81,47 +79,32 @@ function PhotoCard({
       onClick={onToggle}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className="relative rounded-[10px] overflow-hidden cursor-pointer flex-1 min-w-0 transition-[border-color] duration-150"
       style={{
-        position: 'relative',
-        borderRadius: '10px',
-        overflow: 'hidden',
-        cursor: 'pointer',
         aspectRatio: '342 / 176',
         border: isSelected ? '3px solid #4F46E5' : '3px solid transparent',
-        transition: 'border-color 0.15s ease',
-        flex: '1 1 0',
-        minWidth: 0,
       }}
     >
       {/* Image */}
       <img
         src={photo.url}
         alt={photo.label}
-        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        className="w-full h-full object-cover block"
       />
 
       {/* Hover overlay */}
       <div
-        style={{
-          position: 'absolute', inset: 0,
-          background: hovered || isSelected ? 'rgba(0,0,0,0.25)' : 'transparent',
-          transition: 'background 0.15s ease',
-        }}
+        className="absolute inset-0 transition-[background] duration-150"
+        style={{ background: hovered || isSelected ? 'rgba(0,0,0,0.25)' : 'transparent' }}
       />
 
       {/* Selected checkbox — center */}
       {(hovered || isSelected) && (
         <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-[6px] flex items-center justify-center transition-[background] duration-150"
           style={{
-            position: 'absolute',
-            top: '50%', left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '32px', height: '32px',
-            borderRadius: '6px',
             background: isSelected ? '#4F46E5' : 'rgba(255,255,255,0.85)',
             border: isSelected ? 'none' : '2px solid #D1D5DB',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'background 0.15s ease',
           }}
         >
           {isSelected && <CheckIcon />}
@@ -158,42 +141,24 @@ export default function MLSMarketingHubContent() {
     }
   };
 
-  // Derive label from selected option for "Download as ZIP" subtitle
-  const selectedOptionShort = selectedResize.split(' (')[0]; // e.g. "Instagram - Square Post"
-
   return (
-    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div className="w-full flex flex-col gap-4">
 
       {/* ─── TOP BAR: Resize to + Watermark ──────────────────────────────────── */}
-      <div
-        style={{
-          width: '100%',
-          background: '#FFFFFF',
-          borderBottom: '1px solid #E9EAEB',
-          padding: '16px',
-          boxSizing: 'border-box',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px' }}>
+      <div className="w-full bg-white border-b border-[#E9EAEB] p-4 box-border">
+        <div className="flex items-start gap-6">
 
           {/* Resize to dropdown */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '314px' }}>
-            <label style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: 500, color: '#000B14', lineHeight: '20px' }}>
+          <div className="flex flex-col gap-1.5 min-w-[314px]">
+            <label className="font-[Inter] text-sm font-medium text-[#000B14] leading-5">
               Resize to:
             </label>
-            <div style={{ position: 'relative' }}>
+            <div className="relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                style={{
-                  width: '314px', height: '38px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '0 12px',
-                  border: '1px solid #D1D5DB', borderRadius: '6px',
-                  background: '#FFFFFF', cursor: 'pointer',
-                  fontFamily: 'Inter', fontSize: '14px', color: '#000B14',
-                }}
+                className="w-[314px] h-[38px] flex items-center justify-between px-3 border border-[#D1D5DB] rounded-[6px] bg-white cursor-pointer font-[Inter] text-sm text-[#000B14]"
               >
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span className="overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedResize}
                 </span>
                 <ChevronDownIcon />
@@ -201,23 +166,14 @@ export default function MLSMarketingHubContent() {
 
               {/* Dropdown menu */}
               {dropdownOpen && (
-                <div
-                  style={{
-                    position: 'absolute', top: '40px', left: 0, zIndex: 50,
-                    width: '314px', maxHeight: '280px', overflowY: 'auto',
-                    background: '#FFFFFF', border: '1px solid #E9EAEB',
-                    borderRadius: '8px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                  }}
-                >
+                <div className="absolute top-10 left-0 z-50 w-[314px] max-h-[280px] overflow-y-auto bg-white border border-[#E9EAEB] rounded-lg shadow-lg">
                   {RESIZE_OPTIONS.map((opt) => (
                     <button
                       key={opt}
                       onClick={() => { setSelectedResize(opt); setDropdownOpen(false); }}
+                      className="w-full px-3 py-2.5 text-left border-none cursor-pointer font-[Inter] text-sm"
                       style={{
-                        width: '100%', padding: '10px 12px', textAlign: 'left',
                         background: opt === selectedResize ? '#F5F3FF' : 'transparent',
-                        border: 'none', cursor: 'pointer',
-                        fontFamily: 'Inter', fontSize: '14px',
                         color: opt === selectedResize ? '#4F46E5' : '#000B14',
                         fontWeight: opt === selectedResize ? 500 : 400,
                       }}
@@ -233,38 +189,28 @@ export default function MLSMarketingHubContent() {
           </div>
 
           {/* Vertical divider */}
-          <div style={{ width: '1px', height: '60px', background: '#E9EAEB', flexShrink: 0, marginTop: '4px' }} />
+          <div className="w-px h-[60px] bg-[#E9EAEB] flex-shrink-0 mt-1" />
 
           {/* Watermark toggle */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: 500, color: '#000B14' }}>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2.5">
+              <span className="font-[Inter] text-sm font-medium text-[#000B14]">
                 Watermark:
               </span>
               {/* Toggle switch */}
               <button
                 onClick={() => setWatermarkEnabled(!watermarkEnabled)}
-                style={{
-                  width: '44px', height: '24px', borderRadius: '12px', border: 'none', cursor: 'pointer',
-                  background: watermarkEnabled ? '#4F46E5' : '#D1D5DB',
-                  position: 'relative', transition: 'background 0.2s ease', flexShrink: 0,
-                  padding: 0,
-                }}
+                className="w-11 h-6 rounded-full border-none cursor-pointer relative transition-[background] duration-200 flex-shrink-0 p-0"
+                style={{ background: watermarkEnabled ? '#4F46E5' : '#D1D5DB' }}
                 aria-label="Toggle watermark"
               >
                 <div
-                  style={{
-                    position: 'absolute', top: '3px',
-                    left: watermarkEnabled ? '23px' : '3px',
-                    width: '18px', height: '18px', borderRadius: '50%',
-                    background: '#FFFFFF',
-                    transition: 'left 0.2s ease',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                  }}
+                  className="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-[left] duration-200"
+                  style={{ left: watermarkEnabled ? '23px' : '3px' }}
                 />
               </button>
             </div>
-            <span style={{ fontFamily: 'Inter', fontSize: '12px', color: '#858A8E', lineHeight: '16px' }}>
+            <span className="font-[Inter] text-xs text-[#858A8E] leading-4">
               Accepted formats: png, jpeg, jpg, with maximum 10MB.
             </span>
           </div>
@@ -272,87 +218,52 @@ export default function MLSMarketingHubContent() {
       </div>
 
       {/* ─── PLATFORM HEADER CARD (separate card, blue tint) ────────────────── */}
-      <div
-        style={{
-          width: '100%',
-          background: '#EFF6FF',
-          border: '1px solid #BEDBFF',
-          borderRadius: '10px',
-          padding: '16px',
-          boxSizing: 'border-box',
-          height: '85px',
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+      <div className="w-full bg-[#EFF6FF] border border-[#BEDBFF] rounded-[10px] px-4 box-border h-[85px] flex items-center">
+        <div className="flex items-center justify-between w-full">
+
           {/* Left: Instagram icon + title + subtitle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="flex items-center gap-3">
             <InstagramIcon />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <span style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 500, color: '#1C398E', lineHeight: '27px', letterSpacing: '-0.44px' }}>
+            <div className="flex flex-col gap-1">
+              <span className="font-[Inter] text-lg font-medium text-[#1C398E] leading-[27px] tracking-[-0.44px]">
                 Instagram • Square Post
               </span>
-              <span style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: 400, color: '#4F46E5', lineHeight: '20px', letterSpacing: '-0.15px' }}>
+              <span className="font-[Inter] text-sm font-normal text-[#4F46E5] leading-5 tracking-[-0.15px]">
                 Images will be resized to 1080 × 1080px (1:1 aspect ratio)
               </span>
             </div>
           </div>
 
-          {/* Right: Select All / Deselect All button — green */}
+          {/* Right: Select All / Deselect All — green */}
           <button
             onClick={toggleSelectAll}
-            style={{
-              height: '38px', padding: '9px 16px',
-              borderRadius: '8px', border: 'none',
-              background: '#2BC556',
-              color: '#FFFFFF', fontFamily: 'Inter', fontSize: '14px', fontWeight: 500,
-              cursor: 'pointer', letterSpacing: '-0.15px', lineHeight: '20px',
-              whiteSpace: 'nowrap',
-            }}
+            className="h-[38px] px-4 py-[9px] rounded-lg border-none bg-[#2BC556] text-white font-[Inter] text-sm font-medium cursor-pointer whitespace-nowrap tracking-[-0.15px] leading-5"
           >
             {allSelected ? 'Deselect All' : 'Select All'}
           </button>
         </div>
       </div>
 
-      {/* ─── MAIN CONTENT CARD (white card, below with 16px gap) ─────────────── */}
-      <div
-        style={{
-          background: '#FFFFFF',
-          borderRadius: '10px',
-          border: '1px solid #E5E7EB',
-          width: '100%',
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '36px',
-          padding: '24px',
-        }}
-      >
+      {/* ─── MAIN CONTENT CARD ───────────────────────────────────────────────── */}
+      <div className="bg-white rounded-[10px] border border-[#E5E7EB] w-full box-border flex flex-col gap-9 p-6">
+
         {/* ─── Select Images to Export ──────────────────────────────────────── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="flex flex-col gap-4">
 
           {/* Section title + count */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h2 style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
+          <div className="flex items-center justify-between">
+            <h2 className="font-[Inter] text-lg font-medium text-[#0A0A0A] m-0 leading-[27px] tracking-[-0.44px]">
               Select Images to Export
             </h2>
-            <span style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: 400, color: '#6A7282', lineHeight: '20px', letterSpacing: '-0.15px' }}>
+            <span className="font-[Inter] text-sm font-normal text-[#6A7282] leading-5 tracking-[-0.15px]">
               {selectedPhotos.size} of {MLS_PHOTOS.length} selected
             </span>
           </div>
 
-          {/* Photo grid — 3 columns */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '22px',
-            }}
-          >
+          {/* Photo grid — 3 columns, 3 rows */}
+          <div className="flex flex-col gap-[22px]">
             {/* Row 1 */}
-            <div style={{ display: 'flex', gap: '22px', alignItems: 'stretch' }}>
+            <div className="flex gap-[22px] items-stretch">
               {MLS_PHOTOS.slice(0, 3).map((photo) => (
                 <PhotoCard
                   key={photo.id}
@@ -363,7 +274,7 @@ export default function MLSMarketingHubContent() {
               ))}
             </div>
             {/* Row 2 */}
-            <div style={{ display: 'flex', gap: '22px', alignItems: 'stretch' }}>
+            <div className="flex gap-[22px] items-stretch">
               {MLS_PHOTOS.slice(3, 6).map((photo) => (
                 <PhotoCard
                   key={photo.id}
@@ -374,7 +285,7 @@ export default function MLSMarketingHubContent() {
               ))}
             </div>
             {/* Row 3 */}
-            <div style={{ display: 'flex', gap: '22px', alignItems: 'stretch' }}>
+            <div className="flex gap-[22px] items-stretch">
               {MLS_PHOTOS.slice(6, 9).map((photo) => (
                 <PhotoCard
                   key={photo.id}
@@ -388,52 +299,37 @@ export default function MLSMarketingHubContent() {
         </div>
 
         {/* ─── Export Options ───────────────────────────────────────────────── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
+        <div className="flex flex-col gap-4">
+          <h3 className="font-[Inter] text-lg font-medium text-[#0A0A0A] m-0 leading-[27px] tracking-[-0.44px]">
             Export Options
           </h3>
 
           {/* Download as ZIP button */}
           <button
-            style={{
-              display: 'inline-flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              gap: '8px',
-              padding: '16px',
-              border: '2px solid #4F46E5', borderRadius: '12px',
-              background: '#FFFDFF', cursor: 'pointer',
-              alignSelf: 'flex-start',
-            }}
+            className="inline-flex flex-col items-center justify-center gap-2 p-4 border-2 border-[#4F46E5] rounded-xl bg-[#FFFDFF] cursor-pointer self-start"
           >
-            <span style={{ fontFamily: 'Inter', fontSize: '16px', fontWeight: 500, color: '#4F46E5', lineHeight: '20px', letterSpacing: '-0.15px' }}>
+            <span className="font-[Inter] text-base font-medium text-[#4F46E5] leading-5 tracking-[-0.15px]">
               Download as ZIP
             </span>
-            <span style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: 400, color: '#4F46E5', lineHeight: '16px' }}>
+            <span className="font-[Inter] text-sm font-normal text-[#4F46E5] leading-4">
               {selectedPhotos.size > 0 ? selectedPhotos.size : MLS_PHOTOS.length} images • Square Post
             </span>
           </button>
         </div>
 
         {/* ─── Smart Marketing Description ──────────────────────────────────── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
+        <div className="flex flex-col gap-4">
+          <h3 className="font-[Inter] text-lg font-medium text-[#0A0A0A] m-0 leading-[27px] tracking-[-0.44px]">
             Smart Marketing Description
           </h3>
-          <p style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 500, color: '#858A8E', lineHeight: '27px', margin: 0, maxWidth: '429px', letterSpacing: '-0.44px' }}>
+          <p className="font-[Inter] text-lg font-medium text-[#858A8E] leading-[27px] m-0 max-w-[429px] tracking-[-0.44px]">
             Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you
           </p>
 
           {/* CTA button */}
           <div>
             <button
-              style={{
-                height: '46px', padding: '12px 24px',
-                borderRadius: '12px', border: 'none',
-                background: '#4F46E5', color: '#FFFFFF',
-                fontFamily: 'Inter', fontSize: '14px', fontWeight: 700,
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-              }}
+              className="h-[46px] px-6 py-3 rounded-xl border-none bg-[#4F46E5] text-white font-[Inter] text-sm font-bold uppercase cursor-pointer"
             >
               TRY OUR AI DESCRIPTION GENERATOR
             </button>
