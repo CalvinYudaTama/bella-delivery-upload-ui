@@ -60,7 +60,7 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
   const isRevisionActive = pathname.includes('/revision');
   const isHistoryActive = pathname.includes('/history');
   const isVirtualStagingSection = isDeliveryActive || isRevisionActive || isHistoryActive || isDraftActive;
-  const isMLSActive = pathname.includes('/mls');
+  const isMLSActive = pathname.includes('/mls-hub');
   const isOtherActive = pathname.includes('/other-services');
 
   // Keep virtual staging sub-menu open if any sub-item is active
@@ -72,6 +72,7 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
   const deliveryHref = projectId ? `/projects/${projectId}/delivery` : '#';              // New route — Latest Revision page
   const revisionHref = projectId ? `/projects/${projectId}/revision` : '#';
   const historyHref  = projectId ? `/projects/${projectId}/history`  : '#';
+  const mlsHubHref   = projectId ? `/projects/${projectId}/mls-hub`  : '#';             // MLS Marketing Hub
 
   // Reusable top-level menu item style
   const menuItemStyle = (active: boolean): React.CSSProperties => ({
@@ -122,7 +123,7 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
         flexDirection: 'column',
         justifyContent: 'space-between',
         position: 'sticky',
-        top: 0,
+        top: '130px',
         overflowY: 'auto',
         flexShrink: 0,
         alignSelf: 'flex-start',
@@ -192,7 +193,7 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
         {/* MLS Marketing Hub */}
         <div>
           <Link
-            href="#"
+            href={mlsHubHref}
             style={menuItemStyle(isMLSActive)}
             onMouseEnter={(e) => { if (!isMLSActive) e.currentTarget.style.backgroundColor = '#F9FAFB'; }}
             onMouseLeave={(e) => { if (!isMLSActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
