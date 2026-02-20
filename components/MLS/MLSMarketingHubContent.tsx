@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,21 +35,26 @@ const MLS_PHOTOS: MLSPhoto[] = [
   { id: '9', url: '/images/mls/mls-photo-9.png', label: 'Hallway 3' },
 ];
 
+// ─── Breakpoints ──────────────────────────────────────────────────────────────
+// Desktop  : >= 1024px
+// Tablet   : 768px – 1023px
+// Mobile   : < 768px  (reserved for next sprint)
+
 // ─── Chevron Down Icon ────────────────────────────────────────────────────────
-const ChevronDownIcon = () => (
-  <svg className="mls-chevron-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 6L8 10L12 6" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+const ChevronDownIcon = ({ color = '#535862', size = 16 }: { color?: string; size?: number }) => (
+  <svg className="mls-chevron-icon" width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 6L8 10L12 6" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 // ─── Instagram Icon ───────────────────────────────────────────────────────────
-const InstagramIcon = () => (
+const InstagramIcon = ({ size = 40 }: { size?: number }) => (
   <div className="mls-platform-icon" style={{
-    width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+    width: size, height: size, borderRadius: 10, flexShrink: 0,
     background: 'linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCAF45 100%)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
   }}>
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    <svg width={size * 0.55} height={size * 0.55} viewBox="0 0 24 24" fill="none">
       <rect x="2" y="2" width="20" height="20" rx="5" stroke="white" strokeWidth="1.8"/>
       <circle cx="12" cy="12" r="4.5" stroke="white" strokeWidth="1.8"/>
       <circle cx="17.5" cy="6.5" r="1" fill="white"/>
@@ -100,7 +105,6 @@ function PhotoCard({
         alt={photo.label}
         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
       />
-
       <div
         className="mls-photo-card__overlay"
         style={{
@@ -109,7 +113,6 @@ function PhotoCard({
           transition: 'background 0.15s ease',
         }}
       />
-
       {(hovered || isSelected) && (
         <div
           className="mls-photo-card__checkbox"
@@ -132,9 +135,41 @@ function PhotoCard({
   );
 }
 
+// ─── Watermark Toggle Button (shared) ────────────────────────────────────────
+function WatermarkToggle({
+  enabled,
+  onToggle,
+}: {
+  enabled: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      className="mls-topbar__watermark-toggle"
+      onClick={onToggle}
+      style={{
+        width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer',
+        background: enabled ? '#4F46E5' : '#D1D5DB',
+        position: 'relative', transition: 'background 0.2s ease',
+        flexShrink: 0, padding: 0,
+      }}
+      aria-label="Toggle watermark"
+    >
+      <div className="mls-topbar__watermark-knob" style={{
+        position: 'absolute', top: 3,
+        left: enabled ? 23 : 3,
+        width: 18, height: 18, borderRadius: '50%',
+        background: '#FFFFFF', transition: 'left 0.2s ease',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+      }} />
+    </button>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function MLSMarketingHubContent() {
+  // ── State ──────────────────────────────────────────────────────────────────
   const [selectedResize, setSelectedResize] = useState(RESIZE_OPTIONS[0]);
   const [watermarkEnabled, setWatermarkEnabled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -143,8 +178,25 @@ export default function MLSMarketingHubContent() {
   const [watermarkFile, setWatermarkFile] = useState<File | null>(null);
   const [watermarkPreviewUrl, setWatermarkPreviewUrl] = useState<string | null>(null);
   const [watermarkSize, setWatermarkSize] = useState(50);
+
+  // ── Breakpoint detection ───────────────────────────────────────────────────
+  // isTablet: 768–1023px | isDesktop: ≥1024px
+  const [windowWidth, setWindowWidth] = useState<number>(
+    typeof window !== 'undefined' ? window.innerWidth : 1280
+  );
+  useEffect(() => {
+    const onResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  const isTablet = windowWidth >= 768 && windowWidth < 1024;
+  const isMobile = windowWidth < 768;
+  const isCompact = isTablet || isMobile; // shared compact layout flag
+
+  // ── Refs ───────────────────────────────────────────────────────────────────
   const watermarkInputRef = useRef<HTMLInputElement>(null);
 
+  // ── Handlers ──────────────────────────────────────────────────────────────
   const handleWatermarkUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -163,11 +215,9 @@ export default function MLSMarketingHubContent() {
   const handleWatermarkToggle = () => {
     const next = !watermarkEnabled;
     setWatermarkEnabled(next);
-    // If turning off, clear the uploaded file
     if (!next) handleWatermarkClear();
   };
 
-  // Format bytes to human-readable size
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -193,6 +243,356 @@ export default function MLSMarketingHubContent() {
     }
   };
 
+  // ── Shared slider CSS (injected once) ────────────────────────────────────
+  const sliderCSS = `
+    .mls-watermark-slider {
+      -webkit-appearance: none; appearance: none;
+      width: 100px; height: 4px; border-radius: 99px;
+      background: linear-gradient(to right, #4F46E5 0%, #4F46E5 ${watermarkSize}%, #E5E7EB ${watermarkSize}%, #E5E7EB 100%);
+      outline: none; cursor: pointer; border: none; padding: 0; margin: 0;
+    }
+    .mls-watermark-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #4F46E5; cursor: pointer;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 4px rgba(79,70,229,0.4), 0 0 0 1px #4F46E5;
+      transition: box-shadow 0.15s ease;
+    }
+    .mls-watermark-slider::-moz-range-thumb {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #4F46E5; cursor: pointer;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 4px rgba(79,70,229,0.4), 0 0 0 1px #4F46E5;
+    }
+    .mls-watermark-slider:hover::-webkit-slider-thumb {
+      box-shadow: 0 1px 6px rgba(79,70,229,0.5), 0 0 0 3px rgba(79,70,229,0.15);
+    }
+  `;
+
+  // ── Upload button (shared between desktop + tablet) ───────────────────────
+  const UploadButton = () => (
+    <>
+      <input
+        ref={watermarkInputRef}
+        className="mls-topbar__watermark-file-input"
+        type="file"
+        accept=".png,.jpeg,.jpg"
+        style={{ display: 'none' }}
+        onChange={handleWatermarkUpload}
+      />
+      <button
+        className="mls-topbar__watermark-upload-btn"
+        type="button"
+        onClick={() => watermarkInputRef.current?.click()}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          height: 38, padding: '0 13px',
+          border: watermarkFile ? '1px solid #00C950' : '1px solid #D1D5DC',
+          borderRadius: 10,
+          background: watermarkFile ? '#F0FDF4' : '#FFFFFF',
+          cursor: 'pointer',
+          fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+          color: watermarkFile ? '#328048' : '#4F46E5',
+          whiteSpace: 'nowrap',
+          transition: 'all 0.15s ease',
+          minWidth: 0, maxWidth: 198, overflow: 'hidden',
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+          <path d="M7 9.5V2M7 2L4.5 4.5M7 2L9.5 4.5" stroke={watermarkFile ? '#328048' : '#4F46E5'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M1.75 10.5V11.375C1.75 11.9963 2.25368 12.5 2.875 12.5H11.125C11.7463 12.5 12.25 11.9963 12.25 11.375V10.5" stroke={watermarkFile ? '#328048' : '#4F46E5'} strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {watermarkFile ? watermarkFile.name : 'Upload my logo'}
+        </span>
+      </button>
+      {watermarkFile && (
+        <div className="mls-topbar__watermark-size" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <style>{sliderCSS}</style>
+          <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 500, color: '#4A5565', lineHeight: '16px', whiteSpace: 'nowrap' }}>Size:</span>
+          <input
+            className="mls-topbar__watermark-size-slider mls-watermark-slider"
+            type="range" min={0} max={100} value={watermarkSize}
+            onChange={(e) => setWatermarkSize(Number(e.target.value))}
+          />
+          <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 400, color: '#4A5565', lineHeight: '16px', minWidth: 30, textAlign: 'right' }}>
+            {watermarkSize}%
+          </span>
+        </div>
+      )}
+    </>
+  );
+
+  // ── Watermark confirmation bar (shared) ───────────────────────────────────
+  const WatermarkBar = () => watermarkFile ? (
+    <div className="mls-watermark-bar" style={{
+      width: '100%', background: '#F0FDF4',
+      border: '1px solid #B9F8CF', borderRadius: 10,
+      padding: '0 17px', boxSizing: 'border-box',
+      height: 62, display: 'flex', alignItems: 'center',
+      justifyContent: 'space-between',
+    }}>
+      <div className="mls-watermark-bar__info" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div className="mls-watermark-bar__icon-wrap" style={{
+          width: 32, height: 32, borderRadius: 10, background: '#DCFCE7',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M9.33 1.33H4a1.33 1.33 0 0 0-1.33 1.34v10.66A1.33 1.33 0 0 0 4 14.67h8a1.33 1.33 0 0 0 1.33-1.34V5.33L9.33 1.33Z" stroke="#00A63E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M9.33 1.33V5.33h4" stroke="#00A63E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <div className="mls-watermark-bar__file-meta" style={{ display: 'flex', flexDirection: 'column' }}>
+          <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#0D542B', lineHeight: '20px', letterSpacing: '-0.15px', maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {watermarkFile.name}
+          </span>
+          <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 400, color: '#00A63E', lineHeight: '16px' }}>
+            {formatFileSize(watermarkFile.size)}
+          </span>
+        </div>
+      </div>
+      <button
+        className="mls-watermark-bar__remove-btn"
+        type="button" onClick={handleWatermarkClear}
+        aria-label="Remove watermark file"
+        style={{ width: 24, height: 24, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, flexShrink: 0 }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M12 4L4 12M4 4L12 12" stroke="#4A5565" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      </button>
+    </div>
+  ) : null;
+
+  // ── Platform header action buttons (shared logic) ─────────────────────────
+  const PlatformActions = () => selectedPhotos.size === 0 ? (
+    <button
+      className="mls-platform-header__select-btn"
+      onClick={toggleSelectAll}
+      style={{
+        height: 38, padding: '9px 16px', borderRadius: 8, border: 'none',
+        background: '#2BC556', color: '#FFFFFF',
+        fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+        cursor: 'pointer', whiteSpace: 'nowrap',
+        letterSpacing: '-0.15px', lineHeight: '20px',
+      }}
+    >
+      Select All
+    </button>
+  ) : (
+    <>
+      <button
+        className="mls-platform-header__deselect-btn"
+        onClick={() => setSelectedPhotos(new Set())}
+        style={{
+          height: 38, padding: '9px 16px', borderRadius: 8,
+          border: '1px solid #D1D5DC', background: 'transparent',
+          fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+          color: '#0A0A0A', cursor: 'pointer', whiteSpace: 'nowrap',
+          letterSpacing: '-0.15px', lineHeight: '20px',
+        }}
+      >
+        Deselect All
+      </button>
+      <button
+        className="mls-platform-header__export-btn"
+        onClick={() => { /* TODO: trigger export */ }}
+        style={{
+          height: 36, padding: '0 16px', borderRadius: 8, border: 'none',
+          background: '#4F46E5', color: '#FFFFFF',
+          fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+          cursor: 'pointer', whiteSpace: 'nowrap',
+          letterSpacing: '-0.15px', lineHeight: '20px',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2V10.5M8 10.5L5 7.5M8 10.5L11 7.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M2.5 12.5H13.5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+        Export ({selectedPhotos.size})
+      </button>
+    </>
+  );
+
+  // ────────────────────────────────────────────────────────────────────────────
+  //  TABLET LAYOUT  (768px – 1023px)
+  // ────────────────────────────────────────────────────────────────────────────
+  if (isCompact) {
+    return (
+      <div className="mls-hub mls-hub--tablet" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0 }}>
+
+        {/* ── TABLET: Platform header row (compact, with chevron) ────────────── */}
+        <div className="mls-platform-header mls-platform-header--tablet" style={{
+          width: '100%', background: '#EFF6FF',
+          border: '1px solid #BEDBFF', borderRadius: '10px 10px 0 0',
+          padding: '8px 13px', boxSizing: 'border-box',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          minHeight: 57,
+        }}>
+          {/* Left: icon + title + subtitle + chevron */}
+          <div className="mls-platform-header__info" style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+            <InstagramIcon size={20} />
+            <div className="mls-platform-header__text" style={{ display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0 }}>
+              <span className="mls-platform-header__title" style={{
+                fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+                color: '#1C398E', lineHeight: '21px', letterSpacing: '-0.15px',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              }}>
+                Instagram • Square Post
+              </span>
+              <span className="mls-platform-header__subtitle" style={{
+                fontFamily: 'Inter', fontSize: 12, fontWeight: 400,
+                color: '#4F46E5', lineHeight: '16px',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              }}>
+                Images will be resized to 1080 × 1080px (1:1 aspect ratio)
+              </span>
+            </div>
+            <div style={{ flexShrink: 0, marginLeft: 4 }}>
+              <ChevronDownIcon color="#4F46E5" size={24} />
+            </div>
+          </div>
+
+          {/* Right: Select All / Deselect + Export */}
+          <div className="mls-platform-header__actions" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 12 }}>
+            <PlatformActions />
+          </div>
+        </div>
+
+        {/* ── TABLET: Watermark row ─────────────────────────────────────────── */}
+        <div className="mls-topbar mls-topbar--tablet" style={{
+          width: '100%', background: '#FFFFFF',
+          border: '1px solid #BEDBFF', borderTop: 'none',
+          borderRadius: '0 0 10px 10px',
+          padding: '13px', boxSizing: 'border-box',
+        }}>
+          <div className="mls-topbar__watermark-row--tablet" style={{
+            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+          }}>
+            {/* Left: label + hint */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span className="mls-topbar__watermark-label" style={{
+                fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#364153', lineHeight: '20px',
+              }}>
+                Watermark
+              </span>
+              <span className="mls-topbar__watermark-hint" style={{
+                fontFamily: 'Inter', fontSize: 12, color: '#858A8E', lineHeight: '16.5px',
+              }}>
+                Accepts PNG, JPG • Max 2MB
+              </span>
+            </div>
+            {/* Right: toggle */}
+            <WatermarkToggle enabled={watermarkEnabled} onToggle={handleWatermarkToggle} />
+          </div>
+
+          {/* Upload button + slider (visible when watermark ON) */}
+          {watermarkEnabled && (
+            <div className="mls-topbar__watermark-upload--tablet" style={{
+              display: 'flex', alignItems: 'center', gap: 12, marginTop: 10, flexWrap: 'wrap',
+            }}>
+              <UploadButton />
+            </div>
+          )}
+        </div>
+
+        {/* ── TABLET: Watermark file confirmation bar ───────────────────────── */}
+        {watermarkFile && (
+          <div style={{ marginTop: 8 }}>
+            <WatermarkBar />
+          </div>
+        )}
+
+        {/* ── TABLET: Content area (no outer card border on tablet, uses inner padding) */}
+        <div className="mls-content-card mls-content-card--tablet" style={{
+          background: '#FFFFFF', borderRadius: 10,
+          border: '1px solid #E5E7EB', width: '100%',
+          boxSizing: 'border-box', display: 'flex',
+          flexDirection: 'column', gap: 24,
+          padding: 13, marginTop: 16,
+        }}>
+
+          {/* ── Select Images to Export ──────────────────────────────────────── */}
+          <div className="mls-photo-section" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div className="mls-photo-section__header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h2 className="mls-photo-section__title" style={{
+                fontFamily: 'Inter', fontSize: 15, fontWeight: 500, color: '#0A0A0A',
+                margin: 0, lineHeight: '22.5px', letterSpacing: '-0.15px',
+              }}>
+                Select Images to Export
+              </h2>
+              <span className="mls-photo-section__count" style={{
+                fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#6A7282',
+                lineHeight: '19.5px', letterSpacing: '-0.15px',
+              }}>
+                {selectedPhotos.size} of {MLS_PHOTOS.length} selected
+              </span>
+            </div>
+
+            {/* Photo grid — 3 columns, gap 12px on tablet */}
+            <div className="mls-photo-grid" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[MLS_PHOTOS.slice(0, 3), MLS_PHOTOS.slice(3, 6), MLS_PHOTOS.slice(6, 9)].map((row, ri) => (
+                <div key={ri} className="mls-photo-grid__row" style={{ display: 'flex', gap: 12 }}>
+                  {row.map((photo) => (
+                    <PhotoCard key={photo.id} photo={photo} isSelected={selectedPhotos.has(photo.id)} onToggle={() => togglePhoto(photo.id)} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Export Options (tablet: full-width stacked buttons) ─────────── */}
+          <div className="mls-export-section" style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
+            <h3 className="mls-export-section__title" style={{
+              fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#0A0A0A',
+              margin: 0, lineHeight: '21px', letterSpacing: '-0.15px',
+            }}>
+              Export Options
+            </h3>
+
+            {/* Download as ZIP — full width, filled */}
+            <button className="mls-export-section__zip-btn mls-export-section__zip-btn--tablet" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              width: '100%', height: 45, padding: '0 16px',
+              border: 'none', borderRadius: 8,
+              background: '#4F46E5', cursor: 'pointer', boxSizing: 'border-box',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2V10.5M8 10.5L5 7.5M8 10.5L11 7.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2.5 12.5H13.5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#FFFFFF', lineHeight: '21px' }}>
+                Download as ZIP
+              </span>
+            </button>
+
+            {/* Share via Link — full width, outlined */}
+            <button className="mls-export-section__share-btn" style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              width: '100%', height: 47, padding: '0 16px',
+              border: '1px solid #E5E7EB', borderRadius: 8,
+              background: '#FFFFFF', cursor: 'pointer', boxSizing: 'border-box',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M6.667 8.667a3.333 3.333 0 0 0 5.06.373l2-2a3.333 3.333 0 0 0-4.714-4.714L7.72 3.613" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9.333 7.333a3.333 3.333 0 0 0-5.06-.373l-2 2a3.333 3.333 0 0 0 4.714 4.714l1.286-1.287" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#4F46E5', lineHeight: '21px' }}>
+                Share via Link
+              </span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  //  DESKTOP LAYOUT  (≥ 1024px)  — unchanged from original
+  // ────────────────────────────────────────────────────────────────────────────
   return (
     <div className="mls-hub" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
 
@@ -261,215 +661,30 @@ export default function MLSMarketingHubContent() {
           {/* Vertical divider */}
           <div className="mls-topbar__divider" style={{ width: 1, height: 60, background: '#E9EAEB', flexShrink: 0, marginTop: 4 }} />
 
-          {/* Watermark toggle + upload */}
+          {/* Watermark toggle */}
           <div className="mls-topbar__watermark" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div className="mls-topbar__watermark-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span className="mls-topbar__watermark-label" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#000B14' }}>
                 Watermark:
               </span>
-              <button
-                className="mls-topbar__watermark-toggle"
-                onClick={handleWatermarkToggle}
-                style={{
-                  width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer',
-                  background: watermarkEnabled ? '#4F46E5' : '#D1D5DB',
-                  position: 'relative', transition: 'background 0.2s ease',
-                  flexShrink: 0, padding: 0,
-                }}
-                aria-label="Toggle watermark"
-              >
-                <div className="mls-topbar__watermark-knob" style={{
-                  position: 'absolute', top: 3,
-                  left: watermarkEnabled ? 23 : 3,
-                  width: 18, height: 18, borderRadius: '50%',
-                  background: '#FFFFFF', transition: 'left 0.2s ease',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                }} />
-              </button>
+              <WatermarkToggle enabled={watermarkEnabled} onToggle={handleWatermarkToggle} />
             </div>
             <span className="mls-topbar__watermark-hint" style={{ fontFamily: 'Inter', fontSize: 12, color: '#858A8E', lineHeight: '16px' }}>
               Accepted formats: png, jpeg, jpg, with maximum 10MB.
             </span>
           </div>
 
-          {/* Upload my logo button + size slider — visible only when watermark is ON */}
+          {/* Upload button + size slider */}
           {watermarkEnabled && (
             <div className="mls-topbar__watermark-upload" style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
-              {/* Hidden file input */}
-              <input
-                ref={watermarkInputRef}
-                className="mls-topbar__watermark-file-input"
-                type="file"
-                accept=".png,.jpeg,.jpg"
-                style={{ display: 'none' }}
-                onChange={handleWatermarkUpload}
-              />
-
-              {/* Upload button — default (no file) or green (file uploaded) */}
-              <button
-                className="mls-topbar__watermark-upload-btn"
-                type="button"
-                onClick={() => watermarkInputRef.current?.click()}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  height: 38, padding: '0 13px',
-                  border: watermarkFile ? '1px solid #00C950' : '1px solid #D1D5DC',
-                  borderRadius: 10,
-                  background: watermarkFile ? '#F0FDF4' : '#FFFFFF',
-                  cursor: 'pointer',
-                  fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-                  color: watermarkFile ? '#328048' : '#4F46E5',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.15s ease',
-                  minWidth: 0, maxWidth: 198, overflow: 'hidden',
-                }}
-              >
-                {/* Upload icon — changes colour based on state */}
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-                  <path d="M7 9.5V2M7 2L4.5 4.5M7 2L9.5 4.5"
-                    stroke={watermarkFile ? '#328048' : '#4F46E5'}
-                    strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M1.75 10.5V11.375C1.75 11.9963 2.25368 12.5 2.875 12.5H11.125C11.7463 12.5 12.25 11.9963 12.25 11.375V10.5"
-                    stroke={watermarkFile ? '#328048' : '#4F46E5'}
-                    strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {watermarkFile ? watermarkFile.name : 'Upload my logo'}
-                </span>
-              </button>
-
-              {/* Size slider — only visible after file is uploaded */}
-              {watermarkFile && (
-                <div className="mls-topbar__watermark-size" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                  <style>{`
-                    .mls-watermark-slider {
-                      -webkit-appearance: none;
-                      appearance: none;
-                      width: 100px;
-                      height: 4px;
-                      border-radius: 99px;
-                      background: linear-gradient(
-                        to right,
-                        #4F46E5 0%,
-                        #4F46E5 ${watermarkSize}%,
-                        #E5E7EB ${watermarkSize}%,
-                        #E5E7EB 100%
-                      );
-                      outline: none;
-                      cursor: pointer;
-                      border: none;
-                      padding: 0;
-                      margin: 0;
-                    }
-                    .mls-watermark-slider::-webkit-slider-thumb {
-                      -webkit-appearance: none;
-                      appearance: none;
-                      width: 16px;
-                      height: 16px;
-                      border-radius: 50%;
-                      background: #4F46E5;
-                      cursor: pointer;
-                      border: 2px solid #FFFFFF;
-                      box-shadow: 0 1px 4px rgba(79, 70, 229, 0.4), 0 0 0 1px #4F46E5;
-                      transition: box-shadow 0.15s ease;
-                    }
-                    .mls-watermark-slider::-moz-range-thumb {
-                      width: 16px;
-                      height: 16px;
-                      border-radius: 50%;
-                      background: #4F46E5;
-                      cursor: pointer;
-                      border: 2px solid #FFFFFF;
-                      box-shadow: 0 1px 4px rgba(79, 70, 229, 0.4), 0 0 0 1px #4F46E5;
-                    }
-                    .mls-watermark-slider:hover::-webkit-slider-thumb {
-                      box-shadow: 0 1px 6px rgba(79, 70, 229, 0.5), 0 0 0 3px rgba(79, 70, 229, 0.15);
-                    }
-                  `}</style>
-                  <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 500, color: '#4A5565', lineHeight: '16px', whiteSpace: 'nowrap' }}>
-                    Size:
-                  </span>
-                  <input
-                    className="mls-topbar__watermark-size-slider mls-watermark-slider"
-                    type="range"
-                    min={0}
-                    max={100}
-                    value={watermarkSize}
-                    onChange={(e) => setWatermarkSize(Number(e.target.value))}
-                  />
-                  <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 400, color: '#4A5565', lineHeight: '16px', minWidth: 30, textAlign: 'right' }}>
-                    {watermarkSize}%
-                  </span>
-                </div>
-              )}
+              <UploadButton />
             </div>
           )}
         </div>
       </div>
 
-      {/* ─── WATERMARK FILE CONFIRMATION BAR — visible after file uploaded ─── */}
-      {watermarkFile && (
-        <div className="mls-watermark-bar" style={{
-          width: '100%', background: '#F0FDF4',
-          border: '1px solid #B9F8CF', borderRadius: 10,
-          padding: '0 17px', boxSizing: 'border-box',
-          height: 62, display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          {/* Left: icon + file info */}
-          <div className="mls-watermark-bar__info" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {/* File icon container */}
-            <div className="mls-watermark-bar__icon-wrap" style={{
-              width: 32, height: 32, borderRadius: 10,
-              background: '#DCFCE7',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0,
-            }}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.33 1.33H4a1.33 1.33 0 0 0-1.33 1.34v10.66A1.33 1.33 0 0 0 4 14.67h8a1.33 1.33 0 0 0 1.33-1.34V5.33L9.33 1.33Z" stroke="#00A63E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M9.33 1.33V5.33h4" stroke="#00A63E" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-
-            {/* File name + size */}
-            <div className="mls-watermark-bar__file-meta" style={{ display: 'flex', flexDirection: 'column' }}>
-              <span className="mls-watermark-bar__file-name" style={{
-                fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-                color: '#0D542B', lineHeight: '20px', letterSpacing: '-0.15px',
-                maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>
-                {watermarkFile.name}
-              </span>
-              <span className="mls-watermark-bar__file-size" style={{
-                fontFamily: 'Inter', fontSize: 12, fontWeight: 400,
-                color: '#00A63E', lineHeight: '16px',
-              }}>
-                {formatFileSize(watermarkFile.size)}
-              </span>
-            </div>
-          </div>
-
-          {/* Right: close / remove button */}
-          <button
-            className="mls-watermark-bar__remove-btn"
-            type="button"
-            onClick={handleWatermarkClear}
-            aria-label="Remove watermark file"
-            style={{
-              width: 24, height: 24, borderRadius: 8,
-              border: 'none', background: 'transparent',
-              cursor: 'pointer', display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-              padding: 0, flexShrink: 0,
-              color: '#4A5565',
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 4L4 12M4 4L12 12" stroke="#4A5565" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </button>
-        </div>
-      )}
+      {/* ─── WATERMARK FILE CONFIRMATION BAR ─────────────────────────────────── */}
+      <WatermarkBar />
 
       {/* ─── PLATFORM HEADER CARD ────────────────────────────────────────────── */}
       <div className="mls-platform-header" style={{
@@ -479,8 +694,6 @@ export default function MLSMarketingHubContent() {
         height: 85, display: 'flex', alignItems: 'center',
       }}>
         <div className="mls-platform-header__inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-
-          {/* Left: platform icon + text */}
           <div className="mls-platform-header__info" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <InstagramIcon />
             <div className="mls-platform-header__text" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -492,63 +705,9 @@ export default function MLSMarketingHubContent() {
               </span>
             </div>
           </div>
-
-          {/* Right: action buttons */}
           <div className="mls-platform-header__actions" style={{ display: 'flex', alignItems: 'center', gap: 30 }}>
-            {selectedPhotos.size === 0 ? (
-              /* No selection → show "Select All" green button */
-              <button
-                className="mls-platform-header__select-btn"
-                onClick={toggleSelectAll}
-                style={{
-                  height: 38, padding: '9px 16px', borderRadius: 8, border: 'none',
-                  background: '#2BC556', color: '#FFFFFF',
-                  fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-                  cursor: 'pointer', whiteSpace: 'nowrap',
-                  letterSpacing: '-0.15px', lineHeight: '20px',
-                }}
-              >
-                Select All
-              </button>
-            ) : (
-              /* Has selection → show "Deselect All" + "Export (N)" */
-              <>
-                <button
-                  className="mls-platform-header__deselect-btn"
-                  onClick={() => setSelectedPhotos(new Set())}
-                  style={{
-                    height: 38, padding: '9px 16px', borderRadius: 8,
-                    border: '1px solid #D1D5DC', background: 'transparent',
-                    fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-                    color: '#0A0A0A', cursor: 'pointer', whiteSpace: 'nowrap',
-                    letterSpacing: '-0.15px', lineHeight: '20px',
-                  }}
-                >
-                  Deselect All
-                </button>
-                <button
-                  className="mls-platform-header__export-btn"
-                  onClick={() => { /* TODO: trigger export */ }}
-                  style={{
-                    height: 36, padding: '0 16px', borderRadius: 8, border: 'none',
-                    background: '#4F46E5', color: '#FFFFFF',
-                    fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-                    cursor: 'pointer', whiteSpace: 'nowrap',
-                    letterSpacing: '-0.15px', lineHeight: '20px',
-                    display: 'flex', alignItems: 'center', gap: 8,
-                  }}
-                >
-                  {/* Download icon */}
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8 2V10.5M8 10.5L5 7.5M8 10.5L11 7.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M2.5 12.5H13.5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                  Export ({selectedPhotos.size})
-                </button>
-              </>
-            )}
+            <PlatformActions />
           </div>
-
         </div>
       </div>
 
@@ -573,21 +732,13 @@ export default function MLSMarketingHubContent() {
 
           {/* Photo grid — 3 columns, 3 rows */}
           <div className="mls-photo-grid" style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
-            <div className="mls-photo-grid__row" style={{ display: 'flex', gap: 22 }}>
-              {MLS_PHOTOS.slice(0, 3).map((photo) => (
-                <PhotoCard key={photo.id} photo={photo} isSelected={selectedPhotos.has(photo.id)} onToggle={() => togglePhoto(photo.id)} />
-              ))}
-            </div>
-            <div className="mls-photo-grid__row" style={{ display: 'flex', gap: 22 }}>
-              {MLS_PHOTOS.slice(3, 6).map((photo) => (
-                <PhotoCard key={photo.id} photo={photo} isSelected={selectedPhotos.has(photo.id)} onToggle={() => togglePhoto(photo.id)} />
-              ))}
-            </div>
-            <div className="mls-photo-grid__row" style={{ display: 'flex', gap: 22 }}>
-              {MLS_PHOTOS.slice(6, 9).map((photo) => (
-                <PhotoCard key={photo.id} photo={photo} isSelected={selectedPhotos.has(photo.id)} onToggle={() => togglePhoto(photo.id)} />
-              ))}
-            </div>
+            {[MLS_PHOTOS.slice(0, 3), MLS_PHOTOS.slice(3, 6), MLS_PHOTOS.slice(6, 9)].map((row, ri) => (
+              <div key={ri} className="mls-photo-grid__row" style={{ display: 'flex', gap: 22 }}>
+                {row.map((photo) => (
+                  <PhotoCard key={photo.id} photo={photo} isSelected={selectedPhotos.has(photo.id)} onToggle={() => togglePhoto(photo.id)} />
+                ))}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -619,8 +770,6 @@ export default function MLSMarketingHubContent() {
           gap: aiDescVisible ? 32 : 16,
           alignItems: aiDescVisible ? 'flex-start' : undefined,
         }}>
-
-          {/* Left column: title + desc + button (always visible) */}
           <div className="mls-ai-section__left" style={{ display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0 }}>
             <h3 className="mls-ai-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
               Smart Marketing Description
@@ -646,7 +795,6 @@ export default function MLSMarketingHubContent() {
             </div>
           </div>
 
-          {/* Right column: AI-generated description panel — only shown after button click */}
           {aiDescVisible && (
             <div className="mls-ai-section__result" style={{
               flex: '1 0 0', minWidth: 0,
@@ -662,7 +810,6 @@ export default function MLSMarketingHubContent() {
               </p>
             </div>
           )}
-
         </div>
 
       </div>
