@@ -29,6 +29,7 @@ function DraftGalleryCard({ url, label }: { url: string; label: string }) {
 
   return (
     <div
+      className="draft-gallery-card"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -43,6 +44,7 @@ function DraftGalleryCard({ url, label }: { url: string; label: string }) {
     >
       {/* Base image */}
       <img
+        className="draft-gallery-card__image"
         src={url}
         alt={label}
         style={{
@@ -57,6 +59,7 @@ function DraftGalleryCard({ url, label }: { url: string; label: string }) {
 
       {/* Dark gradient overlay — stronger on hover */}
       <div
+        className="draft-gallery-card__overlay"
         style={{
           position: 'absolute',
           inset: 0,
@@ -70,6 +73,7 @@ function DraftGalleryCard({ url, label }: { url: string; label: string }) {
 
       {/* Hover action buttons — bottom right (View, Link, Download) */}
       <div
+        className="draft-gallery-card__actions"
         style={{
           position: 'absolute',
           bottom: '10px',
@@ -84,7 +88,7 @@ function DraftGalleryCard({ url, label }: { url: string; label: string }) {
         }}
       >
         {/* View button */}
-        <button aria-label="View image" style={{ width: '32px', height: '32px', padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <button className="draft-gallery-card__action-btn draft-gallery-card__action-btn--view" aria-label="View image" style={{ width: '32px', height: '32px', padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M25.8729 15.6096C25.6942 15.3652 21.4371 9.625 15.9999 9.625C10.5627 9.625 6.30539 15.3652 6.12691 15.6094C5.9577 15.8413 5.9577 16.1558 6.12691 16.3876C6.30539 16.632 10.5627 22.3723 15.9999 22.3723C21.4371 22.3723 25.6942 16.632 25.8729 16.3878C26.0423 16.156 26.0423 15.8413 25.8729 15.6096ZM15.9999 21.0536C11.9949 21.0536 8.52606 17.2437 7.49922 15.9982C8.52473 14.7516 11.9863 10.9437 15.9999 10.9437C20.0048 10.9437 23.4733 14.7529 24.5006 15.9991C23.4751 17.2456 20.0135 21.0536 15.9999 21.0536Z" fill="white"/>
             <path d="M15.999 12.0449C13.8177 12.0449 12.043 13.8197 12.043 16.001C12.043 18.1823 13.8177 19.957 15.999 19.957C18.1804 19.957 19.9551 18.1823 19.9551 16.001C19.9551 13.8197 18.1804 12.0449 15.999 12.0449ZM15.999 18.6383C14.5447 18.6383 13.3617 17.4552 13.3617 16.001C13.3617 14.5467 14.5448 13.3636 15.999 13.3636C17.4533 13.3636 18.6364 14.5467 18.6364 16.001C18.6364 17.4552 17.4533 18.6383 15.999 18.6383Z" fill="white"/>
@@ -92,7 +96,7 @@ function DraftGalleryCard({ url, label }: { url: string; label: string }) {
         </button>
 
         {/* Link / Copy button */}
-        <button aria-label="Copy link" style={{ width: '32px', height: '32px', padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <button className="draft-gallery-card__action-btn draft-gallery-card__action-btn--link" aria-label="Copy link" style={{ width: '32px', height: '32px', padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip_dc_link)">
               <path d="M16.612 19.0598L14.1639 21.508C13.1514 22.5205 11.5041 22.5206 10.4916 21.5081C10.0012 21.0176 9.73111 20.3655 9.73111 19.672C9.73111 18.9785 10.0012 18.3265 10.4915 17.836L12.9397 15.3877C13.2777 15.0497 13.2777 14.5016 12.9397 14.1636C12.6017 13.8257 12.0536 13.8257 11.7156 14.1636L9.26752 16.6118C8.44997 17.4297 8 18.5163 8 19.672C8 20.8279 8.45015 21.9147 9.26758 22.7322C10.1113 23.5758 11.2195 23.9977 12.3278 23.9977C13.436 23.9977 14.5443 23.5758 15.3879 22.7322L17.836 20.2839C18.174 19.9459 18.174 19.3979 17.836 19.0598C17.4981 18.7219 16.9501 18.7219 16.612 19.0598Z" fill="white"/>
@@ -108,7 +112,7 @@ function DraftGalleryCard({ url, label }: { url: string; label: string }) {
         </button>
 
         {/* Download button */}
-        <button aria-label="Download image" style={{ width: '32px', height: '32px', padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <button className="draft-gallery-card__action-btn draft-gallery-card__action-btn--download" aria-label="Download image" style={{ width: '32px', height: '32px', padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M16 18.6813C15.9 18.6813 15.8063 18.6658 15.7188 18.6348C15.6312 18.6038 15.55 18.5505 15.475 18.475L12.775 15.775C12.625 15.625 12.553 15.45 12.559 15.25C12.565 15.05 12.637 14.875 12.775 14.725C12.925 14.575 13.1033 14.497 13.3098 14.491C13.5163 14.485 13.6943 14.5568 13.8438 14.7063L15.25 16.1125V10.75C15.25 10.5375 15.322 10.3595 15.466 10.216C15.61 10.0725 15.788 10.0005 16 10C16.212 9.9995 16.3903 10.0715 16.5347 10.216C16.6793 10.3605 16.751 10.5385 16.75 10.75V16.1125L18.1562 14.7063C18.3062 14.5563 18.4845 14.4843 18.691 14.4903C18.8975 14.4963 19.0755 14.5745 19.225 14.725C19.3625 14.875 19.4345 15.05 19.441 15.25C19.4475 15.45 19.3755 15.625 19.225 15.775L16.525 18.475C16.45 18.55 16.3688 18.6033 16.2812 18.6348C16.1937 18.6663 16.1 18.6818 16 18.6813ZM11.5 22C11.0875 22 10.7345 21.8533 10.441 21.5598C10.1475 21.2663 10.0005 20.913 10 20.5V19C10 18.7875 10.072 18.6095 10.216 18.466C10.36 18.3225 10.538 18.2505 10.75 18.25C10.962 18.2495 11.1402 18.3215 11.2847 18.466C11.4292 18.6105 11.501 18.7885 11.5 19V20.5H20.5V19C20.5 18.7875 20.572 18.6095 20.716 18.466C20.86 18.3225 21.038 18.2505 21.25 18.25C21.462 18.2495 21.6402 18.3215 21.7847 18.466C21.9292 18.6105 22.001 18.7885 22 19V20.5C22 20.9125 21.8533 21.2658 21.5597 21.5598C21.2662 21.8538 20.913 22.0005 20.5 22H11.5Z" fill="white"/>
           </svg>
@@ -688,6 +692,7 @@ export const DeliveryContent: React.FC = () => {
       >
         {/* Page Title */}
         <h1
+          className="delivery-page-header__title"
           style={{
             color: '#000B14',
             fontFamily: 'Inter',
@@ -703,6 +708,7 @@ export const DeliveryContent: React.FC = () => {
 
         {/* Order Number - TODO (Riley): replace with real order ID from state.resultsOrderId */}
         <span
+          className="delivery-page-header__order"
           style={{
             color: '#535862',
             fontFamily: 'Inter',
@@ -739,7 +745,7 @@ export const DeliveryContent: React.FC = () => {
         }}
       >
         {/* Stat: Photos Delivered */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+        <div className="delivery-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
           {/* Green check circle icon */}
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="32" height="32" rx="16" fill="#DCFCE7" />
@@ -757,10 +763,10 @@ export const DeliveryContent: React.FC = () => {
         </div>
 
         {/* Divider */}
-        <div style={{ width: '1px', height: '36px', background: '#E9EAEB', flexShrink: 0 }} />
+        <div className="delivery-stats-bar__divider" style={{ width: '1px', height: '36px', background: '#E9EAEB', flexShrink: 0 }} />
 
         {/* Stat: Total File Size */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+        <div className="delivery-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
           {/* Download/file icon */}
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="32" height="32" rx="16" fill="#EFF6FF" />
@@ -779,11 +785,12 @@ export const DeliveryContent: React.FC = () => {
         </div>
 
         {/* Spacer pushes buttons to the right */}
-        <div style={{ flex: 1 }} />
+        <div className="delivery-stats-bar__spacer" style={{ flex: 1 }} />
 
         {/* Approve All Button — TODO (Riley): wire up handleApproveAll to backend */}
         {hasApprovableImages() && (
           <button
+            className="delivery-stats-bar__approve-btn"
             type="button"
             onClick={handleApproveAll}
             disabled={isDownloading || !hasApprovableImages()}
@@ -818,6 +825,7 @@ export const DeliveryContent: React.FC = () => {
 
         {/* Download All Button */}
         <button
+          className="delivery-stats-bar__download-btn"
           type="button"
           onClick={handleDownloadAll}
           disabled={isDownloading || inProgressImages.length === 0}
@@ -852,8 +860,9 @@ export const DeliveryContent: React.FC = () => {
       </div>
 
       {/* Main delivery preview */}
-      <div style={{ width: '100%', marginTop: '0', position: 'relative' }}>
+      <div className="draft-preview-wrapper" style={{ width: '100%', marginTop: '0', position: 'relative' }}>
         <div
+          className="draft-preview-image-frame"
           style={{
             width: '100%',
             height: '622px',
@@ -868,6 +877,7 @@ export const DeliveryContent: React.FC = () => {
         >
           {/* Main Image */}
           <img
+            className="draft-preview-image-frame__img"
             src={imageUrl}
             alt={imageTitle}
             style={{
@@ -1000,6 +1010,7 @@ export const DeliveryContent: React.FC = () => {
             <>
               {/* Previous Button - Left */}
               <button
+                className="draft-preview-image-frame__nav-btn draft-preview-image-frame__nav-btn--prev"
                 onClick={handlePreviousImage}
                 aria-label="Previous image"
                 style={{
@@ -1026,6 +1037,7 @@ export const DeliveryContent: React.FC = () => {
 
               {/* Next Button - Right */}
               <button
+                className="draft-preview-image-frame__nav-btn draft-preview-image-frame__nav-btn--next"
                 onClick={handleNextImage}
                 aria-label="Next image"
                 style={{
@@ -1057,6 +1069,7 @@ export const DeliveryContent: React.FC = () => {
         {/* Face happy / sad icons — overlaid on top-right of image, outside inner container
             to avoid being affected by any CSS globals on .delivery-preview-image-container */}
         <div
+          className="draft-preview-image-frame__face-icons"
           style={{
             position: 'absolute',
             top: '10px',
@@ -1072,6 +1085,7 @@ export const DeliveryContent: React.FC = () => {
         >
           {/* Approve button — face happy */}
           <button
+            className="draft-preview-image-frame__face-btn draft-preview-image-frame__face-btn--happy"
             onClick={handleAccept}
             aria-label="Accept image"
             style={{
@@ -1098,6 +1112,7 @@ export const DeliveryContent: React.FC = () => {
 
           {/* Reject button — face sad */}
           <button
+            className="draft-preview-image-frame__face-btn draft-preview-image-frame__face-btn--sad"
             onClick={handleReject}
             aria-label="Reject image"
             style={{
@@ -1207,8 +1222,9 @@ export const DeliveryContent: React.FC = () => {
 
         {/* Image Gallery - In Progress — Figma dummy images dari node 13543:48733 */}
         {/* TODO (Riley): replace DRAFT_GALLERY_IMAGES with real state.images from API */}
-        <div style={{ marginTop: '24px', width: '100%' }}>
+        <div className="draft-gallery-wrapper" style={{ marginTop: '24px', width: '100%' }}>
           <div
+            className="draft-gallery-grid"
             style={{
               display: 'flex',
               flexWrap: 'wrap',
@@ -1222,6 +1238,7 @@ export const DeliveryContent: React.FC = () => {
 
           {/* Action buttons — right aligned, same as Latest Revision */}
           <div
+            className="draft-gallery-actions"
             style={{
               display: 'flex',
               justifyContent: 'flex-end',
@@ -1231,6 +1248,7 @@ export const DeliveryContent: React.FC = () => {
             }}
           >
             <button
+              className="draft-gallery-actions__download-btn"
               type="button"
               style={{
                 display: 'flex', height: '38px', padding: '0 32px',
@@ -1243,6 +1261,7 @@ export const DeliveryContent: React.FC = () => {
               Download all
             </button>
             <button
+              className="draft-gallery-actions__approve-btn"
               type="button"
               style={{
                 display: 'flex', height: '38px', padding: '0 32px',
