@@ -368,6 +368,8 @@ export default function MLSMarketingHubContent() {
         height: 85, display: 'flex', alignItems: 'center',
       }}>
         <div className="mls-platform-header__inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+
+          {/* Left: platform icon + text */}
           <div className="mls-platform-header__info" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <InstagramIcon />
             <div className="mls-platform-header__text" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -379,19 +381,63 @@ export default function MLSMarketingHubContent() {
               </span>
             </div>
           </div>
-          <button
-            className="mls-platform-header__select-btn"
-            onClick={toggleSelectAll}
-            style={{
-              height: 38, padding: '9px 16px', borderRadius: 8, border: 'none',
-              background: '#2BC556', color: '#FFFFFF',
-              fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-              cursor: 'pointer', whiteSpace: 'nowrap',
-              letterSpacing: '-0.15px', lineHeight: '20px',
-            }}
-          >
-            {allSelected ? 'Deselect All' : 'Select All'}
-          </button>
+
+          {/* Right: action buttons */}
+          <div className="mls-platform-header__actions" style={{ display: 'flex', alignItems: 'center', gap: 30 }}>
+            {selectedPhotos.size === 0 ? (
+              /* No selection → show "Select All" green button */
+              <button
+                className="mls-platform-header__select-btn"
+                onClick={toggleSelectAll}
+                style={{
+                  height: 38, padding: '9px 16px', borderRadius: 8, border: 'none',
+                  background: '#2BC556', color: '#FFFFFF',
+                  fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+                  cursor: 'pointer', whiteSpace: 'nowrap',
+                  letterSpacing: '-0.15px', lineHeight: '20px',
+                }}
+              >
+                Select All
+              </button>
+            ) : (
+              /* Has selection → show "Deselect All" + "Export (N)" */
+              <>
+                <button
+                  className="mls-platform-header__deselect-btn"
+                  onClick={() => setSelectedPhotos(new Set())}
+                  style={{
+                    height: 38, padding: '9px 16px', borderRadius: 8,
+                    border: '1px solid #D1D5DC', background: 'transparent',
+                    fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+                    color: '#0A0A0A', cursor: 'pointer', whiteSpace: 'nowrap',
+                    letterSpacing: '-0.15px', lineHeight: '20px',
+                  }}
+                >
+                  Deselect All
+                </button>
+                <button
+                  className="mls-platform-header__export-btn"
+                  onClick={() => { /* TODO: trigger export */ }}
+                  style={{
+                    height: 36, padding: '0 16px', borderRadius: 8, border: 'none',
+                    background: '#4F46E5', color: '#FFFFFF',
+                    fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+                    cursor: 'pointer', whiteSpace: 'nowrap',
+                    letterSpacing: '-0.15px', lineHeight: '20px',
+                    display: 'flex', alignItems: 'center', gap: 8,
+                  }}
+                >
+                  {/* Download icon */}
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 2V10.5M8 10.5L5 7.5M8 10.5L11 7.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M2.5 12.5H13.5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  Export ({selectedPhotos.size})
+                </button>
+              </>
+            )}
+          </div>
+
         </div>
       </div>
 
