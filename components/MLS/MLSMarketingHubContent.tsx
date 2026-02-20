@@ -139,6 +139,7 @@ export default function MLSMarketingHubContent() {
   const [watermarkEnabled, setWatermarkEnabled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
+  const [aiDescVisible, setAiDescVisible] = useState(false);
   const [watermarkFile, setWatermarkFile] = useState<File | null>(null);
   const [watermarkPreviewUrl, setWatermarkPreviewUrl] = useState<string | null>(null);
   const [watermarkSize, setWatermarkSize] = useState(50);
@@ -612,24 +613,56 @@ export default function MLSMarketingHubContent() {
         </div>
 
         {/* ─── Smart Marketing Description ──────────────────────────────────── */}
-        <div className="mls-ai-section" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <h3 className="mls-ai-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
-            Smart Marketing Description
-          </h3>
-          <p className="mls-ai-section__description" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#858A8E', lineHeight: '27px', margin: 0, maxWidth: 429, letterSpacing: '-0.44px' }}>
-            Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you
-          </p>
-          <div className="mls-ai-section__cta">
-            <button className="mls-ai-section__cta-btn" style={{
-              height: 46, padding: '12px 24px',
-              borderRadius: 12, border: 'none',
-              background: '#4F46E5', color: '#FFFFFF',
-              fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
-              textTransform: 'uppercase', cursor: 'pointer',
-            }}>
-              TRY OUR AI DESCRIPTION GENERATOR
-            </button>
+        <div className="mls-ai-section" style={{
+          display: 'flex',
+          flexDirection: aiDescVisible ? 'row' : 'column',
+          gap: aiDescVisible ? 32 : 16,
+          alignItems: aiDescVisible ? 'flex-start' : undefined,
+        }}>
+
+          {/* Left column: title + desc + button (always visible) */}
+          <div className="mls-ai-section__left" style={{ display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0 }}>
+            <h3 className="mls-ai-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
+              Smart Marketing Description
+            </h3>
+            <p className="mls-ai-section__description" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#858A8E', lineHeight: '27px', margin: 0, maxWidth: 429, letterSpacing: '-0.44px' }}>
+              Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you
+            </p>
+            <div className="mls-ai-section__cta">
+              <button
+                className="mls-ai-section__cta-btn"
+                onClick={() => setAiDescVisible(true)}
+                style={{
+                  height: 46, padding: '12px 24px',
+                  borderRadius: 12, border: 'none',
+                  background: '#4F46E5', color: '#FFFFFF',
+                  fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
+                  textTransform: 'uppercase', cursor: 'pointer',
+                  letterSpacing: '0.02em',
+                }}
+              >
+                TRY OUR AI DESCRIPTION GENERATOR
+              </button>
+            </div>
           </div>
+
+          {/* Right column: AI-generated description panel — only shown after button click */}
+          {aiDescVisible && (
+            <div className="mls-ai-section__result" style={{
+              flex: '1 0 0', minWidth: 0,
+              background: '#FAFAFA', borderRadius: 12,
+              padding: 24, alignSelf: 'stretch',
+            }}>
+              <p className="mls-ai-section__result-text" style={{
+                fontFamily: 'Inter', fontSize: 16, fontWeight: 400,
+                color: '#0A0A0A', lineHeight: '27px',
+                letterSpacing: '-0.44px', margin: 0,
+              }}>
+                One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees &amp; cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show. Open house Saturday Feb 21st 1 to 3 pm.
+              </p>
+            </div>
+          )}
+
         </div>
 
       </div>
