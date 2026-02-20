@@ -74,6 +74,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
 
   return (
     <div
+      className="revision-gallery-card"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -89,6 +90,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
     >
       {/* Base image */}
       <img
+        className="revision-gallery-card__image"
         src={image.url}
         alt="delivery"
         style={{
@@ -103,6 +105,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
 
       {/* Dark gradient overlay — always subtle, stronger on hover (matching Figma) */}
       <div
+        className="revision-gallery-card__overlay"
         style={{
           position: 'absolute',
           inset: 0,
@@ -116,6 +119,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
 
       {/* Face icon — top right, always visible */}
       <div
+        className="revision-gallery-card__face-icon"
         style={{
           position: 'absolute',
           top: '8px',
@@ -126,6 +130,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
         }}
       >
         <img
+          className="revision-gallery-card__face-icon-img"
           src={image.isApproved ? FIGMA_FACE_HAPPY_URL : FIGMA_FACE_SAD_URL}
           alt={image.isApproved ? 'completed' : 'in progress'}
           style={{ width: '40px', height: '40px' }}
@@ -135,6 +140,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
       {/* Hover action buttons — bottom RIGHT (View, Link, Download) */}
       {/* TODO (Riley): wire onClick handlers to real actions */}
       <div
+        className="revision-gallery-card__actions"
         style={{
           position: 'absolute',
           bottom: '10px',
@@ -150,6 +156,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
       >
         {/* View button */}
         <button
+          className="revision-gallery-card__action-btn revision-gallery-card__action-btn--view"
           aria-label="View image"
           style={{
             width: '32px', height: '32px', padding: '0',
@@ -166,6 +173,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
 
         {/* Link / Copy button */}
         <button
+          className="revision-gallery-card__action-btn revision-gallery-card__action-btn--link"
           aria-label="Copy link"
           style={{
             width: '32px', height: '32px', padding: '0',
@@ -190,6 +198,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
 
         {/* Download button */}
         <button
+          className="revision-gallery-card__action-btn revision-gallery-card__action-btn--download"
           aria-label="Download image"
           style={{
             width: '32px', height: '32px', padding: '0',
@@ -212,6 +221,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
 function SectionHeader({ label, count }: { label: string; count: number }) {
   return (
     <div
+      className="revision-section-header"
       style={{
         width: '100%',
         borderBottom: '2px solid #E9EAEB',
@@ -219,6 +229,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
       }}
     >
       <div
+        className="revision-section-header__tab"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -232,6 +243,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
         }}
       >
         <span
+          className="revision-section-header__label"
           style={{
             fontFamily: 'Inter',
             fontSize: '16px',
@@ -244,6 +256,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
         </span>
         {/* Badge */}
         <div
+          className="revision-section-header__badge"
           style={{
             backgroundColor: '#000B14',
             borderRadius: '9999px',
@@ -253,6 +266,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
           }}
         >
           <span
+            className="revision-section-header__badge-count"
             style={{
               fontFamily: 'Inter',
               fontSize: '14px',
@@ -308,10 +322,11 @@ export default function LatestRevisionContent({
   const currentImageIsApproved = allImages[safeIndex]?.isApproved ?? false;
 
   return (
-    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0' }}>
+    <div className="revision-content" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0' }}>
 
       {/* ─── PAGE HEADER ─────────────────────────────────────────────────────── */}
       <div
+        className="revision-page-header"
         style={{
           display: 'flex',
           flexDirection: 'row',
@@ -322,6 +337,7 @@ export default function LatestRevisionContent({
         }}
       >
         <h1
+          className="revision-page-header__title"
           style={{
             color: '#000B14',
             fontFamily: 'Inter',
@@ -335,6 +351,7 @@ export default function LatestRevisionContent({
         </h1>
         {/* TODO (Riley): replace with real order ID from API */}
         <span
+          className="revision-page-header__order"
           style={{
             color: '#535862',
             fontFamily: 'Inter',
@@ -349,6 +366,7 @@ export default function LatestRevisionContent({
 
       {/* ─── STATS BAR ───────────────────────────────────────────────────────── */}
       <div
+        className="revision-stats-bar"
         style={{
           display: 'flex',
           flexDirection: 'row',
@@ -364,7 +382,7 @@ export default function LatestRevisionContent({
         }}
       >
         {/* Photos Delivered */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+        <div className="revision-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
             <rect width="32" height="32" rx="16" fill="#DCFCE7"/>
             <path d="M10.667 16L14.0003 19.3333L21.3337 12" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -381,10 +399,10 @@ export default function LatestRevisionContent({
         </div>
 
         {/* Divider */}
-        <div style={{ width: '1px', height: '36px', background: '#E9EAEB', flexShrink: 0 }} />
+        <div className="revision-stats-bar__divider" style={{ width: '1px', height: '36px', background: '#E9EAEB', flexShrink: 0 }} />
 
         {/* Total File Size */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+        <div className="revision-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
             <rect width="32" height="32" rx="16" fill="#EFF6FF"/>
             <path d="M16 10V18M16 18L13 15M16 18L19 15" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -402,10 +420,11 @@ export default function LatestRevisionContent({
         </div>
 
         {/* Spacer */}
-        <div style={{ flex: 1 }} />
+        <div className="revision-stats-bar__spacer" style={{ flex: 1 }} />
 
         {/* Approve All Button (stats bar level) — TODO (Riley): wire to API */}
         <button
+          className="revision-stats-bar__approve-btn"
           type="button"
           onClick={onApproveAll}
           disabled={inProgressImages.length === 0}
@@ -432,6 +451,7 @@ export default function LatestRevisionContent({
 
         {/* Download All Button (stats bar level) — TODO (Riley): wire to API */}
         <button
+          className="revision-stats-bar__download-btn"
           type="button"
           onClick={onDownloadInProgress}
           style={{
@@ -459,6 +479,7 @@ export default function LatestRevisionContent({
       {/* ─── MAIN PREVIEW IMAGE (carousel) ──────────────────────────────────── */}
       {/* TODO (Riley): replace currentImageUrl with real carousel images from API */}
       <div
+        className="revision-preview-frame"
         style={{
           width: '100%',
           height: '622px',
@@ -472,6 +493,7 @@ export default function LatestRevisionContent({
       >
         {/* Main image */}
         <img
+          className="revision-preview-frame__img"
           src={currentImageUrl}
           alt="main preview — virtual staging result"
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -480,6 +502,7 @@ export default function LatestRevisionContent({
         {/* Face happy / sad action icons — top right (from Figma node 13769:46628) */}
         {/* TODO (Riley): wire onClick to real approve/reject API call */}
         <div
+          className="revision-preview-frame__face-icons"
           style={{
             position: 'absolute',
             top: '10px',
@@ -492,6 +515,7 @@ export default function LatestRevisionContent({
         >
           {/* Approve button — happy face */}
           <button
+            className="revision-preview-frame__face-btn revision-preview-frame__face-btn--approve"
             aria-label="Approve image"
             style={{
               width: '48px',
@@ -524,6 +548,7 @@ export default function LatestRevisionContent({
 
           {/* Reject button — sad face */}
           <button
+            className="revision-preview-frame__face-btn revision-preview-frame__face-btn--reject"
             aria-label="Reject image"
             style={{
               width: '48px',
@@ -557,6 +582,7 @@ export default function LatestRevisionContent({
 
         {/* Prev / Next navigation arrows — same style as Draft Delivery */}
         <button
+          className="revision-preview-frame__nav-btn revision-preview-frame__nav-btn--prev"
           onClick={handlePreviousImage}
           aria-label="Previous image"
           style={{
@@ -582,6 +608,7 @@ export default function LatestRevisionContent({
         </button>
 
         <button
+          className="revision-preview-frame__nav-btn revision-preview-frame__nav-btn--next"
           onClick={handleNextImage}
           aria-label="Next image"
           style={{
@@ -609,6 +636,7 @@ export default function LatestRevisionContent({
 
       {/* ─── GALLERY CONTAINER ───────────────────────────────────────────────── */}
       <div
+        className="revision-gallery-container"
         style={{
           background: '#FFFFFF',
           borderRadius: '10px',
@@ -622,11 +650,12 @@ export default function LatestRevisionContent({
       >
 
         {/* ── IN PROGRESS SECTION ─────────────────────────────────────────────── */}
-        <div style={{ width: '100%' }}>
+        <div className="revision-gallery-section revision-gallery-section--in-progress" style={{ width: '100%' }}>
           <SectionHeader label="In Progress" count={inProgressImages.length} />
 
           {/* Gallery grid */}
           <div
+            className="revision-gallery-grid"
             style={{
               display: 'flex',
               flexWrap: 'wrap',
@@ -641,6 +670,7 @@ export default function LatestRevisionContent({
 
           {/* Section action buttons — right aligned */}
           <div
+            className="revision-gallery-actions"
             style={{
               display: 'flex',
               justifyContent: 'flex-end',
@@ -650,6 +680,7 @@ export default function LatestRevisionContent({
           >
             {/* Download all (in progress) — TODO (Riley): wire to API */}
             <button
+              className="revision-gallery-actions__download-btn"
               type="button"
               onClick={onDownloadInProgress}
               style={{
@@ -674,6 +705,7 @@ export default function LatestRevisionContent({
 
             {/* Approve all — TODO (Riley): wire to API */}
             <button
+              className="revision-gallery-actions__approve-btn"
               type="button"
               onClick={onApproveAll}
               style={{
@@ -699,11 +731,12 @@ export default function LatestRevisionContent({
         </div>
 
         {/* ── COMPLETED SECTION ───────────────────────────────────────────────── */}
-        <div style={{ width: '100%' }}>
+        <div className="revision-gallery-section revision-gallery-section--completed" style={{ width: '100%' }}>
           <SectionHeader label="Completed" count={completedImages.length} />
 
           {/* Gallery grid */}
           <div
+            className="revision-gallery-grid"
             style={{
               display: 'flex',
               flexWrap: 'wrap',
@@ -718,6 +751,7 @@ export default function LatestRevisionContent({
 
           {/* Section action button — right aligned, download only */}
           <div
+            className="revision-gallery-actions revision-gallery-actions--completed"
             style={{
               display: 'flex',
               justifyContent: 'flex-end',
@@ -726,6 +760,7 @@ export default function LatestRevisionContent({
           >
             {/* Download all (completed) — TODO (Riley): wire to API */}
             <button
+              className="revision-gallery-actions__download-btn"
               type="button"
               onClick={onDownloadCompleted}
               style={{
