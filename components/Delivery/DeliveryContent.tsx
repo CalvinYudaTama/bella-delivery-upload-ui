@@ -34,20 +34,20 @@ export const DeliveryContent: React.FC = () => {
   // ─── Carousel state (independent index, same pattern as Latest Revision) ──────
   const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
 
-  // ─── Design assets dari Figma node 13543:48597 (Draft Delivery) ──────────────
+  // ─── Design placeholder assets (saved to public/images/delivery/) ─────────────
   // TODO (Riley): replace these with real hosted image URLs from API when available
-  const DRAFT_MAIN_IMAGE_URL = '/images/delivery/draft-main-banner.png'; // main banner (living room putih)
-  const DRAFT_THUMB_1        = '/images/delivery/draft-thumb-1.png';     // bedroom
-  const DRAFT_THUMB_2        = '/images/delivery/draft-thumb-2.png';     // living room
-  const DRAFT_THUMB_3        = '/images/delivery/draft-thumb-3.png';     // dining room
+  const FIGMA_MAIN_IMAGE_URL  = '/images/delivery/main-living-room.png'; // living room wide (hero)
+  const FIGMA_IMG_BEDROOM     = '/images/delivery/bedroom.png';           // bedroom
+  const FIGMA_IMG_LIVING_ROOM = '/images/delivery/living-room.png';       // living room
+  const FIGMA_IMG_DINING_ROOM = '/images/delivery/dining-room.png';       // dining room
 
-  // ─── Carousel images — dari Figma Draft Delivery design ───────────────────────
+  // ─── Carousel images — same dummy set as Latest Revision page ─────────────────
   // TODO (Riley): replace with real images from state.images when API is ready
   const allCarouselImages = useMemo(() => [
-    { id: 'c1', url: DRAFT_MAIN_IMAGE_URL },
-    { id: 'c2', url: DRAFT_THUMB_2 },
-    { id: 'c3', url: DRAFT_THUMB_3 },
-    { id: 'c4', url: DRAFT_THUMB_1 },
+    { id: 'c1', url: FIGMA_MAIN_IMAGE_URL },
+    { id: 'c2', url: FIGMA_IMG_LIVING_ROOM },
+    { id: 'c3', url: FIGMA_IMG_DINING_ROOM },
+    { id: 'c4', url: FIGMA_IMG_BEDROOM },
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], []);
 
