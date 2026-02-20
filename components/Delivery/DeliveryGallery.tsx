@@ -39,10 +39,23 @@ export const DeliveryGallery: React.FC<DeliveryGalleryProps> = ({ filter = 'all'
       })
     : images;
 
-  // Use highlightImages if available, otherwise use filtered images
-  const galleryImages = filter === 'all' && highlightImages.length > 0 
-    ? highlightImages 
+  // ─── Figma Draft Delivery design assets (fallback when no API data) ───────────
+  // TODO (Riley): remove DUMMY_GALLERY_IMAGES once real API data is available
+  const DUMMY_GALLERY_IMAGES = [
+    '/images/delivery/draft-thumb-1.png', // bedroom
+    '/images/delivery/draft-thumb-2.png', // living room
+    '/images/delivery/draft-thumb-3.png', // dining room
+    '/images/delivery/draft-thumb-1.png', // bedroom (row 2)
+    '/images/delivery/draft-thumb-2.png', // living room (row 2)
+    '/images/delivery/draft-thumb-3.png', // dining room (row 2)
+  ];
+
+  // Use highlightImages if available, otherwise use filtered images, fallback to dummy
+  const rawGalleryImages = filter === 'all' && highlightImages.length > 0
+    ? highlightImages
     : filteredImages.map((img) => img.url);
+
+  const galleryImages = rawGalleryImages.length > 0 ? rawGalleryImages : DUMMY_GALLERY_IMAGES;
 
   // Helper function to get image status based on revisionStatus
   // Uses the same URL matching logic as onClick handler to ensure consistency
