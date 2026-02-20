@@ -339,37 +339,64 @@ export default function MLSMarketingHubContent() {
 
               {/* Size slider — only visible after file is uploaded */}
               {watermarkFile && (
-                <div className="mls-topbar__watermark-size" style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                <div className="mls-topbar__watermark-size" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                  <style>{`
+                    .mls-watermark-slider {
+                      -webkit-appearance: none;
+                      appearance: none;
+                      width: 100px;
+                      height: 4px;
+                      border-radius: 99px;
+                      background: linear-gradient(
+                        to right,
+                        #4F46E5 0%,
+                        #4F46E5 ${watermarkSize}%,
+                        #E5E7EB ${watermarkSize}%,
+                        #E5E7EB 100%
+                      );
+                      outline: none;
+                      cursor: pointer;
+                      border: none;
+                      padding: 0;
+                      margin: 0;
+                    }
+                    .mls-watermark-slider::-webkit-slider-thumb {
+                      -webkit-appearance: none;
+                      appearance: none;
+                      width: 16px;
+                      height: 16px;
+                      border-radius: 50%;
+                      background: #4F46E5;
+                      cursor: pointer;
+                      border: 2px solid #FFFFFF;
+                      box-shadow: 0 1px 4px rgba(79, 70, 229, 0.4), 0 0 0 1px #4F46E5;
+                      transition: box-shadow 0.15s ease;
+                    }
+                    .mls-watermark-slider::-moz-range-thumb {
+                      width: 16px;
+                      height: 16px;
+                      border-radius: 50%;
+                      background: #4F46E5;
+                      cursor: pointer;
+                      border: 2px solid #FFFFFF;
+                      box-shadow: 0 1px 4px rgba(79, 70, 229, 0.4), 0 0 0 1px #4F46E5;
+                    }
+                    .mls-watermark-slider:hover::-webkit-slider-thumb {
+                      box-shadow: 0 1px 6px rgba(79, 70, 229, 0.5), 0 0 0 3px rgba(79, 70, 229, 0.15);
+                    }
+                  `}</style>
                   <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 500, color: '#4A5565', lineHeight: '16px', whiteSpace: 'nowrap' }}>
                     Size:
                   </span>
-                  {/* Custom slider track */}
-                  <div style={{ position: 'relative', width: 60, height: 8 }}>
-                    <div style={{
-                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                      background: '#E5E7EB', borderRadius: 99,
-                    }} />
-                    <div style={{
-                      position: 'absolute', top: 0, left: 0, bottom: 0,
-                      width: `${watermarkSize}%`,
-                      background: '#4F46E5', borderRadius: 99,
-                    }} />
-                    <input
-                      className="mls-topbar__watermark-size-slider"
-                      type="range"
-                      min={0}
-                      max={100}
-                      value={watermarkSize}
-                      onChange={(e) => setWatermarkSize(Number(e.target.value))}
-                      style={{
-                        position: 'absolute', top: '50%', left: 0,
-                        transform: 'translateY(-50%)',
-                        width: '100%', margin: 0,
-                        opacity: 0, cursor: 'pointer', height: 16,
-                      }}
-                    />
-                  </div>
-                  <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 400, color: '#4A5565', lineHeight: '16px', minWidth: 28, textAlign: 'right' }}>
+                  <input
+                    className="mls-topbar__watermark-size-slider mls-watermark-slider"
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={watermarkSize}
+                    onChange={(e) => setWatermarkSize(Number(e.target.value))}
+                  />
+                  <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 400, color: '#4A5565', lineHeight: '16px', minWidth: 30, textAlign: 'right' }}>
                     {watermarkSize}%
                   </span>
                 </div>
