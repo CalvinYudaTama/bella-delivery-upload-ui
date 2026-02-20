@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -139,6 +139,28 @@ export default function MLSMarketingHubContent() {
   const [watermarkEnabled, setWatermarkEnabled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
+  const [watermarkFile, setWatermarkFile] = useState<File | null>(null);
+  const [watermarkPreviewUrl, setWatermarkPreviewUrl] = useState<string | null>(null);
+  const watermarkInputRef = useRef<HTMLInputElement>(null);
+
+  const handleWatermarkUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setWatermarkFile(file);
+    const url = URL.createObjectURL(file);
+    setWatermarkPreviewUrl(url);
+  };
+
+  const handleWatermarkToggle = () => {
+    const next = !watermarkEnabled;
+    setWatermarkEnabled(next);
+    // If turning off, clear the uploaded file
+    if (!next) {
+      setWatermarkFile(null);
+      setWatermarkPreviewUrl(null);
+      if (watermarkInputRef.current) watermarkInputRef.current.value = '';
+    }
+  };
 
   const allSelected = selectedPhotos.size === MLS_PHOTOS.length;
 
@@ -227,7 +249,7 @@ export default function MLSMarketingHubContent() {
           {/* Vertical divider */}
           <div className="mls-topbar__divider" style={{ width: 1, height: 60, background: '#E9EAEB', flexShrink: 0, marginTop: 4 }} />
 
-          {/* Watermark toggle */}
+          {/* Watermark toggle + upload */}
           <div className="mls-topbar__watermark" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div className="mls-topbar__watermark-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span className="mls-topbar__watermark-label" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#000B14' }}>
@@ -235,7 +257,7 @@ export default function MLSMarketingHubContent() {
               </span>
               <button
                 className="mls-topbar__watermark-toggle"
-                onClick={() => setWatermarkEnabled(!watermarkEnabled)}
+                onClick={handleWatermarkToggle}
                 style={{
                   width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer',
                   background: watermarkEnabled ? '#4F46E5' : '#D1D5DB',
@@ -257,6 +279,84 @@ export default function MLSMarketingHubContent() {
               Accepted formats: png, jpeg, jpg, with maximum 10MB.
             </span>
           </div>
+
+          {/* Upload my logo button — visible only when watermark is ON */}
+          {watermarkEnabled && (
+            <div className="mls-topbar__watermark-upload" style={{ display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'center' }}>
+              {/* Hidden file input */}
+              <input
+                ref={watermarkInputRef}
+                className="mls-topbar__watermark-file-input"
+                type="file"
+                accept=".png,.jpeg,.jpg"
+                style={{ display: 'none' }}
+                onChange={handleWatermarkUpload}
+              />
+
+              {/* Upload button */}
+              <button
+                className="mls-topbar__watermark-upload-btn"
+                type="button"
+                onClick={() => watermarkInputRef.current?.click()}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  height: 38, padding: '0 13px',
+                  border: '1px solid #D1D5DC', borderRadius: 10,
+                  background: '#FFFFFF', cursor: 'pointer',
+                  fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+                  color: '#4F46E5', whiteSpace: 'nowrap',
+                  transition: 'border-color 0.15s ease',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#4F46E5'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = '#D1D5DC'; }}
+              >
+                {/* Upload icon */}
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7 9.5V2M7 2L4.5 4.5M7 2L9.5 4.5" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M1.75 10.5V11.375C1.75 11.9963 2.25368 12.5 2.875 12.5H11.125C11.7463 12.5 12.25 11.9963 12.25 11.375V10.5" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                {watermarkFile ? watermarkFile.name : 'Upload my logo'}
+              </button>
+
+              {/* Preview thumbnail if file uploaded */}
+              {watermarkPreviewUrl && (
+                <div className="mls-topbar__watermark-preview" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <img
+                    src={watermarkPreviewUrl}
+                    alt="Watermark preview"
+                    style={{
+                      width: 24, height: 24, objectFit: 'contain',
+                      border: '1px solid #E5E7EB', borderRadius: 4,
+                    }}
+                  />
+                  <span style={{ fontFamily: 'Inter', fontSize: 11, color: '#858A8E', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {watermarkFile?.name}
+                  </span>
+                  {/* Remove button */}
+                  <button
+                    className="mls-topbar__watermark-remove-btn"
+                    type="button"
+                    onClick={() => {
+                      setWatermarkFile(null);
+                      setWatermarkPreviewUrl(null);
+                      if (watermarkInputRef.current) watermarkInputRef.current.value = '';
+                    }}
+                    style={{
+                      width: 16, height: 16, borderRadius: '50%',
+                      border: 'none', background: '#E5E7EB', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      padding: 0, flexShrink: 0,
+                    }}
+                    aria-label="Remove watermark"
+                  >
+                    <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                      <path d="M1 1L7 7M7 1L1 7" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
