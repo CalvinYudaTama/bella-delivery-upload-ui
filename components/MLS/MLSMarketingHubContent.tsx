@@ -83,13 +83,14 @@ function PhotoCard({
       onMouseLeave={() => setHovered(false)}
       style={{
         position: 'relative',
-        borderRadius: '12px',
+        borderRadius: '10px',
         overflow: 'hidden',
         cursor: 'pointer',
         aspectRatio: '342 / 176',
         border: isSelected ? '3px solid #4F46E5' : '3px solid transparent',
         transition: 'border-color 0.15s ease',
-        flexShrink: 0,
+        flex: '1 1 0',
+        minWidth: 0,
       }}
     >
       {/* Image */}
@@ -351,7 +352,7 @@ export default function MLSMarketingHubContent() {
             }}
           >
             {/* Row 1 */}
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '22px', alignItems: 'stretch' }}>
               {MLS_PHOTOS.slice(0, 3).map((photo) => (
                 <PhotoCard
                   key={photo.id}
@@ -362,7 +363,7 @@ export default function MLSMarketingHubContent() {
               ))}
             </div>
             {/* Row 2 */}
-            <div style={{ display: 'flex', gap: '22px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '22px', alignItems: 'stretch' }}>
               {MLS_PHOTOS.slice(3, 6).map((photo) => (
                 <PhotoCard
                   key={photo.id}
@@ -373,7 +374,7 @@ export default function MLSMarketingHubContent() {
               ))}
             </div>
             {/* Row 3 */}
-            <div style={{ display: 'flex', gap: '22px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '22px', alignItems: 'stretch' }}>
               {MLS_PHOTOS.slice(6, 9).map((photo) => (
                 <PhotoCard
                   key={photo.id}
