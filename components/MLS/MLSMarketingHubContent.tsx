@@ -161,7 +161,7 @@ export default function MLSMarketingHubContent() {
   const selectedOptionShort = selectedResize.split(' (')[0]; // e.g. "Instagram - Square Post"
 
   return (
-    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0' }}>
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
       {/* ─── TOP BAR: Resize to + Watermark ──────────────────────────────────── */}
       <div
@@ -171,7 +171,6 @@ export default function MLSMarketingHubContent() {
           borderBottom: '1px solid #E9EAEB',
           padding: '16px',
           boxSizing: 'border-box',
-          marginBottom: '24px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px' }}>
@@ -271,62 +270,74 @@ export default function MLSMarketingHubContent() {
         </div>
       </div>
 
-      {/* ─── MAIN CONTENT CARD ───────────────────────────────────────────────── */}
+      {/* ─── PLATFORM HEADER CARD (separate card, blue tint) ────────────────── */}
       <div
         style={{
-          background: '#FFFFFF',
-          borderRadius: '12px',
-          border: '1px solid #E9EAEB',
-          overflow: 'hidden',
           width: '100%',
+          background: '#EFF6FF',
+          border: '1px solid #BEDBFF',
+          borderRadius: '10px',
+          padding: '16px',
           boxSizing: 'border-box',
+          height: '85px',
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
-        {/* Platform header bar — Instagram • Square Post */}
-        <div
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '16px 24px',
-            background: '#EEF2FF',
-            borderBottom: '1px solid #E9EAEB',
-          }}
-        >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          {/* Left: Instagram icon + title + subtitle */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <InstagramIcon />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <span style={{ fontFamily: 'Inter', fontSize: '16px', fontWeight: 600, color: '#4F46E5', lineHeight: '24px' }}>
-                {selectedOptionShort}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <span style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 500, color: '#1C398E', lineHeight: '27px', letterSpacing: '-0.44px' }}>
+                Instagram • Square Post
               </span>
-              <span style={{ fontFamily: 'Inter', fontSize: '13px', color: '#6366F1', lineHeight: '18px' }}>
+              <span style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: 400, color: '#4F46E5', lineHeight: '20px', letterSpacing: '-0.15px' }}>
                 Images will be resized to 1080 × 1080px (1:1 aspect ratio)
               </span>
             </div>
           </div>
 
-          {/* Select All button */}
+          {/* Right: Select All / Deselect All button — green */}
           <button
             onClick={toggleSelectAll}
             style={{
-              height: '38px', padding: '0 20px',
-              borderRadius: '6px', border: 'none',
-              background: allSelected ? '#4F46E5' : '#4F46E5',
-              color: '#FFFFFF', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
-              cursor: 'pointer',
+              height: '38px', padding: '9px 16px',
+              borderRadius: '8px', border: 'none',
+              background: '#2BC556',
+              color: '#FFFFFF', fontFamily: 'Inter', fontSize: '14px', fontWeight: 500,
+              cursor: 'pointer', letterSpacing: '-0.15px', lineHeight: '20px',
+              whiteSpace: 'nowrap',
             }}
           >
             {allSelected ? 'Deselect All' : 'Select All'}
           </button>
         </div>
+      </div>
 
-        {/* Select Images to Export */}
-        <div style={{ padding: '24px' }}>
+      {/* ─── MAIN CONTENT CARD (white card, below with 16px gap) ─────────────── */}
+      <div
+        style={{
+          background: '#FFFFFF',
+          borderRadius: '10px',
+          border: '1px solid #E5E7EB',
+          width: '100%',
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '36px',
+          padding: '24px',
+        }}
+      >
+        {/* ─── Select Images to Export ──────────────────────────────────────── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
           {/* Section title + count */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <h2 style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 600, color: '#000B14', margin: 0, lineHeight: '27px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h2 style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
               Select Images to Export
             </h2>
-            <span style={{ fontFamily: 'Inter', fontSize: '14px', color: '#858A8E' }}>
+            <span style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: 400, color: '#6A7282', lineHeight: '20px', letterSpacing: '-0.15px' }}>
               {selectedPhotos.size} of {MLS_PHOTOS.length} selected
             </span>
           </div>
@@ -334,74 +345,100 @@ export default function MLSMarketingHubContent() {
           {/* Photo grid — 3 columns */}
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '16px',
-              marginBottom: '32px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '22px',
             }}
           >
-            {MLS_PHOTOS.map((photo) => (
-              <PhotoCard
-                key={photo.id}
-                photo={photo}
-                isSelected={selectedPhotos.has(photo.id)}
-                onToggle={() => togglePhoto(photo.id)}
-              />
-            ))}
+            {/* Row 1 */}
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+              {MLS_PHOTOS.slice(0, 3).map((photo) => (
+                <PhotoCard
+                  key={photo.id}
+                  photo={photo}
+                  isSelected={selectedPhotos.has(photo.id)}
+                  onToggle={() => togglePhoto(photo.id)}
+                />
+              ))}
+            </div>
+            {/* Row 2 */}
+            <div style={{ display: 'flex', gap: '22px', alignItems: 'center' }}>
+              {MLS_PHOTOS.slice(3, 6).map((photo) => (
+                <PhotoCard
+                  key={photo.id}
+                  photo={photo}
+                  isSelected={selectedPhotos.has(photo.id)}
+                  onToggle={() => togglePhoto(photo.id)}
+                />
+              ))}
+            </div>
+            {/* Row 3 */}
+            <div style={{ display: 'flex', gap: '22px', alignItems: 'center' }}>
+              {MLS_PHOTOS.slice(6, 9).map((photo) => (
+                <PhotoCard
+                  key={photo.id}
+                  photo={photo}
+                  isSelected={selectedPhotos.has(photo.id)}
+                  onToggle={() => togglePhoto(photo.id)}
+                />
+              ))}
+            </div>
           </div>
+        </div>
 
-          {/* ─── Export Options ───────────────────────────────────────────────── */}
-          <div style={{ borderTop: '1px solid #E9EAEB', paddingTop: '24px', marginBottom: '32px' }}>
-            <h3 style={{ fontFamily: 'Inter', fontSize: '16px', fontWeight: 600, color: '#000B14', margin: '0 0 16px 0' }}>
-              Export Options
-            </h3>
+        {/* ─── Export Options ───────────────────────────────────────────────── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h3 style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
+            Export Options
+          </h3>
 
-            {/* Download as ZIP button */}
+          {/* Download as ZIP button */}
+          <button
+            style={{
+              display: 'inline-flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              gap: '8px',
+              padding: '16px',
+              border: '2px solid #4F46E5', borderRadius: '12px',
+              background: '#FFFDFF', cursor: 'pointer',
+              alignSelf: 'flex-start',
+            }}
+          >
+            <span style={{ fontFamily: 'Inter', fontSize: '16px', fontWeight: 500, color: '#4F46E5', lineHeight: '20px', letterSpacing: '-0.15px' }}>
+              Download as ZIP
+            </span>
+            <span style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: 400, color: '#4F46E5', lineHeight: '16px' }}>
+              {selectedPhotos.size > 0 ? selectedPhotos.size : MLS_PHOTOS.length} images • Square Post
+            </span>
+          </button>
+        </div>
+
+        {/* ─── Smart Marketing Description ──────────────────────────────────── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h3 style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
+            Smart Marketing Description
+          </h3>
+          <p style={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 500, color: '#858A8E', lineHeight: '27px', margin: 0, maxWidth: '429px', letterSpacing: '-0.44px' }}>
+            Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you
+          </p>
+
+          {/* CTA button */}
+          <div>
             <button
               style={{
-                display: 'inline-flex', flexDirection: 'column',
-                alignItems: 'flex-start', gap: '4px',
-                padding: '12px 16px',
-                border: '2px solid #4F46E5', borderRadius: '10px',
-                background: 'transparent', cursor: 'pointer',
-              }}
-              // TODO (Riley): wire to real download logic
-            >
-              <span style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, color: '#4F46E5', lineHeight: '20px' }}>
-                Download as ZIP
-              </span>
-              <span style={{ fontFamily: 'Inter', fontSize: '12px', color: '#6366F1', lineHeight: '16px' }}>
-                {selectedPhotos.size > 0 ? selectedPhotos.size : MLS_PHOTOS.length} images • {selectedOptionShort.split(' - ')[1] || selectedOptionShort}
-              </span>
-            </button>
-          </div>
-
-          {/* ─── Smart Marketing Description ──────────────────────────────────── */}
-          <div style={{ borderTop: '1px solid #E9EAEB', paddingTop: '24px' }}>
-            <h3 style={{ fontFamily: 'Inter', fontSize: '16px', fontWeight: 600, color: '#000B14', margin: '0 0 12px 0' }}>
-              Smart Marketing Description
-            </h3>
-            <p style={{ fontFamily: 'Inter', fontSize: '14px', color: '#535862', lineHeight: '22px', margin: '0 0 20px 0', maxWidth: '429px' }}>
-              Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you
-            </p>
-
-            {/* CTA button */}
-            <button
-              style={{
-                height: '46px', padding: '0 24px',
-                borderRadius: '8px', border: 'none',
+                height: '46px', padding: '12px 24px',
+                borderRadius: '12px', border: 'none',
                 background: '#4F46E5', color: '#FFFFFF',
                 fontFamily: 'Inter', fontSize: '14px', fontWeight: 700,
-                letterSpacing: '0.5px', textTransform: 'uppercase',
+                textTransform: 'uppercase',
                 cursor: 'pointer',
               }}
-              // TODO (Riley): wire to AI description generator
             >
               TRY OUR AI DESCRIPTION GENERATOR
             </button>
           </div>
-
         </div>
+
       </div>
     </div>
   );
