@@ -179,19 +179,26 @@ export default function MLSMarketingHubContent() {
   const [watermarkPreviewUrl, setWatermarkPreviewUrl] = useState<string | null>(null);
   const [watermarkSize, setWatermarkSize] = useState(50);
 
-  // ── Breakpoint detection ───────────────────────────────────────────────────
-  // isTablet: 768–1023px | isDesktop: ≥1024px
-  const [windowWidth, setWindowWidth] = useState<number>(
-    typeof window !== 'undefined' ? window.innerWidth : 1280
-  );
+  // ── Breakpoint detection via ResizeObserver on the container ─────────────
+  // Measures the *actual rendered width* of the MLS content area,
+  // so the sidebar offset is automatically accounted for.
+  // Compact (tablet/mobile) : container width < 768px
+  // Desktop                 : container width ≥ 768px
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(9999);
   useEffect(() => {
-    const onResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setContainerWidth(entry.contentRect.width);
+    });
+    ro.observe(el);
+    // Set initial value immediately
+    setContainerWidth(el.getBoundingClientRect().width);
+    return () => ro.disconnect();
   }, []);
-  const isTablet = windowWidth >= 768 && windowWidth < 1024;
-  const isMobile = windowWidth < 768;
-  const isCompact = isTablet || isMobile; // shared compact layout flag
+  const isCompact = containerWidth < 768;  // tablet + mobile
+  const isMobile  = containerWidth < 480;  // reserved for next sprint
 
   // ── Refs ───────────────────────────────────────────────────────────────────
   const watermarkInputRef = useRef<HTMLInputElement>(null);
@@ -421,7 +428,7 @@ export default function MLSMarketingHubContent() {
   // ────────────────────────────────────────────────────────────────────────────
   if (isCompact) {
     return (
-      <div className="mls-hub mls-hub--tablet" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <div ref={containerRef} className="mls-hub mls-hub--tablet" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0 }}>
 
         {/* ── TABLET: Platform header row (compact, with chevron) ────────────── */}
         <div className="mls-platform-header mls-platform-header--tablet" style={{
@@ -594,7 +601,7 @@ export default function MLSMarketingHubContent() {
   //  DESKTOP LAYOUT  (≥ 1024px)  — unchanged from original
   // ────────────────────────────────────────────────────────────────────────────
   return (
-    <div className="mls-hub" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div ref={containerRef} className="mls-hub" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
 
       {/* ─── TOP BAR: Resize to + Watermark ──────────────────────────────────── */}
       <div className="mls-topbar" style={{
