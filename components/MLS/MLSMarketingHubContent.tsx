@@ -10,21 +10,15 @@ interface MLSPhoto {
   label: string;
 }
 
-// ─── Dropdown options (from Figma node 13736:29294) ───────────────────────────
+// ─── Dropdown options (from Figma comment by Violet) ─────────────────────────
 const RESIZE_OPTIONS = [
-  'Instagram - Square Post (1080×1080px)',
-  'Instagram - Portrait Post (1080×1350px)',
-  'Instagram - Story (1080×1920px)',
-  'Instagram - Landscape Post (1080×566px)',
-  'Facebook - Feed Post (1200×630px)',
-  'Facebook - Cover Photo (820×312px)',
-  'Facebook - Story (1080×1920px)',
-  'Facebook - Square Post (1200×1200px)',
-  'LinkedIn - Feed Post (1200×627px)',
-  'LinkedIn - Banner (1584×396px)',
-  'LinkedIn - Story (1080×1920px)',
-  'Twitter/X - Post Image (1200×675px)',
-  'Twitter/X - Header Photo (1500×500px)',
+  'realtor.com – 2,000 × 1,500 px (4:3)',
+  'Realtor.ca – 2,000 × 1,500 px (4:3)',
+  'Zillow – 2,048 × 1,536 px (4:3)',
+  'Redfin – 2,048 × 1,536 px (4:3)',
+  'REW.ca – 2,400 × 1,600 px (3:2 or 4:3)',
+  'Instagram – 1,080 × 1,080 px (1:1)',
+  'One-size export – 2,400 × 1,800 px (4:3)',
 ];
 
 // ─── Dummy photos (from Figma node 13563:31059) ───────────────────────────────
