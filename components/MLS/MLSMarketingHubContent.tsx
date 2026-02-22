@@ -18,7 +18,6 @@ const RESIZE_OPTIONS = [
   'Redfin – 2,048 × 1,536 px (4:3)',
   'REW.ca – 2,400 × 1,600 px (3:2 or 4:3)',
   'Instagram – 1,080 × 1,080 px (1:1)',
-  'One-size export – 2,400 × 1,800 px (4:3)',
 ];
 
 // ─── Dummy photos (from Figma node 13563:31059) ───────────────────────────────
@@ -603,12 +602,14 @@ export default function MLSMarketingHubContent() {
   return (
     <div ref={containerRef} className="mls-hub" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-      {/* ─── TOP BAR: Resize to + Watermark ──────────────────────────────────── */}
+      {/* ─── TOP BAR: Resize to + Watermark (+ file confirmation bar inside) ─── */}
       <div className="mls-topbar" style={{
         width: '100%', background: '#FFFFFF',
-        borderBottom: '1px solid #E9EAEB',
+        border: '1px solid #E5E7EB', borderRadius: 10,
         padding: 16, boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', gap: 16,
       }}>
+        {/* Row 1: controls */}
         <div className="mls-topbar__inner" style={{ display: 'flex', alignItems: 'flex-start', gap: 24 }}>
 
           {/* Resize to dropdown */}
@@ -688,10 +689,10 @@ export default function MLSMarketingHubContent() {
             </div>
           )}
         </div>
-      </div>
 
-      {/* ─── WATERMARK FILE CONFIRMATION BAR ─────────────────────────────────── */}
-      <WatermarkBar />
+        {/* Row 2: file confirmation bar — inside topbar card, only when file uploaded */}
+        {watermarkFile && <WatermarkBar />}
+      </div>
 
       {/* ─── PLATFORM HEADER CARD ────────────────────────────────────────────── */}
       <div className="mls-platform-header" style={{
