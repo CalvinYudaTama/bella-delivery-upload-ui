@@ -719,15 +719,12 @@ export default function MLSMarketingHubContent() {
         </div>
       </div>
 
-      {/* ─── MAIN CONTENT CARD ───────────────────────────────────────────────── */}
+      {/* ─── CARD 1: Select Images to Export ────────────────────────────────── */}
       <div className="mls-content-card" style={{
         background: '#FFFFFF', borderRadius: 10,
         border: '1px solid #E5E7EB', width: '100%',
-        boxSizing: 'border-box', display: 'flex',
-        flexDirection: 'column', gap: 36, padding: 24,
+        boxSizing: 'border-box', padding: 24,
       }}>
-
-        {/* ─── Select Images to Export ──────────────────────────────────────── */}
         <div className="mls-photo-section" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div className="mls-photo-section__header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <h2 className="mls-photo-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
@@ -749,77 +746,88 @@ export default function MLSMarketingHubContent() {
             ))}
           </div>
         </div>
+      </div>
 
-        {/* ─── Export Options ───────────────────────────────────────────────── */}
-        <div className="mls-export-section" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <h3 className="mls-export-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
-            Export Options
-          </h3>
-          <button className="mls-export-section__zip-btn" style={{
-            display: 'inline-flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            gap: 8, padding: 16,
-            border: '2px solid #4F46E5', borderRadius: 12,
-            background: '#FFFDFF', cursor: 'pointer', alignSelf: 'flex-start',
-          }}>
-            <span className="mls-export-section__zip-label" style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 500, color: '#4F46E5', lineHeight: '20px', letterSpacing: '-0.15px' }}>
-              Download as ZIP
-            </span>
-            <span className="mls-export-section__zip-meta" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#4F46E5', lineHeight: '16px' }}>
-              {selectedPhotos.size > 0 ? selectedPhotos.size : MLS_PHOTOS.length} images • Square Post
-            </span>
-          </button>
-        </div>
-
-        {/* ─── Smart Marketing Description ──────────────────────────────────── */}
-        <div className="mls-ai-section" style={{
-          display: 'flex',
-          flexDirection: aiDescVisible ? 'row' : 'column',
-          gap: aiDescVisible ? 32 : 16,
-          alignItems: aiDescVisible ? 'flex-start' : undefined,
+      {/* ─── CARD 2: Export Options ───────────────────────────────────────────── */}
+      <div className="mls-export-section" style={{
+        background: '#FFFFFF', borderRadius: 10,
+        border: '1px solid #E5E7EB', width: '100%',
+        boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', gap: 16,
+        padding: '32px 24px',
+      }}>
+        <h3 className="mls-export-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
+          Export Options
+        </h3>
+        <button className="mls-export-section__zip-btn" style={{
+          display: 'inline-flex', flexDirection: 'column',
+          alignItems: 'flex-start', justifyContent: 'center',
+          gap: 8, padding: 16,
+          border: '2px solid #4F46E5', borderRadius: 12,
+          background: '#FFFDFF', cursor: 'pointer', alignSelf: 'flex-start',
         }}>
-          <div className="mls-ai-section__left" style={{ display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0 }}>
-            <h3 className="mls-ai-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
-              Smart Marketing Description
-            </h3>
-            <p className="mls-ai-section__description" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#858A8E', lineHeight: '27px', margin: 0, maxWidth: 429, letterSpacing: '-0.44px' }}>
-              Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you
-            </p>
-            <div className="mls-ai-section__cta">
-              <button
-                className="mls-ai-section__cta-btn"
-                onClick={() => setAiDescVisible(true)}
-                style={{
-                  height: 46, padding: '12px 24px',
-                  borderRadius: 12, border: 'none',
-                  background: '#4F46E5', color: '#FFFFFF',
-                  fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
-                  textTransform: 'uppercase', cursor: 'pointer',
-                  letterSpacing: '0.02em',
-                }}
-              >
-                TRY OUR AI DESCRIPTION GENERATOR
-              </button>
-            </div>
-          </div>
+          <span className="mls-export-section__zip-label" style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 500, color: '#4F46E5', lineHeight: '20px', letterSpacing: '-0.15px' }}>
+            Download as ZIP
+          </span>
+          <span className="mls-export-section__zip-meta" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#4F46E5', lineHeight: '16px' }}>
+            {selectedPhotos.size > 0 ? selectedPhotos.size : MLS_PHOTOS.length} images • Square Post
+          </span>
+        </button>
+      </div>
 
-          {aiDescVisible && (
-            <div className="mls-ai-section__result" style={{
-              flex: '1 0 0', minWidth: 0,
-              background: '#FAFAFA', borderRadius: 12,
-              padding: 24, alignSelf: 'stretch',
-            }}>
-              <p className="mls-ai-section__result-text" style={{
-                fontFamily: 'Inter', fontSize: 16, fontWeight: 400,
-                color: '#0A0A0A', lineHeight: '27px',
-                letterSpacing: '-0.44px', margin: 0,
-              }}>
-                One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees &amp; cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show. Open house Saturday Feb 21st 1 to 3 pm.
-              </p>
-            </div>
-          )}
+      {/* ─── CARD 3: Smart Marketing Description ─────────────────────────────── */}
+      <div className="mls-ai-section" style={{
+        background: '#FFFFFF', borderRadius: 10,
+        border: '1px solid #E5E7EB', width: '100%',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: aiDescVisible ? 'row' : 'row',
+        alignItems: 'flex-start',
+        padding: '32px 24px',
+        gap: 32,
+      }}>
+        {/* Left: title + desc + button */}
+        <div className="mls-ai-section__left" style={{ display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0 }}>
+          <h3 className="mls-ai-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
+            Smart Marketing Description
+          </h3>
+          <p className="mls-ai-section__description" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#858A8E', lineHeight: '27px', margin: 0, maxWidth: 429, letterSpacing: '-0.44px' }}>
+            Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you
+          </p>
+          <div className="mls-ai-section__cta">
+            <button
+              className="mls-ai-section__cta-btn"
+              onClick={() => setAiDescVisible(true)}
+              style={{
+                height: 46, padding: '12px 24px',
+                borderRadius: 12, border: 'none',
+                background: '#4F46E5', color: '#FFFFFF',
+                fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
+                textTransform: 'uppercase', cursor: 'pointer',
+                letterSpacing: '0.02em',
+              }}
+            >
+              TRY OUR AI DESCRIPTION GENERATOR
+            </button>
+          </div>
         </div>
 
+        {/* Right: AI result panel — only shown after button click */}
+        {aiDescVisible && (
+          <div className="mls-ai-section__result" style={{
+            flex: '1 0 0', minWidth: 0,
+            background: '#FAFAFA', borderRadius: 12,
+            padding: 24, alignSelf: 'stretch',
+          }}>
+            <p className="mls-ai-section__result-text" style={{
+              fontFamily: 'Inter', fontSize: 16, fontWeight: 400,
+              color: '#0A0A0A', lineHeight: '27px',
+              letterSpacing: '-0.44px', margin: 0,
+            }}>
+              One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees &amp; cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show. Open house Saturday Feb 21st 1 to 3 pm.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
