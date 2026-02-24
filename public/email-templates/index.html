@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bella Virtual – Email Templates</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f4f4f4;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+    .container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 620px;
+      width: 100%;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .brand-text p { line-height: 1.2; color: #000b14; }
+    .brand-text .name { font-size: 20px; font-weight: 400; letter-spacing: 10px; }
+    .brand-text .sub  { font-size: 13px; font-weight: 300; letter-spacing: 5px; }
+    h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #000b14;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #858a8e;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 100px;
+      background: #f0f0ff;
+      color: #4f46e5;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #000b14;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: #858a8e;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+    .card-desc code {
+      background: #f4f4f4;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #4f46e5;
+    }
+    .card-desc ul {
+      margin: 8px 0 0 16px;
+    }
+    .card-desc ul li {
+      margin-bottom: 2px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: #000b14;
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #f4f4f4;
+      color: #000b14;
+      border: 1px solid #e5e7eb;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #f0f0f0;
+      margin: 24px 0;
+    }
+    .footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: #bbb;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-text">
+        <p class="name">BELLA</p>
+        <p class="sub">VIRTUAL</p>
+      </div>
+    </div>
+
+    <h1>Email Templates</h1>
+    <p class="subtitle">
+      Download atau preview template HTML email di bawah ini.<br/>
+      Gunakan placeholder yang tersedia untuk integrasi backend sebelum mengirim email.
+    </p>
+
+    <!-- ── Template 1 ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="badge">VS Only</span>
+        <p class="card-title">Payment Confirmed – Upload Your Photos</p>
+      </div>
+      <p class="card-desc">
+        Dikirim setelah pembayaran berhasil untuk layanan <strong>Virtual Staging</strong> saja.
+        Berisi <strong>4 langkah instruksi</strong>.
+        <ul>
+          <li>Placeholders: <code>{{ORDER_NUMBER}}</code> <code>{{MY_ORDERS_URL}}</code> <code>{{UPLOAD_PHOTOS_URL}}</code></li>
+          <li><code>{{LOOKBOOK_URL}}</code> <code>{{SUPPORT_URL}}</code> <code>{{UNSUBSCRIBE_URL}}</code></li>
+        </ul>
+      </p>
+      <div class="btn-group">
+        <a class="btn btn-primary" href="payment-confirmed.html" download="bella-payment-confirmed.html">
+          ⬇ Download HTML
+        </a>
+        <a class="btn btn-secondary" href="payment-confirmed.html" target="_blank">
+          👁 Preview
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Template 2 ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="badge" style="background:#fff4f0;color:#e5460f;">VS + VS Premium</span>
+        <p class="card-title">Payment Confirmed – All Virtual Staging Services</p>
+      </div>
+      <p class="card-desc">
+        Dikirim setelah pembayaran berhasil untuk layanan <strong>Virtual Staging + Virtual Staging Premium</strong>.
+        Berisi <strong>2 section instruksi</strong>: VS (4 steps) + VS Premium (3 steps).
+        <ul>
+          <li>Placeholders: <code>{{ORDER_NUMBER}}</code> <code>{{MY_ORDERS_URL}}</code> <code>{{UPLOAD_PHOTOS_URL}}</code></li>
+          <li><code>{{LOOKBOOK_URL}}</code> <code>{{SUPPORT_URL}}</code> <code>{{UNSUBSCRIBE_URL}}</code></li>
+        </ul>
+      </p>
+      <div class="btn-group">
+        <a class="btn btn-primary" href="payment-confirmed-all-virtual-staging.html" download="bella-payment-confirmed-all-virtual-staging.html">
+          ⬇ Download HTML
+        </a>
+        <a class="btn btn-secondary" href="payment-confirmed-all-virtual-staging.html" target="_blank">
+          👁 Preview
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Template 3 ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="badge" style="background:#f0fff4;color:#16a34a;">Other Services</span>
+        <p class="card-title">Payment Confirmed – Other Services</p>
+      </div>
+      <p class="card-desc">
+        Dikirim setelah pembayaran berhasil untuk layanan lain seperti <strong>Floor Plan, CGI Rendering, Renovation</strong>, dll.
+        Berisi <strong>3 langkah instruksi</strong> dengan bullet list pada Step 1.
+        <br/><br/>
+        <strong>⚠️ Khusus template ini:</strong> <code>{{SERVICE_NAME}}</code> wajib diisi sesuai nama layanan yang dibeli
+        (contoh: <em>"Floor Plan"</em> → judul jadi <em>"FLOOR PLAN - UPLOADING INSTRUCTIONS"</em>).
+        <ul>
+          <li>Placeholders: <code>{{ORDER_NUMBER}}</code> <code>{{SERVICE_NAME}}</code> <code>{{UPLOAD_PHOTOS_URL}}</code></li>
+          <li><code>{{LOOKBOOK_URL}}</code> <code>{{SUPPORT_URL}}</code> <code>{{UNSUBSCRIBE_URL}}</code></li>
+        </ul>
+      </p>
+      <div class="btn-group">
+        <a class="btn btn-primary" href="payment-confirmed-other-services.html" download="bella-payment-confirmed-other-services.html">
+          ⬇ Download HTML
+        </a>
+        <a class="btn btn-secondary" href="payment-confirmed-other-services.html" target="_blank">
+          👁 Preview
+        </a>
+      </div>
+    </div>
+
+    <div class="footer">Bella Virtual Staging · Email Template Kit · v1.0.0</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Payment Confirmed – Bella Virtual Staging (Other Services)</title>
+  <!--
+    ============================================================
+    BELLA VIRTUAL STAGING — Email Template
+    Template : Payment Confirmed / Other Services
+               (Floor Plan, Renovation, CGI, etc.)
+    Version  : 1.0.0
+    Figma    : node-id=13729-27969
+
+    BACKEND USAGE:
+    --------------
+    Replace the following placeholders before sending:
+      {{ORDER_NUMBER}}      → e.g. 98876544322
+      {{SERVICE_NAME}}      → e.g. "Floor Plan", "CGI Rendering", "Renovation"
+                              Used in section title: "[SERVICE_NAME] - UPLOADING INSTRUCTIONS"
+      {{UPLOAD_PHOTOS_URL}} → Dropbox / upload link
+      {{LOOKBOOK_URL}}      → Lookbook URL (NOT a PDF)
+      {{SUPPORT_URL}}       → Support channel URL (e.g. Intercom / help desk)
+      {{UNSUBSCRIBE_URL}}   → Unsubscribe link
+
+    Sender address : notifications@bellavirtualstaging.com
+    Sender name    : Bella Virtual Staging
+    Subject line   : Payment Confirmed – Upload Your Photos to Start Project #{{ORDER_NUMBER}}
+
+    TEMPLATE STRUCTURE:
+    -------------------
+    Section A  → Header: Logo + Upload CTA
+    Section B  → Order info + intro text
+    Section C  → [SERVICE_NAME] Uploading Instructions (3 steps)
+                   Step 1: Upload your photos (with bullet list + Dropbox link)
+                   Step 2: Choose your staging style (with Lookbook link)
+                   Step 3: Submit with your requirements
+    Section D  → Delivery note
+    Section E  → Need help + sign-off
+    Section F  → Footer
+
+    KEY DIFFERENCES vs Virtual Staging templates:
+    - Section title uses dynamic {{SERVICE_NAME}} placeholder
+    - Step 1 has a BULLET LIST (not plain text), with a Dropbox link
+    - Steps are separated by horizontal dividers INSIDE the card
+    - Step 2 uses "View our Lookbook" link → {{LOOKBOOK_URL}} (URL, not PDF)
+    - Only 3 steps total (no Property Info step)
+
+    NOTES:
+    - Width fixed at 600px (email-safe).
+    - All CSS is inline for maximum email-client compatibility.
+    - Table-based layout for Outlook / legacy client support.
+    ============================================================
+  -->
+  <style type="text/css">
+    body, table, td, p, a, ul, li { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+    body { margin: 0 !important; padding: 0 !important; background-color: #f4f4f4; }
+    a { color: #4f46e5; text-decoration: underline; }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f4;font-family:'Inter',Arial,sans-serif;">
+
+  <!-- ===================== OUTER WRAPPER ===================== -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#f4f4f4">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        <!-- ===================== EMAIL CARD (600px) ===================== -->
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0"
+          style="max-width:600px;width:100%;background-color:#ffffff;border-radius:8px;overflow:hidden;">
+
+          <!-- ============================================================
+               SECTION A: HEADER — Logo + Upload CTA
+               Goal: Acknowledge payment + prompt to upload photos
+               ============================================================ -->
+          <tr>
+            <td style="padding:24px 32px 20px 32px;border-bottom:1px solid #e5e7eb;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <!-- Logo -->
+                  <td valign="middle" width="220">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td valign="middle" style="padding-right:12px;">
+                          <!-- Replace src with hosted logo icon asset -->
+                          <img
+                            src="https://bellavirtualstaging.com/logo-icon.png"
+                            alt="Bella Virtual Logo"
+                            width="36"
+                            height="36"
+                            style="display:block;width:36px;height:36px;"
+                          />
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+
+                  <!-- Header CTA -->
+                  <td align="right" valign="middle">
+                    <!--
+                      BACKEND: Replace href with {{UPLOAD_PHOTOS_URL}} (Dropbox link)
+                      Goal: Acknowledge payment went through + prompt upload to start order countdown
+                    -->
+                    <a href="{{UPLOAD_PHOTOS_URL}}"
+                      style="display:inline-block;font-family:'Inter',Arial,sans-serif;font-size:16px;font-weight:600;color:#000b14;text-decoration:none;white-space:nowrap;">
+                      Upload your Photos
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ============================================================
+               SECTION B: ORDER INFO + INTRO TEXT
+               ============================================================ -->
+          <tr>
+            <td style="padding:32px 32px 0 32px;">
+
+              <!-- Order label -->
+              <p style="margin:0 0 12px 0;font-family:'Inter',Arial,sans-serif;font-size:14px;font-weight:400;color:#52595f;line-height:26px;">
+                <!-- BACKEND: Replace {{ORDER_NUMBER}} with actual order number -->
+                ORDER #{{ORDER_NUMBER}} Payment Confirmed
+              </p>
+
+              <!-- Intro text -->
+              <p style="margin:0 0 32px 0;font-family:'Inter',Arial,sans-serif;font-size:16px;font-weight:600;color:#858a8e;line-height:22px;">
+                You're almost done! To begin your project, please upload your photos and share your design preferences.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- ============================================================
+               SECTION C: OTHER SERVICES — 3 Steps
+               Steps separated by dividers inside the card
+               ============================================================ -->
+          <tr>
+            <td style="padding:0 32px 32px 32px;">
+
+              <!-- Section title — dynamic service name -->
+              <!--
+                BACKEND: Replace {{SERVICE_NAME}} with the actual service name
+                e.g. "Floor Plan", "CGI Rendering", "Renovation", etc.
+                Result: "FLOOR PLAN - UPLOADING INSTRUCTIONS"
+              -->
+              <p style="margin:0 0 24px 0;font-family:'Inter',Arial,sans-serif;font-size:20px;font-weight:700;color:#000b14;line-height:26px;text-transform:uppercase;">
+                {{SERVICE_NAME}} - UPLOADING INSTRUCTIONS
+              </p>
+
+              <!-- Steps card -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="background-color:#fafafa;border-radius:8px;padding:20px;">
+
+                    <!-- ── STEP 1: Upload your photos (with bullet list) ── -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <!-- Number badge -->
+                        <td valign="top" width="44" style="padding-right:16px;">
+                          <div style="width:44px;height:44px;background-color:rgba(0,11,20,0.1);border-radius:100px;text-align:center;line-height:44px;">
+                            <span style="font-family:'Inter',Arial,sans-serif;font-size:18px;font-weight:700;color:#000b14;">1</span>
+                          </div>
+                        </td>
+                        <!-- Content -->
+                        <td valign="top">
+                          <p style="margin:0 0 8px 0;font-family:'Inter',Arial,sans-serif;font-size:18px;font-weight:700;color:#000b14;line-height:22px;">
+                            Upload your photos
+                          </p>
+                          <!-- Bullet list — first item has Dropbox link -->
+                          <ul style="margin:0;padding:0 0 0 20px;font-family:'Inter',Arial,sans-serif;font-size:16px;line-height:25px;color:#858a8e;">
+                            <li style="margin-bottom:4px;">
+                              <!--
+                                BACKEND: {{UPLOAD_PHOTOS_URL}} → Dropbox link
+                              -->
+                              <a href="{{UPLOAD_PHOTOS_URL}}"
+                                style="color:#4f46e5;text-decoration:underline;font-weight:500;">Click here to upload photos,</a>
+                              <span style="color:#858a8e;font-weight:400;"> including any floor plans or design references.</span>
+                            </li>
+                            <li style="margin-bottom:4px;">
+                              <span style="color:#858a8e;font-weight:400;">Please rename each image with the room type (e.g., image_001_office).</span>
+                            </li>
+                            <li>
+                              <span style="color:#858a8e;font-weight:400;">For the best results, use high-resolution, well-lit photos.</span>
+                            </li>
+                          </ul>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Divider between steps -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                      style="margin:20px 0;">
+                      <tr>
+                        <td style="border-top:1px solid #e5e7eb;font-size:0;line-height:0;">&nbsp;</td>
+                      </tr>
+                    </table>
+
+                    <!-- ── STEP 2: Choose your staging style ── -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <!-- Number badge -->
+                        <td valign="top" width="44" style="padding-right:16px;">
+                          <div style="width:44px;height:44px;background-color:rgba(0,11,20,0.1);border-radius:100px;text-align:center;line-height:44px;">
+                            <span style="font-family:'Inter',Arial,sans-serif;font-size:18px;font-weight:700;color:#000b14;">2</span>
+                          </div>
+                        </td>
+                        <!-- Content -->
+                        <td valign="top">
+                          <p style="margin:0 0 4px 0;font-family:'Inter',Arial,sans-serif;font-size:18px;font-weight:700;color:#000b14;line-height:22px;">
+                            Choose your staging style
+                          </p>
+                          <p style="margin:0;font-family:'Inter',Arial,sans-serif;font-size:16px;font-weight:400;color:#858a8e;line-height:20px;">
+                            <!--
+                              BACKEND: {{LOOKBOOK_URL}} → Lookbook URL (NOT a PDF link)
+                            -->
+                            <a href="{{LOOKBOOK_URL}}"
+                              style="color:#4f46e5;text-decoration:underline;font-weight:500;">View our Lookbook</a>,
+                            to select and favourite the styles you prefer from our variety of staging references.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Divider between steps -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                      style="margin:20px 0;">
+                      <tr>
+                        <td style="border-top:1px solid #e5e7eb;font-size:0;line-height:0;">&nbsp;</td>
+                      </tr>
+                    </table>
+
+                    <!-- ── STEP 3: Submit with your requirements ── -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <!-- Number badge -->
+                        <td valign="top" width="44" style="padding-right:16px;">
+                          <div style="width:44px;height:44px;background-color:rgba(0,11,20,0.1);border-radius:100px;text-align:center;line-height:44px;">
+                            <span style="font-family:'Inter',Arial,sans-serif;font-size:18px;font-weight:700;color:#000b14;">3</span>
+                          </div>
+                        </td>
+                        <!-- Content -->
+                        <td valign="top">
+                          <p style="margin:0 0 4px 0;font-family:'Inter',Arial,sans-serif;font-size:18px;font-weight:700;color:#000b14;line-height:22px;">
+                            Submit with your requirements
+                          </p>
+                          <p style="margin:0;font-family:'Inter',Arial,sans-serif;font-size:16px;font-weight:400;color:#858a8e;line-height:20px;">
+                            Add any extra notes relevant to your project, such as property addresses or image SKUs from the Lookbook. You may also leave the creative direction to our designers.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ============================================================
+               SECTION D: DELIVERY NOTE
+               ============================================================ -->
+          <tr>
+            <td style="padding:0 32px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="border-top:1px solid #e5e7eb;font-size:0;line-height:0;">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 32px;">
+              <p style="margin:0;font-family:'Inter',Arial,sans-serif;font-size:16px;font-weight:600;color:#858a8e;line-height:22px;">
+                Once submitted, your staged photos will be delivered by email within the estimated timeframe.
+              </p>
+            </td>
+          </tr>
+
+          <!-- ============================================================
+               SECTION E: NEED HELP + SIGN-OFF
+               ============================================================ -->
+          <tr>
+            <td style="padding:0 32px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="border-top:1px solid #e5e7eb;font-size:0;line-height:0;">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 32px 32px 32px;">
+
+              <p style="margin:0 0 8px 0;font-family:'Inter',Arial,sans-serif;font-size:18px;font-weight:500;color:#000b14;line-height:1.35;">
+                Need help?
+              </p>
+              <p style="margin:0 0 24px 0;font-family:'Inter',Arial,sans-serif;font-size:14px;font-weight:400;color:#858a8e;line-height:20px;">
+                If you have any questions, contact us via
+                <!-- BACKEND: Replace href with {{SUPPORT_URL}} -->
+                <a href="{{SUPPORT_URL}}" style="color:#2a83eb;text-decoration:underline;">Support Channel</a>
+              </p>
+
+              <p style="margin:0;font-family:'Inter',Arial,sans-serif;font-size:14px;font-weight:400;color:#858a8e;line-height:20px;">Cheers,</p>
+              <p style="margin:0;font-family:'Inter',Arial,sans-serif;font-size:14px;font-weight:400;color:#000b14;line-height:20px;">Bella Team</p>
+
+            </td>
+          </tr>
+
+          <!-- ============================================================
+               SECTION F: FOOTER
+               ============================================================ -->
+          <tr>
+            <td style="padding:16px 32px;background-color:#fafafa;border-top:1px solid #e5e7eb;">
+              <p style="margin:0;font-family:'Inter',Arial,sans-serif;font-size:12px;font-weight:400;color:#858a8e;line-height:18px;text-align:center;">
+                © 2024 Bella Virtual Staging. All rights reserved.<br/>
+                You received this email because you placed an order with us.<br/>
+                <!-- BACKEND: Replace href with {{UNSUBSCRIBE_URL}} -->
+                <a href="{{UNSUBSCRIBE_URL}}" style="color:#858a8e;text-decoration:underline;">Unsubscribe</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- ===================== END EMAIL CARD ===================== -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
