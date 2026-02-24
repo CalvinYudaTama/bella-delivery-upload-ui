@@ -48,16 +48,36 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${montserrat.variable} ${tenorSans.variable} font-sans antialiased`}>
+        <style>{`
+          /* root-main paddingTop = announcement bar + header inner height
+             Values mirror the CSS variables in globals.css per breakpoint:
+             Desktop  : 40px announcement + 92px header  = 132px (inline style)
+             ≤768px   : 50px announcement + 70px header  = 120px
+             ≤480px   : 52px announcement + 70px header  = 122px
+             ≤431px   : 50px announcement + 70px header  = 120px          */
+          @media (max-width: 768px) {
+            .root-main { padding-top: 120px !important; }
+          }
+          @media (max-width: 480px) {
+            .root-main { padding-top: 122px !important; }
+          }
+          @media (max-width: 431px) {
+            .root-main { padding-top: 120px !important; }
+          }
+        `}</style>
         <AuthProvider>
           <CollectionProvider>
             {/* Header - Fixed at top, present on all pages */}
             <Header />
 
             {/* Main Content - Dynamic per page */}
+            {/* paddingTop (132px) = AnnouncementBar (40px) + Header (92px) — desktop only.
+                Mobile overrides via .root-main media queries in <style> above. */}
             <main
+              className="root-main"
               style={{
                 minHeight: '100vh',
-                paddingTop: '132px', // Announcement bar (40px) + Header (92px actual measured height)
+                paddingTop: '132px',
               }}
             >
               {children}
