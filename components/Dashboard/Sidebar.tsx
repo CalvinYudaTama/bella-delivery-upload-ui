@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useParams } from 'next/navigation';
 import { Phone } from 'lucide-react';
@@ -54,18 +54,25 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
   // Prefer projectId from URL params (new routes), fallback to prop (old ?page= routes)
   const projectId = (params?.projectId as string) || propProjectId;
 
-  // Detect active section from pathname
-  const isDraftActive = pathname === '/projects' || (pathname.includes('/projects') && !pathname.includes('/delivery') && !pathname.includes('/revision') && !pathname.includes('/history'));
-  const isDeliveryActive = pathname.includes('/delivery');
-  const isRevisionActive = pathname.includes('/revision');
-  const isHistoryActive = pathname.includes('/history');
+  // Detect active section from pathname — use endsWith for exact, mutually exclusive matching.
+  // Draft Delivery uses the old /projects?page= route so pathname is always '/projects'.
+  // All other pages use /projects/[id]/xxx so we match on the final segment only.
+  const isDraftActive    = pathname === '/projects';
+  const isDeliveryActive = pathname.endsWith('/delivery');
+  const isRevisionActive = pathname.endsWith('/revision');
+  const isHistoryActive  = pathname.endsWith('/history');
+  const isMLSActive      = pathname.endsWith('/mls-hub');
+  const isOtherActive    = pathname.includes('/other-services');
   const isVirtualStagingSection = isDeliveryActive || isRevisionActive || isHistoryActive || isDraftActive;
-  const isMLSActive = pathname.includes('/mls-hub');
-  const isOtherActive = pathname.includes('/other-services');
 
-  // Keep virtual staging sub-menu open if any sub-item is active
+  // Keep virtual staging sub-menu open if any sub-item is active.
+  // useEffect ensures the accordion stays in sync when navigating between routes.
   const [virtualStagingOpen, setVirtualStagingOpen] = useState(isVirtualStagingSection);
   const [otherServicesOpen, setOtherServicesOpen] = useState(false);
+
+  useEffect(() => {
+    if (isVirtualStagingSection) setVirtualStagingOpen(true);
+  }, [isVirtualStagingSection]);
 
   // Build href for sub-items using projectId
   const draftHref    = projectId ? `/projects?page=${projectId}/delivery` : '/projects'; // Old route — Draft Delivery page
@@ -95,7 +102,7 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
     boxSizing: 'border-box' as const,
   });
 
-  // Reusable sub-item style
+  // Reusable sub-item style — active/hover uses underline only, no grey background
   const subItemStyle = (active: boolean): React.CSSProperties => ({
     display: 'flex',
     alignItems: 'center',
@@ -108,7 +115,7 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
     textDecoration: active ? 'underline' : 'none',
     borderRadius: '6px',
     backgroundColor: 'transparent',
-    transition: 'background 0.15s',
+    transition: 'color 0.15s',
   });
 
   return (
@@ -142,8 +149,8 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
           >
             <span style={{ flexShrink: 0 }}><VirtualStagingIcon active={isVirtualStagingSection} /></span>
             <span style={{ flex: 1 }}>Virtual Staging Delivery</span>
-            {/* Chevron UP when active/open, RIGHT when inactive/closed */}
-            {isVirtualStagingSection && virtualStagingOpen ? <ChevronUp /> : <ChevronRight />}
+            {/* Chevron UP when open, RIGHT when closed */}
+            {virtualStagingOpen ? <ChevronUp /> : <ChevronRight />}
           </button>
 
           {/* Sub-items — shown when open */}
@@ -154,8 +161,8 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
               <Link
                 href={draftHref}
                 style={subItemStyle(isDraftActive)}
-                onMouseEnter={(e) => { if (!isDraftActive) e.currentTarget.style.backgroundColor = '#F9FAFB'; }}
-                onMouseLeave={(e) => { if (!isDraftActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                onMouseEnter={(e) => { if (!isDraftActive) { e.currentTarget.style.color = '#111827'; e.currentTarget.style.textDecoration = 'underline'; } }}
+                onMouseLeave={(e) => { if (!isDraftActive) { e.currentTarget.style.color = '#6B7280'; e.currentTarget.style.textDecoration = 'none'; } }}
               >
                 <span>Draft Delivery</span>
                 <ChevronRight color={isDraftActive ? '#111827' : '#9CA3AF'} />
@@ -165,8 +172,8 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
               <Link
                 href={deliveryHref}
                 style={subItemStyle(isDeliveryActive)}
-                onMouseEnter={(e) => { if (!isDeliveryActive) e.currentTarget.style.backgroundColor = '#F9FAFB'; }}
-                onMouseLeave={(e) => { if (!isDeliveryActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                onMouseEnter={(e) => { if (!isDeliveryActive) { e.currentTarget.style.color = '#111827'; e.currentTarget.style.textDecoration = 'underline'; } }}
+                onMouseLeave={(e) => { if (!isDeliveryActive) { e.currentTarget.style.color = '#6B7280'; e.currentTarget.style.textDecoration = 'none'; } }}
               >
                 <span>Latest Revision</span>
                 <ChevronRight color={isDeliveryActive ? '#111827' : '#9CA3AF'} />
@@ -176,8 +183,8 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
               <Link
                 href={historyHref}
                 style={subItemStyle(isHistoryActive)}
-                onMouseEnter={(e) => { if (!isHistoryActive) e.currentTarget.style.backgroundColor = '#F9FAFB'; }}
-                onMouseLeave={(e) => { if (!isHistoryActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                onMouseEnter={(e) => { if (!isHistoryActive) { e.currentTarget.style.color = '#111827'; e.currentTarget.style.textDecoration = 'underline'; } }}
+                onMouseLeave={(e) => { if (!isHistoryActive) { e.currentTarget.style.color = '#6B7280'; e.currentTarget.style.textDecoration = 'none'; } }}
               >
                 <span>Delivery History</span>
                 <ChevronRight color={isHistoryActive ? '#111827' : '#9CA3AF'} />

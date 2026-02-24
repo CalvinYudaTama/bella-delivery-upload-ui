@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,7 +42,6 @@ const DownloadIcon = ({ color = '#4F46E5' }: { color?: string }) => (
 
 // ─── Figma design placeholder assets (from Figma MCP — local dev only) ────────
 // TODO (Riley): replace these with real hosted image URLs from your CDN/API
-// These localhost URLs only work while Figma desktop app is open during local development
 const FIGMA_MAIN_IMAGE_URL    = '/images/delivery/main-living-room.png'; // living room wide
 const FIGMA_IMG_BEDROOM       = '/images/delivery/bedroom.png'; // bedroom
 const FIGMA_IMG_LIVING_ROOM   = '/images/delivery/living-room.png'; // living room
@@ -69,7 +68,7 @@ const DUMMY_COMPLETED: DeliveryImage[] = [
 
 // ─── Gallery Image Card ───────────────────────────────────────────────────────
 
-function GalleryImageCard({ image }: { image: DeliveryImage }) {
+function GalleryImageCard({ image, isTabletOrMobile }: { image: DeliveryImage; isTabletOrMobile: boolean }) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -79,13 +78,13 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         position: 'relative',
-        width: '262px',
-        height: '162px',
-        borderRadius: '12px',
+        borderRadius: '10px',
         flexShrink: 0,
         overflow: 'hidden',
         border: image.isApproved ? '2px solid #16A34A' : '2px solid transparent',
         cursor: 'pointer',
+        // Always landscape 16:10 aspect ratio — responsive via grid column width
+        aspectRatio: '16 / 10',
       }}
     >
       {/* Base image */}
@@ -99,7 +98,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          borderRadius: '12px',
+          borderRadius: '10px',
         }}
       />
 
@@ -109,7 +108,7 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
         style={{
           position: 'absolute',
           inset: 0,
-          borderRadius: '12px',
+          borderRadius: '10px',
           background: hovered
             ? 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 100%)'
             : 'linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.4) 100%)',
@@ -124,16 +123,22 @@ function GalleryImageCard({ image }: { image: DeliveryImage }) {
           position: 'absolute',
           top: '8px',
           right: '8px',
-          width: '40px',
-          height: '40px',
+          width: isTabletOrMobile ? '28px' : '40px',
+          height: isTabletOrMobile ? '28px' : '40px',
           zIndex: 2,
+          flexShrink: 0,
         }}
       >
         <img
           className="revision-gallery-card__face-icon-img"
           src={image.isApproved ? FIGMA_FACE_HAPPY_URL : FIGMA_FACE_SAD_URL}
           alt={image.isApproved ? 'completed' : 'in progress'}
-          style={{ width: '40px', height: '40px' }}
+          style={{
+            width: isTabletOrMobile ? '28px' : '40px',
+            height: isTabletOrMobile ? '28px' : '40px',
+            aspectRatio: '1 / 1',
+            objectFit: 'contain',
+          }}
         />
       </div>
 
@@ -246,10 +251,10 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
           className="revision-section-header__label"
           style={{
             fontFamily: 'Inter',
-            fontSize: '16px',
+            fontSize: '14px',
             fontWeight: 600,
             color: '#000B14',
-            lineHeight: '24px',
+            lineHeight: '20px',
           }}
         >
           {label}
@@ -260,7 +265,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
           style={{
             backgroundColor: '#000B14',
             borderRadius: '9999px',
-            padding: '2px 10px',
+            padding: '1px 8px',
             display: 'flex',
             alignItems: 'center',
           }}
@@ -269,10 +274,10 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
             className="revision-section-header__badge-count"
             style={{
               fontFamily: 'Inter',
-              fontSize: '14px',
+              fontSize: '12px',
               fontWeight: 500,
               color: '#FFFDFF',
-              lineHeight: '20px',
+              lineHeight: '18px',
             }}
           >
             {count}
@@ -297,6 +302,15 @@ export default function LatestRevisionContent({
 
   const totalPhotos = inProgressImages.length + completedImages.length;
 
+  // ─── Responsive breakpoint (matches layout.tsx and DeliveryContent.tsx) ──────
+  const [isTabletOrMobile, setIsTabletOrMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsTabletOrMobile(typeof window !== 'undefined' && window.innerWidth < 1024);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   // ─── Carousel state ──────────────────────────────────────────────────────────
   // All images combined for carousel navigation (in-progress first, then completed)
   // TODO (Riley): wire to real image list from API
@@ -319,21 +333,21 @@ export default function LatestRevisionContent({
 
   // Current image shown in main preview (falls back to Figma placeholder if no images)
   const currentImageUrl = allImages[safeIndex]?.url ?? FIGMA_MAIN_IMAGE_URL;
-  const currentImageIsApproved = allImages[safeIndex]?.isApproved ?? false;
 
   return (
     <div className="revision-content" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0' }}>
 
-      {/* ─── PAGE HEADER ─────────────────────────────────────────────────────── */}
+      {/* ─── PAGE HEADER — same as .delivery-page-header (responsive) ────────── */}
       <div
         className="revision-page-header"
         style={{
           display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
+          flexDirection: isTabletOrMobile ? 'column' : 'row',
+          alignItems: isTabletOrMobile ? 'flex-start' : 'center',
           justifyContent: 'space-between',
+          gap: isTabletOrMobile ? '4px' : '0',
           width: '100%',
-          marginBottom: '16px',
+          marginBottom: isTabletOrMobile ? '12px' : '16px',
         }}
       >
         <h1
@@ -341,9 +355,9 @@ export default function LatestRevisionContent({
           style={{
             color: '#000B14',
             fontFamily: 'Inter',
-            fontSize: '24px',
+            fontSize: isTabletOrMobile ? '18px' : '24px',
             fontWeight: 600,
-            lineHeight: '32px',
+            lineHeight: isTabletOrMobile ? '1.4' : '32px',
             margin: 0,
           }}
         >
@@ -360,135 +374,187 @@ export default function LatestRevisionContent({
             lineHeight: '20px',
           }}
         >
-          Results Order # {orderId || projectId || '—'}
+          Order # {orderId || projectId || '—'}
         </span>
       </div>
 
-      {/* ─── STATS BAR ───────────────────────────────────────────────────────── */}
+      {/* ─── STATS BAR — same as .delivery-stats-bar (responsive) ─────────────
+          Desktop  : single row — stats left, buttons right
+          Tablet/Mobile: stats row on top, buttons row below (full-width)
+      ──────────────────────────────────────────────────────────────────────── */}
       <div
         className="revision-stats-bar"
         style={{
           display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '24px',
-          padding: '12px 16px',
+          flexDirection: isTabletOrMobile ? 'column' : 'row',
+          alignItems: isTabletOrMobile ? 'stretch' : 'center',
+          gap: isTabletOrMobile ? '12px' : '24px',
+          padding: isTabletOrMobile ? '12px' : '12px 16px',
           borderRadius: '8px',
           border: '1px solid #E9EAEB',
           background: '#FFFFFF',
-          marginBottom: '24px',
+          marginBottom: isTabletOrMobile ? '16px' : '20px',
           width: '100%',
           boxSizing: 'border-box',
         }}
       >
-        {/* Photos Delivered */}
-        <div className="revision-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="16" fill="#DCFCE7"/>
-            <path d="M10.667 16L14.0003 19.3333L21.3337 12" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-            {/* TODO (Riley): replace with real count from API */}
-            <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
-              {totalPhotos} Photos Delivered
-            </span>
-            <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
-              Ready for review
-            </span>
+        {/* Top row: stats */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: isTabletOrMobile ? '12px' : '24px',
+          flex: isTabletOrMobile ? 'none' : 1,
+        }}>
+          {/* Stat: Photos Delivered */}
+          <div className="revision-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ flexShrink: 0 }}>
+              <rect width="32" height="32" rx="16" fill="#DCFCE7"/>
+              <path d="M10.667 16L14.0003 19.3333L21.3337 12" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+              {/* TODO (Riley): replace with real count from API */}
+              <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+                {totalPhotos} Photos Delivered
+              </span>
+              <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
+                Ready for review
+              </span>
+            </div>
           </div>
+
+          {/* Divider */}
+          <div className="revision-stats-bar__divider" style={{ width: '1px', height: '36px', background: '#E9EAEB', flexShrink: 0 }} />
+
+          {/* Stat: Total File Size */}
+          <div className="revision-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ flexShrink: 0 }}>
+              <rect width="32" height="32" rx="16" fill="#EFF6FF"/>
+              <path d="M16 10V18M16 18L13 15M16 18L19 15" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M11 20H21" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+              {/* TODO (Riley): replace with real file size from API */}
+              <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+                2.4GB Total
+              </span>
+              <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
+                Available to download
+              </span>
+            </div>
+          </div>
+
+          {/* Spacer — only on desktop to push buttons right */}
+          {!isTabletOrMobile && <div className="revision-stats-bar__spacer" style={{ flex: 1 }} />}
+
+          {/* Desktop: Approve All Button inline */}
+          {!isTabletOrMobile && (
+            <button
+              className="revision-stats-bar__approve-btn"
+              type="button"
+              onClick={onApproveAll}
+              disabled={inProgressImages.length === 0}
+              style={{
+                display: 'flex', height: '36px', padding: '0 16px',
+                alignItems: 'center', gap: '8px', borderRadius: '6px',
+                background: inProgressImages.length === 0 ? '#C1C2C3' : '#00A63E',
+                border: 'none', color: '#FFFFFF',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
+                cursor: inProgressImages.length === 0 ? 'not-allowed' : 'pointer',
+                flexShrink: 0, whiteSpace: 'nowrap',
+              }}
+            >
+              <ThumbsUpIcon />
+              Approve All
+            </button>
+          )}
+
+          {/* Desktop: Download All Button inline */}
+          {!isTabletOrMobile && (
+            <button
+              className="revision-stats-bar__download-btn"
+              type="button"
+              onClick={onDownloadInProgress}
+              style={{
+                display: 'flex', height: '36px', padding: '0 16px',
+                alignItems: 'center', gap: '8px', borderRadius: '6px',
+                border: '1.5px solid #4F46E5', background: '#FFFFFF', color: '#4F46E5',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
+                cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap',
+              }}
+            >
+              <DownloadIcon />
+              Download All
+            </button>
+          )}
         </div>
 
-        {/* Divider */}
-        <div className="revision-stats-bar__divider" style={{ width: '1px', height: '36px', background: '#E9EAEB', flexShrink: 0 }} />
-
-        {/* Total File Size */}
-        <div className="revision-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="16" fill="#EFF6FF"/>
-            <path d="M16 10V18M16 18L13 15M16 18L19 15" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M11 20H21" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-            {/* TODO (Riley): replace with real file size from API */}
-            <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
-              2.4GB Total
-            </span>
-            <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
-              Available to download
-            </span>
+        {/* Mobile/Tablet bottom row: full-width action buttons */}
+        {isTabletOrMobile && (
+          <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+            {inProgressImages.length > 0 && (
+              <button
+                type="button"
+                onClick={onApproveAll}
+                style={{
+                  flex: 1, height: '38px', padding: '0 12px',
+                  display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px',
+                  borderRadius: '8px', border: 'none',
+                  background: '#00A63E', color: '#FFFFFF',
+                  fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
+                  cursor: 'pointer', whiteSpace: 'nowrap',
+                }}
+              >
+                <ThumbsUpIcon />
+                Approve All
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onDownloadInProgress}
+              style={{
+                flex: 1, height: '38px', padding: '0 12px',
+                display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px',
+                borderRadius: '8px', border: '1.5px solid #4F46E5',
+                background: '#FFFFFF', color: '#4F46E5',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
+                cursor: 'pointer', whiteSpace: 'nowrap',
+              }}
+            >
+              <DownloadIcon />
+              Download All
+            </button>
           </div>
-        </div>
-
-        {/* Spacer */}
-        <div className="revision-stats-bar__spacer" style={{ flex: 1 }} />
-
-        {/* Approve All Button (stats bar level) — TODO (Riley): wire to API */}
-        <button
-          className="revision-stats-bar__approve-btn"
-          type="button"
-          onClick={onApproveAll}
-          disabled={inProgressImages.length === 0}
-          style={{
-            display: 'flex',
-            height: '36px',
-            padding: '0 16px',
-            alignItems: 'center',
-            gap: '8px',
-            borderRadius: '6px',
-            background: inProgressImages.length === 0 ? '#C1C2C3' : '#00A63E',
-            border: 'none',
-            color: '#FFFFFF',
-            fontFamily: 'Inter',
-            fontSize: '14px',
-            fontWeight: 600,
-            cursor: inProgressImages.length === 0 ? 'not-allowed' : 'pointer',
-            flexShrink: 0,
-          }}
-        >
-          <ThumbsUpIcon />
-          Approve All
-        </button>
-
-        {/* Download All Button (stats bar level) — TODO (Riley): wire to API */}
-        <button
-          className="revision-stats-bar__download-btn"
-          type="button"
-          onClick={onDownloadInProgress}
-          style={{
-            display: 'flex',
-            height: '36px',
-            padding: '0 16px',
-            alignItems: 'center',
-            gap: '8px',
-            borderRadius: '6px',
-            border: '1.5px solid #4F46E5',
-            background: '#FFFFFF',
-            color: '#4F46E5',
-            fontFamily: 'Inter',
-            fontSize: '14px',
-            fontWeight: 600,
-            cursor: 'pointer',
-            flexShrink: 0,
-          }}
-        >
-          <DownloadIcon />
-          Download All
-        </button>
+        )}
       </div>
 
-      {/* ─── MAIN PREVIEW IMAGE (carousel) ──────────────────────────────────── */}
-      {/* TODO (Riley): replace currentImageUrl with real carousel images from API */}
+      {/* ─── MAIN PREVIEW IMAGE (carousel) — landscape, same as DeliveryContent ─
+          Desktop  : fixed height 622px
+          Tablet/Mobile: aspect-ratio 390/249 (landscape)
+      ──────────────────────────────────────────────────────────────────────── */}
+      {isTabletOrMobile && (
+        <p style={{
+          fontFamily: 'Inter', fontSize: '18px', fontWeight: 600,
+          color: '#000B14', lineHeight: '1.4', margin: '0 0 12px 0',
+        }}>
+          Preview: Shop With Virtual Look
+        </p>
+      )}
       <div
         className="revision-preview-frame"
         style={{
           width: '100%',
-          height: '622px',
-          borderRadius: '16px',
+          height: isTabletOrMobile ? undefined : '622px',
+          aspectRatio: isTabletOrMobile ? '390 / 249' : undefined,
+          borderRadius: isTabletOrMobile ? '8px' : '16px',
           overflow: 'hidden',
-          marginBottom: '24px',
+          marginBottom: isTabletOrMobile ? '0' : '24px',
           position: 'relative',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+          boxShadow: isTabletOrMobile
+            ? '0px 4px 6px rgba(0,0,0,0.1), 0px 10px 15px rgba(0,0,0,0.1)'
+            : '0 4px 24px rgba(0,0,0,0.12)',
           backgroundColor: '#E9EAEB',
+          flexShrink: 0,
         }}
       >
         {/* Main image */}
@@ -499,17 +565,17 @@ export default function LatestRevisionContent({
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
         />
 
-        {/* Face happy / sad action icons — top right (from Figma node 13769:46628) */}
-        {/* TODO (Riley): wire onClick to real approve/reject API call */}
+        {/* Face happy / sad action icons — top right */}
         <div
           className="revision-preview-frame__face-icons"
           style={{
             position: 'absolute',
-            top: '10px',
-            right: '10px',
+            top: isTabletOrMobile ? '8px' : '10px',
+            right: isTabletOrMobile ? '8px' : '10px',
             display: 'flex',
-            gap: '8px',
-            padding: '8px',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: isTabletOrMobile ? '4px' : '8px',
             zIndex: 10,
           }}
         >
@@ -518,17 +584,13 @@ export default function LatestRevisionContent({
             className="revision-preview-frame__face-btn revision-preview-frame__face-btn--approve"
             aria-label="Approve image"
             style={{
-              width: '48px',
-              height: '48px',
-              padding: '4px',
-              border: 'none',
-              background: 'transparent',
-              cursor: 'pointer',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'transform 0.15s, box-shadow 0.15s',
+              width: isTabletOrMobile ? '36px' : '48px',
+              height: isTabletOrMobile ? '36px' : '48px',
+              padding: 0,
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+              transition: 'transform 0.15s, filter 0.15s',
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLElement).style.transform = 'scale(1.12)';
@@ -542,7 +604,14 @@ export default function LatestRevisionContent({
             <img
               src={FIGMA_FACE_HAPPY_URL}
               alt="approve"
-              style={{ width: '40px', height: '40px' }}
+              style={{
+                width: isTabletOrMobile ? '36px' : '48px',
+                height: isTabletOrMobile ? '36px' : '48px',
+                aspectRatio: '1 / 1',
+                objectFit: 'contain',
+                display: 'block',
+                flexShrink: 0,
+              }}
             />
           </button>
 
@@ -551,17 +620,13 @@ export default function LatestRevisionContent({
             className="revision-preview-frame__face-btn revision-preview-frame__face-btn--reject"
             aria-label="Reject image"
             style={{
-              width: '48px',
-              height: '48px',
-              padding: '4px',
-              border: 'none',
-              background: 'transparent',
-              cursor: 'pointer',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'transform 0.15s, box-shadow 0.15s',
+              width: isTabletOrMobile ? '36px' : '48px',
+              height: isTabletOrMobile ? '36px' : '48px',
+              padding: 0,
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+              transition: 'transform 0.15s, filter 0.15s',
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLElement).style.transform = 'scale(1.12)';
@@ -575,22 +640,35 @@ export default function LatestRevisionContent({
             <img
               src={FIGMA_FACE_SAD_URL}
               alt="reject"
-              style={{ width: '40px', height: '40px' }}
+              style={{
+                width: isTabletOrMobile ? '36px' : '48px',
+                height: isTabletOrMobile ? '36px' : '48px',
+                aspectRatio: '1 / 1',
+                objectFit: 'contain',
+                display: 'block',
+                flexShrink: 0,
+              }}
             />
           </button>
         </div>
 
-        {/* Prev / Next navigation arrows — same style as Draft Delivery */}
+        {/* Prev / Next navigation arrows */}
         <button
           className="revision-preview-frame__nav-btn revision-preview-frame__nav-btn--prev"
           onClick={handlePreviousImage}
           aria-label="Previous image"
           style={{
-            position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)',
-            width: '50px', height: '50px', borderRadius: '25px', border: 'none',
+            position: 'absolute',
+            left: isTabletOrMobile ? '12px' : '20px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: isTabletOrMobile ? '36px' : '50px',
+            height: isTabletOrMobile ? '36px' : '50px',
+            borderRadius: isTabletOrMobile ? '18px' : '25px',
+            border: 'none',
             background: 'rgba(255,255,255,0.80)', cursor: 'pointer', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
-            padding: '13px', gap: '10px', zIndex: 10,
+            padding: isTabletOrMobile ? '8px' : '13px', gap: '10px', zIndex: 10,
             transition: 'background 0.15s, box-shadow 0.15s',
           }}
           onMouseEnter={(e) => {
@@ -602,7 +680,7 @@ export default function LatestRevisionContent({
             (e.currentTarget as HTMLElement).style.boxShadow = 'none';
           }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="10" viewBox="0 0 7 12" fill="none">
+          <svg xmlns="http://www.w3.org/2000/svg" width={isTabletOrMobile ? '14' : '20'} height={isTabletOrMobile ? '8' : '10'} viewBox="0 0 7 12" fill="none">
             <path d="M6 1L1 6L6 11" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
@@ -612,11 +690,17 @@ export default function LatestRevisionContent({
           onClick={handleNextImage}
           aria-label="Next image"
           style={{
-            position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%) rotate(180deg)',
-            width: '50px', height: '50px', borderRadius: '25px', border: 'none',
+            position: 'absolute',
+            right: isTabletOrMobile ? '12px' : '20px',
+            top: '50%',
+            transform: 'translateY(-50%) rotate(180deg)',
+            width: isTabletOrMobile ? '36px' : '50px',
+            height: isTabletOrMobile ? '36px' : '50px',
+            borderRadius: isTabletOrMobile ? '18px' : '25px',
+            border: 'none',
             background: 'rgba(255,255,255,0.80)', cursor: 'pointer', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
-            padding: '13px', gap: '10px', zIndex: 10,
+            padding: isTabletOrMobile ? '8px' : '13px', gap: '10px', zIndex: 10,
             transition: 'background 0.15s, box-shadow 0.15s',
           }}
           onMouseEnter={(e) => {
@@ -628,7 +712,7 @@ export default function LatestRevisionContent({
             (e.currentTarget as HTMLElement).style.boxShadow = 'none';
           }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="10" viewBox="0 0 7 12" fill="none">
+          <svg xmlns="http://www.w3.org/2000/svg" width={isTabletOrMobile ? '14' : '20'} height={isTabletOrMobile ? '8' : '10'} viewBox="0 0 7 12" fill="none">
             <path d="M6 1L1 6L6 11" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
@@ -640,12 +724,13 @@ export default function LatestRevisionContent({
         style={{
           background: '#FFFFFF',
           borderRadius: '10px',
-          padding: '24px',
+          padding: isTabletOrMobile ? '16px' : '24px',
           width: '100%',
           boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
           gap: '12px',
+          marginTop: isTabletOrMobile ? '16px' : '24px',
         }}
       >
 
@@ -653,76 +738,59 @@ export default function LatestRevisionContent({
         <div className="revision-gallery-section revision-gallery-section--in-progress" style={{ width: '100%' }}>
           <SectionHeader label="In Progress" count={inProgressImages.length} />
 
-          {/* Gallery grid */}
+          {/* Gallery grid — max 3 per row on both desktop and mobile */}
           <div
             className="revision-gallery-grid"
             style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '24px',
-              marginBottom: '24px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: isTabletOrMobile ? '12px' : '24px',
+              marginBottom: isTabletOrMobile ? '16px' : '24px',
             }}
           >
             {inProgressImages.map((img) => (
-              <GalleryImageCard key={img.id} image={img} />
+              <GalleryImageCard key={img.id} image={img} isTabletOrMobile={isTabletOrMobile} />
             ))}
           </div>
 
-          {/* Section action buttons — right aligned */}
+          {/* Section action buttons — full width on mobile, right-aligned on desktop */}
           <div
             className="revision-gallery-actions"
             style={{
               display: 'flex',
-              justifyContent: 'flex-end',
+              justifyContent: isTabletOrMobile ? 'stretch' : 'flex-end',
               gap: '8px',
-              paddingBottom: '24px',
+              paddingBottom: isTabletOrMobile ? '8px' : '24px',
             }}
           >
-            {/* Download all (in progress) — TODO (Riley): wire to API */}
             <button
               className="revision-gallery-actions__download-btn"
               type="button"
               onClick={onDownloadInProgress}
               style={{
-                display: 'flex',
-                height: '38px',
-                padding: '0 32px',
-                alignItems: 'center',
-                gap: '8px',
-                borderRadius: '6px',
-                border: '2px solid #4F46E5',
-                background: '#FFFDFF',
-                color: '#4F46E5',
-                fontFamily: 'Inter',
-                fontSize: '14px',
-                fontWeight: 700,
+                flex: isTabletOrMobile ? 1 : 'none',
+                display: 'flex', height: '38px', padding: '0 32px',
+                alignItems: 'center', justifyContent: 'center', gap: '8px',
+                borderRadius: '6px', border: '2px solid #4F46E5',
+                background: '#FFFDFF', color: '#4F46E5',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 700,
                 cursor: 'pointer',
-                flexShrink: 0,
               }}
             >
               Download all
             </button>
-
-            {/* Approve all — TODO (Riley): wire to API */}
             <button
               className="revision-gallery-actions__approve-btn"
               type="button"
               onClick={onApproveAll}
               style={{
-                display: 'flex',
-                height: '38px',
-                padding: '0 32px',
-                alignItems: 'center',
-                gap: '8px',
-                borderRadius: '6px',
-                border: 'none',
-                background: '#2BC556',
-                color: '#FFFFFF',
-                fontFamily: 'Inter',
-                fontSize: '14px',
-                fontWeight: 700,
+                flex: isTabletOrMobile ? 1 : 'none',
+                display: 'flex', height: '38px', padding: '0 32px',
+                alignItems: 'center', justifyContent: 'center', gap: '8px',
+                borderRadius: '6px', border: 'none',
+                background: '#2BC556', color: '#FFFFFF',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 700,
                 cursor: 'pointer',
-                flexShrink: 0,
               }}
             >
               Approve all
@@ -734,50 +802,42 @@ export default function LatestRevisionContent({
         <div className="revision-gallery-section revision-gallery-section--completed" style={{ width: '100%' }}>
           <SectionHeader label="Completed" count={completedImages.length} />
 
-          {/* Gallery grid */}
+          {/* Gallery grid — max 3 per row */}
           <div
             className="revision-gallery-grid"
             style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '24px',
-              marginBottom: '24px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: isTabletOrMobile ? '12px' : '24px',
+              marginBottom: isTabletOrMobile ? '16px' : '24px',
             }}
           >
             {completedImages.map((img) => (
-              <GalleryImageCard key={img.id} image={img} />
+              <GalleryImageCard key={img.id} image={img} isTabletOrMobile={isTabletOrMobile} />
             ))}
           </div>
 
-          {/* Section action button — right aligned, download only */}
+          {/* Section action button — full width on mobile, right-aligned on desktop */}
           <div
             className="revision-gallery-actions revision-gallery-actions--completed"
             style={{
               display: 'flex',
-              justifyContent: 'flex-end',
-              paddingBottom: '24px',
+              justifyContent: isTabletOrMobile ? 'stretch' : 'flex-end',
+              paddingBottom: isTabletOrMobile ? '8px' : '24px',
             }}
           >
-            {/* Download all (completed) — TODO (Riley): wire to API */}
             <button
               className="revision-gallery-actions__download-btn"
               type="button"
               onClick={onDownloadCompleted}
               style={{
-                display: 'flex',
-                height: '38px',
-                padding: '0 32px',
-                alignItems: 'center',
-                gap: '8px',
-                borderRadius: '6px',
-                border: '2px solid #4F46E5',
-                background: '#FFFDFF',
-                color: '#4F46E5',
-                fontFamily: 'Inter',
-                fontSize: '14px',
-                fontWeight: 700,
+                flex: isTabletOrMobile ? 1 : 'none',
+                display: 'flex', height: '38px', padding: '0 32px',
+                alignItems: 'center', justifyContent: 'center', gap: '8px',
+                borderRadius: '6px', border: '2px solid #4F46E5',
+                background: '#FFFDFF', color: '#4F46E5',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 700,
                 cursor: 'pointer',
-                flexShrink: 0,
               }}
             >
               Download all

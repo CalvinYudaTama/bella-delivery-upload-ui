@@ -167,7 +167,8 @@ export const DeliveryContent: React.FC = () => {
     : 0;
 
   useEffect(() => {
-    const checkViewport = () => setIsTabletOrMobile(typeof window !== 'undefined' && window.innerWidth <= 761);
+    // Tablet/mobile breakpoint: < 1024px (matches projects/layout.tsx sidebar breakpoint)
+    const checkViewport = () => setIsTabletOrMobile(typeof window !== 'undefined' && window.innerWidth < 1024);
     checkViewport();
     window.addEventListener('resize', checkViewport);
     return () => window.removeEventListener('resize', checkViewport);
@@ -683,11 +684,12 @@ export const DeliveryContent: React.FC = () => {
         className="delivery-page-header"
         style={{
           display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
+          flexDirection: isTabletOrMobile ? 'column' : 'row',
+          alignItems: isTabletOrMobile ? 'flex-start' : 'center',
           justifyContent: 'space-between',
+          gap: isTabletOrMobile ? '4px' : '0',
           width: '100%',
-          marginBottom: '16px',
+          marginBottom: isTabletOrMobile ? '12px' : '16px',
         }}
       >
         {/* Page Title */}
@@ -696,10 +698,10 @@ export const DeliveryContent: React.FC = () => {
           style={{
             color: '#000B14',
             fontFamily: 'Inter',
-            fontSize: '24px',
+            fontSize: isTabletOrMobile ? '18px' : '24px',
             fontStyle: 'normal',
             fontWeight: 600,
-            lineHeight: '32px',
+            lineHeight: isTabletOrMobile ? '1.4' : '32px',
             margin: 0,
           }}
         >
@@ -728,149 +730,205 @@ export const DeliveryContent: React.FC = () => {
             - photosDelivered  → state.images.length (or inProgressImages.length)
             - totalFileSize    → from API response (not yet in state)
           ─────────────────────────────────────────────────────────────────── */}
+      {/* ─── STATS BAR (responsive) ─────────────────────────────────────────────
+          Desktop  : single row — stats left, buttons right
+          Tablet/Mobile: stats row on top, buttons row below (full-width)
+      ─────────────────────────────────────────────────────────────────────── */}
       <div
         className="delivery-stats-bar"
         style={{
           display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '24px',
-          padding: '12px 16px',
+          flexDirection: isTabletOrMobile ? 'column' : 'row',
+          alignItems: isTabletOrMobile ? 'stretch' : 'center',
+          gap: isTabletOrMobile ? '12px' : '24px',
+          padding: isTabletOrMobile ? '12px' : '12px 16px',
           borderRadius: '8px',
           border: '1px solid #E9EAEB',
           background: '#FFFFFF',
-          marginBottom: '20px',
+          marginBottom: isTabletOrMobile ? '16px' : '20px',
           width: '100%',
           boxSizing: 'border-box',
         }}
       >
-        {/* Stat: Photos Delivered */}
-        <div className="delivery-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-          {/* Green check circle icon */}
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="32" height="32" rx="16" fill="#DCFCE7" />
-            <path d="M10.667 16L14.0003 19.3333L21.3337 12" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-            {/* TODO (Riley): replace hardcoded "8" with real count → state.images.length or inProgressImages.length */}
-            <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
-              {inProgressImages.length} Photos Delivered
-            </span>
-            <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
-              Ready for review
-            </span>
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="delivery-stats-bar__divider" style={{ width: '1px', height: '36px', background: '#E9EAEB', flexShrink: 0 }} />
-
-        {/* Stat: Total File Size */}
-        <div className="delivery-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-          {/* Download/file icon */}
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="32" height="32" rx="16" fill="#EFF6FF" />
-            <path d="M16 10V18M16 18L13 15M16 18L19 15" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M11 20H21" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-            {/* TODO (Riley): replace "2.4GB" with real total file size from API */}
-            <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
-              2.4GB Total
-            </span>
-            <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
-              Available to download
-            </span>
-          </div>
-        </div>
-
-        {/* Spacer pushes buttons to the right */}
-        <div className="delivery-stats-bar__spacer" style={{ flex: 1 }} />
-
-        {/* Approve All Button — TODO (Riley): wire up handleApproveAll to backend */}
-        {hasApprovableImages() && (
-          <button
-            className="delivery-stats-bar__approve-btn"
-            type="button"
-            onClick={handleApproveAll}
-            disabled={isDownloading || !hasApprovableImages()}
-            style={{
-              display: 'flex',
-              height: '36px',
-              padding: '0 16px',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: '8px',
-              borderRadius: '6px',
-              background: (isDownloading || !hasApprovableImages()) ? '#C1C2C3' : '#00A63E',
-              border: 'none',
-              color: '#FFFFFF',
-              fontFamily: 'Inter',
-              fontSize: '14px',
-              fontWeight: 600,
-              lineHeight: '20px',
-              whiteSpace: 'nowrap',
-              cursor: (isDownloading || !hasApprovableImages()) ? 'not-allowed' : 'pointer',
-              flexShrink: 0,
-            }}
-          >
-            {/* Approve All icon — thumbs up (Icon-Approve-All.svg) */}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4.66602 6.66602V14.666" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M10.0007 3.92065L9.33398 6.66732H13.2207C13.4276 6.66732 13.6318 6.71551 13.8169 6.80808C14.0021 6.90065 14.1631 7.03506 14.2873 7.20065C14.4115 7.36625 14.4954 7.55848 14.5325 7.76214C14.5695 7.96579 14.5586 8.17527 14.5007 8.37398L12.9473 13.7073C12.8665 13.9843 12.6981 14.2276 12.4673 14.4007C12.2365 14.5737 11.9558 14.6673 11.6673 14.6673H2.66732C2.3137 14.6673 1.97456 14.5268 1.72451 14.2768C1.47446 14.0267 1.33398 13.6876 1.33398 13.334V8.00065C1.33398 7.64703 1.47446 7.30789 1.72451 7.05784C1.97456 6.80779 2.3137 6.66732 2.66732 6.66732H4.50732C4.75537 6.66719 4.99848 6.59786 5.20929 6.46713C5.4201 6.3364 5.59027 6.14946 5.70065 5.92732L8.00065 1.33398C8.31504 1.33788 8.62448 1.41276 8.90585 1.55305C9.18723 1.69333 9.43327 1.89539 9.62559 2.14412C9.81791 2.39285 9.95153 2.68182 10.0165 2.98945C10.0814 3.29708 10.076 3.61541 10.0007 3.92065Z" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+        {/* Top row: stats */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: isTabletOrMobile ? '12px' : '24px',
+          flex: isTabletOrMobile ? 'none' : 1,
+        }}>
+          {/* Stat: Photos Delivered */}
+          <div className="delivery-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+            {/* Green check circle icon */}
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+              <rect width="32" height="32" rx="16" fill="#DCFCE7" />
+              <path d="M10.667 16L14.0003 19.3333L21.3337 12" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            Approve All
-          </button>
-        )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+              <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+                {inProgressImages.length} Photos Delivered
+              </span>
+              <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
+                Ready for review
+              </span>
+            </div>
+          </div>
 
-        {/* Download All Button */}
-        <button
-          className="delivery-stats-bar__download-btn"
-          type="button"
-          onClick={handleDownloadAll}
-          disabled={isDownloading || inProgressImages.length === 0}
-          style={{
-            display: 'flex',
-            height: '36px',
-            padding: '0 16px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '8px',
-            borderRadius: '6px',
-            border: '1.5px solid #4F46E5',
-            background: '#FFFFFF',
-            color: '#4F46E5',
-            fontFamily: 'Inter',
-            fontSize: '14px',
-            fontWeight: 600,
-            lineHeight: '20px',
-            whiteSpace: 'nowrap',
-            cursor: (isDownloading || inProgressImages.length === 0) ? 'not-allowed' : 'pointer',
-            opacity: (isDownloading || inProgressImages.length === 0) ? 0.5 : 1,
-            flexShrink: 0,
-          }}
-        >
-          {/* Download icon — color matches button text #4F46E5 */}
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 3V10M8 10L5.5 7.5M8 10L10.5 7.5" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M3 13H13" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
-          {isDownloading ? 'Downloading...' : 'Download All'}
-        </button>
+          {/* Divider */}
+          <div className="delivery-stats-bar__divider" style={{ width: '1px', height: '36px', background: '#E9EAEB', flexShrink: 0 }} />
+
+          {/* Stat: Total File Size */}
+          <div className="delivery-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+              <rect width="32" height="32" rx="16" fill="#EFF6FF" />
+              <path d="M16 10V18M16 18L13 15M16 18L19 15" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M11 20H21" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+              <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+                2.4GB Total
+              </span>
+              <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
+                Available to download
+              </span>
+            </div>
+          </div>
+
+          {/* Spacer — only on desktop to push buttons right */}
+          {!isTabletOrMobile && <div className="delivery-stats-bar__spacer" style={{ flex: 1 }} />}
+
+          {/* Desktop: Approve All Button inline */}
+          {!isTabletOrMobile && hasApprovableImages() && (
+            <button
+              className="delivery-stats-bar__approve-btn"
+              type="button"
+              onClick={handleApproveAll}
+              disabled={isDownloading || !hasApprovableImages()}
+              style={{
+                display: 'flex', height: '36px', padding: '0 16px',
+                justifyContent: 'center', alignItems: 'center', gap: '8px',
+                borderRadius: '6px',
+                background: (isDownloading || !hasApprovableImages()) ? '#C1C2C3' : '#00A63E',
+                border: 'none', color: '#FFFFFF',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px',
+                whiteSpace: 'nowrap',
+                cursor: (isDownloading || !hasApprovableImages()) ? 'not-allowed' : 'pointer',
+                flexShrink: 0,
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M4.66602 6.66602V14.666" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M10.0007 3.92065L9.33398 6.66732H13.2207C13.4276 6.66732 13.6318 6.71551 13.8169 6.80808C14.0021 6.90065 14.1631 7.03506 14.2873 7.20065C14.4115 7.36625 14.4954 7.55848 14.5325 7.76214C14.5695 7.96579 14.5586 8.17527 14.5007 8.37398L12.9473 13.7073C12.8665 13.9843 12.6981 14.2276 12.4673 14.4007C12.2365 14.5737 11.9558 14.6673 11.6673 14.6673H2.66732C2.3137 14.6673 1.97456 14.5268 1.72451 14.2768C1.47446 14.0267 1.33398 13.6876 1.33398 13.334V8.00065C1.33398 7.64703 1.47446 7.30789 1.72451 7.05784C1.97456 6.80779 2.3137 6.66732 2.66732 6.66732H4.50732C4.75537 6.66719 4.99848 6.59786 5.20929 6.46713C5.4201 6.3364 5.59027 6.14946 5.70065 5.92732L8.00065 1.33398C8.31504 1.33788 8.62448 1.41276 8.90585 1.55305C9.18723 1.69333 9.43327 1.89539 9.62559 2.14412C9.81791 2.39285 9.95153 2.68182 10.0165 2.98945C10.0814 3.29708 10.076 3.61541 10.0007 3.92065Z" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Approve All
+            </button>
+          )}
+
+          {/* Desktop: Download All Button inline */}
+          {!isTabletOrMobile && (
+            <button
+              className="delivery-stats-bar__download-btn"
+              type="button"
+              onClick={handleDownloadAll}
+              disabled={isDownloading || inProgressImages.length === 0}
+              style={{
+                display: 'flex', height: '36px', padding: '0 16px',
+                justifyContent: 'center', alignItems: 'center', gap: '8px',
+                borderRadius: '6px', border: '1.5px solid #4F46E5',
+                background: '#FFFFFF', color: '#4F46E5',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px',
+                whiteSpace: 'nowrap',
+                cursor: (isDownloading || inProgressImages.length === 0) ? 'not-allowed' : 'pointer',
+                opacity: (isDownloading || inProgressImages.length === 0) ? 0.5 : 1,
+                flexShrink: 0,
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3V10M8 10L5.5 7.5M8 10L10.5 7.5" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M3 13H13" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              {isDownloading ? 'Downloading...' : 'Download All'}
+            </button>
+          )}
+        </div>
+
+        {/* Mobile/Tablet bottom row: full-width action buttons */}
+        {isTabletOrMobile && (
+          <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+            {hasApprovableImages() && (
+              <button
+                type="button"
+                onClick={handleApproveAll}
+                disabled={isDownloading || !hasApprovableImages()}
+                style={{
+                  flex: 1, height: '38px', padding: '0 12px',
+                  display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px',
+                  borderRadius: '8px', border: 'none',
+                  background: (isDownloading || !hasApprovableImages()) ? '#C1C2C3' : '#00A63E',
+                  color: '#FFFFFF', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
+                  cursor: (isDownloading || !hasApprovableImages()) ? 'not-allowed' : 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                  <path d="M4.66602 6.66602V14.666" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M10.0007 3.92065L9.33398 6.66732H13.2207C13.4276 6.66732 13.6318 6.71551 13.8169 6.80808C14.0021 6.90065 14.1631 7.03506 14.2873 7.20065C14.4115 7.36625 14.4954 7.55848 14.5325 7.76214C14.5695 7.96579 14.5586 8.17527 14.5007 8.37398L12.9473 13.7073C12.8665 13.9843 12.6981 14.2276 12.4673 14.4007C12.2365 14.5737 11.9558 14.6673 11.6673 14.6673H2.66732C2.3137 14.6673 1.97456 14.5268 1.72451 14.2768C1.47446 14.0267 1.33398 13.6876 1.33398 13.334V8.00065C1.33398 7.64703 1.47446 7.30789 1.72451 7.05784C1.97456 6.80779 2.3137 6.66732 2.66732 6.66732H4.50732C4.75537 6.66719 4.99848 6.59786 5.20929 6.46713C5.4201 6.3364 5.59027 6.14946 5.70065 5.92732L8.00065 1.33398C8.31504 1.33788 8.62448 1.41276 8.90585 1.55305C9.18723 1.69333 9.43327 1.89539 9.62559 2.14412C9.81791 2.39285 9.95153 2.68182 10.0165 2.98945C10.0814 3.29708 10.076 3.61541 10.0007 3.92065Z" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Approve All
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleDownloadAll}
+              disabled={isDownloading || inProgressImages.length === 0}
+              style={{
+                flex: 1, height: '38px', padding: '0 12px',
+                display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px',
+                borderRadius: '8px', border: '1.5px solid #4F46E5',
+                background: '#FFFFFF', color: '#4F46E5',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
+                cursor: (isDownloading || inProgressImages.length === 0) ? 'not-allowed' : 'pointer',
+                opacity: (isDownloading || inProgressImages.length === 0) ? 0.5 : 1,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3V10M8 10L5.5 7.5M8 10L10.5 7.5" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M3 13H13" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              {isDownloading ? 'Downloading...' : 'Download All'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Main delivery preview */}
       <div className="draft-preview-wrapper" style={{ width: '100%', marginTop: '0', position: 'relative' }}>
+        {/* Figma tablet: title "Preview: Shop With Virtual Look" above carousel */}
+        {isTabletOrMobile && (
+          <p style={{
+            fontFamily: 'Inter', fontSize: '18px', fontWeight: 600,
+            color: '#000B14', lineHeight: '1.4', margin: '0 0 12px 0',
+          }}>
+            Preview: Shop With Virtual Look
+          </p>
+        )}
         <div
           className="draft-preview-image-frame"
           style={{
             width: '100%',
-            height: '622px',
-            borderRadius: '16px',
+            // Tablet/mobile: aspect ratio 390:249 from Figma (≈63.8% height)
+            // Desktop: fixed 622px
+            height: isTabletOrMobile ? undefined : '622px',
+            aspectRatio: isTabletOrMobile ? '390 / 249' : undefined,
+            borderRadius: isTabletOrMobile ? '8px' : '16px',
             position: 'relative',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+            boxShadow: isTabletOrMobile
+              ? '0px 4px 6px rgba(0,0,0,0.1), 0px 10px 15px rgba(0,0,0,0.1)'
+              : '0 4px 24px rgba(0,0,0,0.12)',
             backgroundColor: '#E9EAEB',
-            marginBottom: '24px',
+            marginBottom: isTabletOrMobile ? '0' : '24px',
             flexShrink: 0,
             isolation: 'isolate',
           }}
@@ -1014,23 +1072,16 @@ export const DeliveryContent: React.FC = () => {
                 onClick={handlePreviousImage}
                 aria-label="Previous image"
                 style={{
-                  position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)',
-                  width: '50px', height: '50px', borderRadius: '25px', border: 'none',
+                  position: 'absolute', left: isTabletOrMobile ? '12px' : '20px', top: '50%', transform: 'translateY(-50%)',
+                  width: isTabletOrMobile ? '36px' : '50px', height: isTabletOrMobile ? '36px' : '50px',
+                  borderRadius: isTabletOrMobile ? '18px' : '25px', border: 'none',
                   background: 'rgba(255,255,255,0.80)', cursor: 'pointer', display: 'flex',
                   alignItems: 'center', justifyContent: 'center',
-                  padding: '13px', gap: '10px', zIndex: 10,
+                  padding: isTabletOrMobile ? '8px' : '13px', gap: '10px', zIndex: 10,
                   transition: 'background 0.15s, box-shadow 0.15s',
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,1)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.18)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.80)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-                }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="10" viewBox="0 0 7 12" fill="none">
+                <svg xmlns="http://www.w3.org/2000/svg" width={isTabletOrMobile ? '14' : '20'} height={isTabletOrMobile ? '8' : '10'} viewBox="0 0 7 12" fill="none">
                   <path d="M6 1L1 6L6 11" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
@@ -1041,106 +1092,111 @@ export const DeliveryContent: React.FC = () => {
                 onClick={handleNextImage}
                 aria-label="Next image"
                 style={{
-                  position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%) rotate(180deg)',
-                  width: '50px', height: '50px', borderRadius: '25px', border: 'none',
+                  position: 'absolute', right: isTabletOrMobile ? '12px' : '20px', top: '50%', transform: 'translateY(-50%) rotate(180deg)',
+                  width: isTabletOrMobile ? '36px' : '50px', height: isTabletOrMobile ? '36px' : '50px',
+                  borderRadius: isTabletOrMobile ? '18px' : '25px', border: 'none',
                   background: 'rgba(255,255,255,0.80)', cursor: 'pointer', display: 'flex',
                   alignItems: 'center', justifyContent: 'center',
-                  padding: '13px', gap: '10px', zIndex: 10,
+                  padding: isTabletOrMobile ? '8px' : '13px', gap: '10px', zIndex: 10,
                   transition: 'background 0.15s, box-shadow 0.15s',
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,1)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.18)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.80)';
-                  (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-                }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="10" viewBox="0 0 7 12" fill="none">
+                <svg xmlns="http://www.w3.org/2000/svg" width={isTabletOrMobile ? '14' : '20'} height={isTabletOrMobile ? '8' : '10'} viewBox="0 0 7 12" fill="none">
                   <path d="M6 1L1 6L6 11" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
             </>
           )}
 
-        </div>
-
-        {/* Face happy / sad icons — overlaid on top-right of image, outside inner container
-            to avoid being affected by any CSS globals on .delivery-preview-image-container */}
-        <div
-          className="draft-preview-image-frame__face-icons"
-          style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '8px',
-            zIndex: 20,
-            pointerEvents: 'auto',
-          }}
-        >
-          {/* Approve button — face happy */}
-          <button
-            className="draft-preview-image-frame__face-btn draft-preview-image-frame__face-btn--happy"
-            onClick={handleAccept}
-            aria-label="Accept image"
+          {/* Face happy / sad icons — inside image frame so position:absolute is relative to the image */}
+          <div
+            className="draft-preview-image-frame__face-icons"
             style={{
-              width: '48px', height: '48px', padding: '4px',
-              border: 'none', background: 'transparent', cursor: 'pointer',
-              borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'transform 0.15s, filter 0.15s',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = 'scale(1.12)';
-              (e.currentTarget as HTMLElement).style.filter = 'drop-shadow(0 2px 6px rgba(0,0,0,0.25))';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
-              (e.currentTarget as HTMLElement).style.filter = 'none';
+              position: 'absolute',
+              top: isTabletOrMobile ? '8px' : '10px',
+              right: isTabletOrMobile ? '8px' : '10px',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: isTabletOrMobile ? '4px' : '8px',
+              zIndex: 20,
+              pointerEvents: 'auto',
             }}
           >
-            <img
-              src="/images/delivery/face-happy.svg"
-              alt="approve"
-              style={{ width: '40px', height: '40px' }}
-            />
-          </button>
+            {/* Approve button — face happy */}
+            <button
+              className="draft-preview-image-frame__face-btn draft-preview-image-frame__face-btn--happy"
+              onClick={handleAccept}
+              aria-label="Accept image"
+              style={{
+                width: isTabletOrMobile ? '36px' : '48px',
+                height: isTabletOrMobile ? '36px' : '48px',
+                padding: 0,
+                border: 'none', background: 'transparent', cursor: 'pointer',
+                borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+                transition: 'transform 0.15s, filter 0.15s',
+              }}
+            >
+              <img
+                src="/images/delivery/face-happy.svg"
+                alt="approve"
+                style={{
+                  width: isTabletOrMobile ? '36px' : '48px',
+                  height: isTabletOrMobile ? '36px' : '48px',
+                  aspectRatio: '1 / 1',
+                  objectFit: 'contain',
+                  display: 'block',
+                  flexShrink: 0,
+                }}
+              />
+            </button>
 
-          {/* Reject button — face sad */}
-          <button
-            className="draft-preview-image-frame__face-btn draft-preview-image-frame__face-btn--sad"
-            onClick={handleReject}
-            aria-label="Reject image"
-            style={{
-              width: '48px', height: '48px', padding: '4px',
-              border: 'none', background: 'transparent', cursor: 'pointer',
-              borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'transform 0.15s, filter 0.15s',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = 'scale(1.12)';
-              (e.currentTarget as HTMLElement).style.filter = 'drop-shadow(0 2px 6px rgba(0,0,0,0.25))';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
-              (e.currentTarget as HTMLElement).style.filter = 'none';
-            }}
-          >
-            <img
-              src="/images/delivery/face-sad.svg"
-              alt="reject"
-              style={{ width: '40px', height: '40px' }}
-            />
-          </button>
+            {/* Reject button — face sad */}
+            <button
+              className="draft-preview-image-frame__face-btn draft-preview-image-frame__face-btn--sad"
+              onClick={handleReject}
+              aria-label="Reject image"
+              style={{
+                width: isTabletOrMobile ? '36px' : '48px',
+                height: isTabletOrMobile ? '36px' : '48px',
+                padding: 0,
+                border: 'none', background: 'transparent', cursor: 'pointer',
+                borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+                transition: 'transform 0.15s, filter 0.15s',
+              }}
+            >
+              <img
+                src="/images/delivery/face-sad.svg"
+                alt="reject"
+                style={{
+                  width: isTabletOrMobile ? '36px' : '48px',
+                  height: isTabletOrMobile ? '36px' : '48px',
+                  aspectRatio: '1 / 1',
+                  objectFit: 'contain',
+                  display: 'block',
+                  flexShrink: 0,
+                }}
+              />
+            </button>
+          </div>
+
         </div>
       </div>
 
       {/* Header and Gallery Container - no spacing between them */}
-      <div className="delivery-photo-in-review-container" style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+      <div
+        className="delivery-photo-in-review-container"
+        style={{
+          display: 'flex', flexDirection: 'column', gap: '0',
+          marginTop: isTabletOrMobile ? '16px' : '0',
+          background: isTabletOrMobile ? '#FFFFFF' : undefined,
+          borderRadius: isTabletOrMobile ? '12px' : undefined,
+          padding: isTabletOrMobile ? '16px 0' : undefined,
+          boxSizing: 'border-box',
+        }}
+      >
         {/* Header between main image and gallery */}
         <div
           style={{
@@ -1174,10 +1230,10 @@ export const DeliveryContent: React.FC = () => {
                 style={{
                   color: 'var(--Neutral-Dark900, #000B14)',
                   fontFamily: 'var(--Font-family-font-family-body, Inter)',
-                  fontSize: 'var(--Font-size-text-md, 16px)',
+                  fontSize: isTabletOrMobile ? '14px' : '16px',
                   fontStyle: 'normal',
                   fontWeight: 600,
-                  lineHeight: 'var(--Line-height-text-md, 24px)',
+                  lineHeight: isTabletOrMobile ? '20px' : 'var(--Line-height-text-md, 24px)',
                 }}
               >
                 Photos in review
@@ -1187,16 +1243,16 @@ export const DeliveryContent: React.FC = () => {
               <div
                 style={{
                   display: 'flex',
-                  padding: 'var(--spacing-xxs, 0px) 12px',
+                  padding: isTabletOrMobile ? '1px 8px' : 'var(--spacing-xxs, 0px) 12px',
                   alignItems: 'center',
                   borderRadius: 'var(--radius-full, 9999px)',
                   background: 'var(--Neutral-Dark900, #000B14)',
                   color: '#FFF',
                   fontFamily: 'var(--Font-family-font-family-body, Inter)',
-                  fontSize: 'var(--Font-size-text-md, 16px)',
+                  fontSize: isTabletOrMobile ? '12px' : 'var(--Font-size-text-md, 16px)',
                   fontStyle: 'normal',
                   fontWeight: 600,
-                  lineHeight: 'var(--Line-height-text-md, 24px)',
+                  lineHeight: isTabletOrMobile ? '18px' : 'var(--Line-height-text-md, 24px)',
                 }}
               >
                 {inProgressImages.length}
@@ -1222,26 +1278,54 @@ export const DeliveryContent: React.FC = () => {
 
         {/* Image Gallery - In Progress — Figma dummy images dari node 13543:48733 */}
         {/* TODO (Riley): replace DRAFT_GALLERY_IMAGES with real state.images from API */}
-        <div className="draft-gallery-wrapper" style={{ marginTop: '24px', width: '100%' }}>
-          <div
-            className="draft-gallery-grid"
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '24px',
-            }}
-          >
-            {DRAFT_GALLERY_IMAGES.map((img) => (
-              <DraftGalleryCard key={img.id} url={img.url} label={img.label} />
-            ))}
-          </div>
+        <div className="draft-gallery-wrapper" style={{ marginTop: isTabletOrMobile ? '12px' : '24px', width: '100%' }}>
+          {isTabletOrMobile ? (
+            /* Tablet/Mobile: 3-column CSS grid, aspect-ratio cards (Figma: h-[146.542px] in 3-col) */
+            <div
+              className="draft-gallery-grid draft-gallery-grid--mobile"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '12px',
+              }}
+            >
+              {DRAFT_GALLERY_IMAGES.map((img) => (
+                <div
+                  key={img.id}
+                  style={{
+                    position: 'relative',
+                    borderRadius: '10px',
+                    overflow: 'hidden',
+                    aspectRatio: '16 / 10',   // landscape, matches LatestRevisionContent gallery cards
+                    cursor: 'pointer',
+                  }}
+                >
+                  <img
+                    src={img.url}
+                    alt={img.label}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* Desktop: flex-wrap with fixed-size DraftGalleryCard */
+            <div
+              className="draft-gallery-grid"
+              style={{ display: 'flex', flexWrap: 'wrap', gap: '24px' }}
+            >
+              {DRAFT_GALLERY_IMAGES.map((img) => (
+                <DraftGalleryCard key={img.id} url={img.url} label={img.label} />
+              ))}
+            </div>
+          )}
 
-          {/* Action buttons — right aligned, same as Latest Revision */}
+          {/* Action buttons */}
           <div
             className="draft-gallery-actions"
             style={{
               display: 'flex',
-              justifyContent: 'flex-end',
+              justifyContent: isTabletOrMobile ? 'stretch' : 'flex-end',
               gap: '8px',
               marginTop: '24px',
               paddingBottom: '8px',
@@ -1251,8 +1335,9 @@ export const DeliveryContent: React.FC = () => {
               className="draft-gallery-actions__download-btn"
               type="button"
               style={{
+                flex: isTabletOrMobile ? 1 : 'none',
                 display: 'flex', height: '38px', padding: '0 32px',
-                alignItems: 'center', gap: '8px', borderRadius: '6px',
+                alignItems: 'center', justifyContent: 'center', gap: '8px', borderRadius: '6px',
                 border: '2px solid #4F46E5', background: '#FFFDFF',
                 color: '#4F46E5', fontFamily: 'Inter', fontSize: '14px',
                 fontWeight: 700, cursor: 'pointer',
@@ -1264,8 +1349,9 @@ export const DeliveryContent: React.FC = () => {
               className="draft-gallery-actions__approve-btn"
               type="button"
               style={{
+                flex: isTabletOrMobile ? 1 : 'none',
                 display: 'flex', height: '38px', padding: '0 32px',
-                alignItems: 'center', gap: '8px', borderRadius: '6px',
+                alignItems: 'center', justifyContent: 'center', gap: '8px', borderRadius: '6px',
                 border: 'none', background: '#2BC556',
                 color: '#FFFFFF', fontFamily: 'Inter', fontSize: '14px',
                 fontWeight: 700, cursor: 'pointer',
@@ -1281,7 +1367,17 @@ export const DeliveryContent: React.FC = () => {
       {state.completedImages.length > 0 && (
         <>
           {/* Header and Completed Gallery Container */}
-          <div className="delivery-photo-completed-container" style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+          <div
+            className="delivery-photo-completed-container"
+            style={{
+              display: 'flex', flexDirection: 'column', gap: '0',
+              background: isTabletOrMobile ? '#FFFFFF' : undefined,
+              borderRadius: isTabletOrMobile ? '12px' : undefined,
+              padding: isTabletOrMobile ? '16px 0' : undefined,
+              boxSizing: 'border-box',
+              marginTop: isTabletOrMobile ? '12px' : undefined,
+            }}
+          >
             {/* Header between sections */}
             <div
               style={{
@@ -1315,26 +1411,26 @@ export const DeliveryContent: React.FC = () => {
                     style={{
                       color: 'var(--Neutral-Dark900, #000B14)',
                       fontFamily: 'var(--Font-family-font-family-body, Inter)',
-                      fontSize: 'var(--Font-size-text-md, 16px)',
+                      fontSize: isTabletOrMobile ? '14px' : '16px',
                       fontStyle: 'normal',
                       fontWeight: 600,
-                      lineHeight: 'var(--Line-height-text-md, 24px)',
+                      lineHeight: isTabletOrMobile ? '20px' : 'var(--Line-height-text-md, 24px)',
                     }}
                   >
                     Photo Completed
                   </div>
-                  
+
                   {/* Image count badge */}
                   <div
                     style={{
                       display: 'flex',
-                      padding: 'var(--spacing-xxs, 0px) 12px',
+                      padding: isTabletOrMobile ? '1px 8px' : 'var(--spacing-xxs, 0px) 12px',
                       alignItems: 'center',
                       borderRadius: 'var(--radius-full, 9999px)',
                       background: 'var(--Neutral-Dark900, #000B14)',
                       color: '#FFF',
                       fontFamily: 'var(--Font-family-font-family-body, Inter)',
-                      fontSize: 'var(--Font-size-text-md, 16px)',
+                      fontSize: isTabletOrMobile ? '12px' : 'var(--Font-size-text-md, 16px)',
                       fontStyle: 'normal',
                       fontWeight: 600,
                       lineHeight: 'var(--Line-height-text-md, 24px)',

@@ -195,7 +195,7 @@ const Header: React.FC = () => {
 
           .header-inner {
             gap: 16px !important;
-            padding: 12px 16px;
+            padding: 8px 16px;
           }
 
           .mobile-menu-toggle {
@@ -227,7 +227,7 @@ const Header: React.FC = () => {
 
           .header-inner {
             gap: 12px !important;
-            padding: 12px 12px;
+            padding: 8px 12px;
           }
         }
       `}</style>
