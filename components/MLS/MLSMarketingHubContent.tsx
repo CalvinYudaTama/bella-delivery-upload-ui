@@ -813,27 +813,32 @@ export default function MLSMarketingHubContent() {
           {/* Warning: no property info */}
           {showNoInfoWarning && !generatedDescription && (
             <div style={{
-              background: '#FFFBEB', border: '1px solid #F59E0B',
-              borderRadius: 12, padding: 16, boxSizing: 'border-box',
-              display: 'flex', flexDirection: 'column', gap: 10,
+              background: '#FFF3CD', border: '1px solid #FFC107',
+              borderRadius: 8, padding: '17px 17px 4px 17px', boxSizing: 'border-box',
+              display: 'flex', flexDirection: 'column', gap: 0,
             }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                <span style={{ fontSize: 16, lineHeight: 1 }}>⚠️</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingBottom: 16 }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
+                  <path d="M10 2L1.5 17h17L10 2z" stroke="#856404" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M10 8v4M10 14.5v.5" stroke="#856404" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: '#92400E' }}>No Property Information</span>
-                  <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#92400E' }}>Property information was not provided during upload.</span>
+                  <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#856404', lineHeight: '21px' }}>No Property Information</span>
+                  <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#856404', lineHeight: '19.5px' }}>Property information was not provided during upload.</span>
                 </div>
               </div>
               <button
                 onClick={() => setShowPropertyModal(true)}
                 style={{
-                  alignSelf: 'flex-start', padding: '8px 16px',
-                  borderRadius: 8, border: '1px solid #F59E0B',
-                  background: '#FFFFFF', cursor: 'pointer',
-                  fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#92400E',
+                  alignSelf: 'flex-start', marginBottom: 16,
+                  height: 46, padding: '12px 24px',
+                  borderRadius: 12, border: '2px solid #4F46E5',
+                  background: '#FFFDFF', cursor: 'pointer',
+                  fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
+                  color: '#4F46E5', textTransform: 'capitalize',
                 }}
               >
-                Provide information now
+                Provide Information Now
               </button>
             </div>
           )}
@@ -1367,38 +1372,44 @@ export default function MLSMarketingHubContent() {
               {generatedDescription ? 'TRY ANOTHER' : 'TRY OUR AI DESCRIPTION GENERATOR'}
             </button>
           </div>
-
-          {/* Warning: no property info */}
-          {showNoInfoWarning && !generatedDescription && (
-            <div style={{
-              background: '#FFFBEB', border: '1px solid #F59E0B',
-              borderRadius: 12, padding: 16, boxSizing: 'border-box',
-              display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 429,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                <span style={{ fontSize: 16, lineHeight: 1 }}>⚠️</span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: '#92400E' }}>No Property Information</span>
-                  <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#92400E' }}>Property information was not provided during upload.</span>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowPropertyModal(true)}
-                style={{
-                  alignSelf: 'flex-start', padding: '8px 16px',
-                  borderRadius: 8, border: '1px solid #F59E0B',
-                  background: '#FFFFFF', cursor: 'pointer',
-                  fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#92400E',
-                }}
-              >
-                Provide information now
-              </button>
-            </div>
-          )}
         </div>
 
-        {/* Right: AI result panel */}
-        {generatedDescription && (
+        {/* Right: warning OR AI result panel */}
+        {(showNoInfoWarning && !generatedDescription) ? (
+          <div style={{ flex: '1 0 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* Warning box */}
+            <div style={{
+              background: '#FFF3CD', border: '1px solid #FFC107',
+              borderRadius: 8, padding: '17px 17px 1px 17px',
+              boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingBottom: 16 }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
+                  <path d="M10 2L1.5 17h17L10 2z" stroke="#856404" strokeWidth="1.5" strokeLinejoin="round"/>
+                  <path d="M10 8v4M10 14.5v.5" stroke="#856404" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#856404', lineHeight: '21px' }}>No Property Information</span>
+                  <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#856404', lineHeight: '19.5px' }}>Property information was not provided during upload.</span>
+                </div>
+              </div>
+            </div>
+            {/* Provide Information Now button */}
+            <button
+              onClick={() => setShowPropertyModal(true)}
+              style={{
+                alignSelf: 'flex-start',
+                height: 46, padding: '12px 24px',
+                borderRadius: 12, border: '2px solid #4F46E5',
+                background: '#FFFDFF', cursor: 'pointer',
+                fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
+                color: '#4F46E5', textTransform: 'capitalize',
+              }}
+            >
+              Provide Information Now
+            </button>
+          </div>
+        ) : generatedDescription ? (
           <div
             className="mls-ai-section__result"
             onClick={() => setIsEditingDescription(true)}
@@ -1434,7 +1445,7 @@ export default function MLSMarketingHubContent() {
               </p>
             )}
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* ─── Property Information Modal ───────────────────────────────────────── */}
