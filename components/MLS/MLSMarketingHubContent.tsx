@@ -292,10 +292,42 @@ export default function MLSMarketingHubContent() {
   const [watermarkEnabled, setWatermarkEnabled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
-  const [aiDescVisible, setAiDescVisible] = useState(false);
+  const [generatedDescription, setGeneratedDescription] = useState<string | null>(null);
+  const [showNoInfoWarning, setShowNoInfoWarning] = useState(false);
+  const [showPropertyModal, setShowPropertyModal] = useState(false);
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [propertyFormData, setPropertyFormData] = useState({
+    propertyType: '',
+    buyerProfile: '',
+    intendedUse: '',
+    propertyAddress: '',
+    mlsLink: '',
+  });
+  // Mock: set to true if property info was provided during upload
+  const hasPropertyInfo = false;
   const [watermarkFile, setWatermarkFile] = useState<File | null>(null);
   const [watermarkPreviewUrl, setWatermarkPreviewUrl] = useState<string | null>(null);
   const [watermarkSize, setWatermarkSize] = useState(50);
+
+  // ── AI Description handlers ───────────────────────────────────────────────
+  const isFormValid = Object.values(propertyFormData).some(v => v.trim() !== '');
+
+  const handleGenerateClick = () => {
+    if (hasPropertyInfo || generatedDescription) {
+      // Scenario 1: auto-generate with existing info
+      setGeneratedDescription('One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees & cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show.');
+      setShowNoInfoWarning(false);
+    } else {
+      // Scenario 2: no info, show warning
+      setShowNoInfoWarning(true);
+    }
+  };
+
+  const handleFormSubmit = () => {
+    setGeneratedDescription('One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees & cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show.');
+    setShowPropertyModal(false);
+    setShowNoInfoWarning(false);
+  };
 
   // ── Breakpoint detection via ResizeObserver on the container ─────────────
   // Measures the *actual rendered width* of the MLS content area,
@@ -761,7 +793,7 @@ export default function MLSMarketingHubContent() {
             Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you.
           </p>
           <button
-            onClick={() => setAiDescVisible(true)}
+            onClick={handleGenerateClick}
             style={{
               height: 46, padding: '12px',
               borderRadius: 12, border: 'none',
@@ -772,25 +804,73 @@ export default function MLSMarketingHubContent() {
           >
             <span style={{
               fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
-              color: '#FFFFFF', lineHeight: '1.4',
+              color: '#FFFFFF', lineHeight: '1.4', textTransform: 'uppercase',
             }}>
-              Try our AI description generator
+              {generatedDescription ? 'TRY ANOTHER' : 'TRY OUR AI DESCRIPTION GENERATOR'}
             </span>
           </button>
 
-          {/* AI result panel — shown after button click */}
-          {aiDescVisible && (
+          {/* Warning: no property info */}
+          {showNoInfoWarning && !generatedDescription && (
             <div style={{
-              background: '#FAFAFA', borderRadius: 12,
-              padding: 16, boxSizing: 'border-box',
+              background: '#FFFBEB', border: '1px solid #F59E0B',
+              borderRadius: 12, padding: 16, boxSizing: 'border-box',
+              display: 'flex', flexDirection: 'column', gap: 10,
             }}>
-              <p style={{
-                fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
-                color: '#0A0A0A', lineHeight: '22px',
-                letterSpacing: '-0.15px', margin: 0,
-              }}>
-                One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees &amp; cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show. Open house Saturday Feb 21st 1 to 3 pm.
-              </p>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <span style={{ fontSize: 16, lineHeight: 1 }}>⚠️</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: '#92400E' }}>No Property Information</span>
+                  <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#92400E' }}>Property information was not provided during upload.</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowPropertyModal(true)}
+                style={{
+                  alignSelf: 'flex-start', padding: '8px 16px',
+                  borderRadius: 8, border: '1px solid #F59E0B',
+                  background: '#FFFFFF', cursor: 'pointer',
+                  fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#92400E',
+                }}
+              >
+                Provide information now
+              </button>
+            </div>
+          )}
+
+          {/* AI result panel */}
+          {generatedDescription && (
+            <div
+              onClick={() => setIsEditingDescription(true)}
+              style={{
+                background: '#FAFAFA', borderRadius: 12,
+                padding: 16, boxSizing: 'border-box',
+                cursor: 'text', border: isEditingDescription ? '2px solid #4F46E5' : '2px solid transparent',
+                transition: 'border-color 0.15s',
+              }}
+            >
+              {isEditingDescription ? (
+                <textarea
+                  autoFocus
+                  value={generatedDescription}
+                  onChange={e => setGeneratedDescription(e.target.value)}
+                  onBlur={() => setIsEditingDescription(false)}
+                  style={{
+                    width: '100%', minHeight: 120, resize: 'vertical',
+                    fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
+                    color: '#0A0A0A', lineHeight: '22px', letterSpacing: '-0.15px',
+                    border: 'none', background: 'transparent', outline: 'none', padding: 0,
+                  }}
+                />
+              ) : (
+                <p style={{
+                  fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
+                  color: '#0A0A0A', lineHeight: '22px',
+                  letterSpacing: '-0.15px', margin: 0,
+                }}>
+                  {generatedDescription}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -997,7 +1077,7 @@ export default function MLSMarketingHubContent() {
               Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you.
             </p>
             <button
-              onClick={() => setAiDescVisible(true)}
+              onClick={handleGenerateClick}
               style={{
                 width: '100%', height: 46, padding: '12px 24px',
                 borderRadius: 12, border: 'none',
@@ -1010,23 +1090,71 @@ export default function MLSMarketingHubContent() {
                 fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
                 color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.02em',
               }}>
-                TRY OUR AI DESCRIPTION GENERATOR
+                {generatedDescription ? 'TRY ANOTHER' : 'TRY OUR AI DESCRIPTION GENERATOR'}
               </span>
             </button>
 
-            {/* AI result panel — shown after button click */}
-            {aiDescVisible && (
+            {/* Warning: no property info */}
+            {showNoInfoWarning && !generatedDescription && (
               <div style={{
-                background: '#FAFAFA', borderRadius: 12,
-                padding: 16, boxSizing: 'border-box',
+                background: '#FFFBEB', border: '1px solid #F59E0B',
+                borderRadius: 12, padding: 16, boxSizing: 'border-box',
+                display: 'flex', flexDirection: 'column', gap: 10,
               }}>
-                <p style={{
-                  fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
-                  color: '#0A0A0A', lineHeight: '22px',
-                  letterSpacing: '-0.15px', margin: 0,
-                }}>
-                  One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees &amp; cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show. Open house Saturday Feb 21st 1 to 3 pm.
-                </p>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <span style={{ fontSize: 16, lineHeight: 1 }}>⚠️</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: '#92400E' }}>No Property Information</span>
+                    <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#92400E' }}>Property information was not provided during upload.</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowPropertyModal(true)}
+                  style={{
+                    alignSelf: 'flex-start', padding: '8px 16px',
+                    borderRadius: 8, border: '1px solid #F59E0B',
+                    background: '#FFFFFF', cursor: 'pointer',
+                    fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#92400E',
+                  }}
+                >
+                  Provide information now
+                </button>
+              </div>
+            )}
+
+            {/* AI result panel */}
+            {generatedDescription && (
+              <div
+                onClick={() => setIsEditingDescription(true)}
+                style={{
+                  background: '#FAFAFA', borderRadius: 12,
+                  padding: 16, boxSizing: 'border-box',
+                  cursor: 'text', border: isEditingDescription ? '2px solid #4F46E5' : '2px solid transparent',
+                  transition: 'border-color 0.15s',
+                }}
+              >
+                {isEditingDescription ? (
+                  <textarea
+                    autoFocus
+                    value={generatedDescription}
+                    onChange={e => setGeneratedDescription(e.target.value)}
+                    onBlur={() => setIsEditingDescription(false)}
+                    style={{
+                      width: '100%', minHeight: 120, resize: 'vertical',
+                      fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
+                      color: '#0A0A0A', lineHeight: '22px', letterSpacing: '-0.15px',
+                      border: 'none', background: 'transparent', outline: 'none', padding: 0,
+                    }}
+                  />
+                ) : (
+                  <p style={{
+                    fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
+                    color: '#0A0A0A', lineHeight: '22px',
+                    letterSpacing: '-0.15px', margin: 0,
+                  }}>
+                    {generatedDescription}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -1226,7 +1354,7 @@ export default function MLSMarketingHubContent() {
           <div className="mls-ai-section__cta">
             <button
               className="mls-ai-section__cta-btn"
-              onClick={() => setAiDescVisible(true)}
+              onClick={handleGenerateClick}
               style={{
                 height: 46, padding: '12px 24px',
                 borderRadius: 12, border: 'none',
@@ -1236,28 +1364,218 @@ export default function MLSMarketingHubContent() {
                 letterSpacing: '0.02em',
               }}
             >
-              TRY OUR AI DESCRIPTION GENERATOR
+              {generatedDescription ? 'TRY ANOTHER' : 'TRY OUR AI DESCRIPTION GENERATOR'}
             </button>
           </div>
+
+          {/* Warning: no property info */}
+          {showNoInfoWarning && !generatedDescription && (
+            <div style={{
+              background: '#FFFBEB', border: '1px solid #F59E0B',
+              borderRadius: 12, padding: 16, boxSizing: 'border-box',
+              display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 429,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <span style={{ fontSize: 16, lineHeight: 1 }}>⚠️</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: '#92400E' }}>No Property Information</span>
+                  <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#92400E' }}>Property information was not provided during upload.</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowPropertyModal(true)}
+                style={{
+                  alignSelf: 'flex-start', padding: '8px 16px',
+                  borderRadius: 8, border: '1px solid #F59E0B',
+                  background: '#FFFFFF', cursor: 'pointer',
+                  fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#92400E',
+                }}
+              >
+                Provide information now
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Right: AI result panel — only shown after button click */}
-        {aiDescVisible && (
-          <div className="mls-ai-section__result" style={{
-            flex: '1 0 0', minWidth: 0,
-            background: '#FAFAFA', borderRadius: 12,
-            padding: 24, alignSelf: 'stretch',
-          }}>
-            <p className="mls-ai-section__result-text" style={{
-              fontFamily: 'Inter', fontSize: 16, fontWeight: 400,
-              color: '#0A0A0A', lineHeight: '27px',
-              letterSpacing: '-0.44px', margin: 0,
-            }}>
-              One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees &amp; cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show. Open house Saturday Feb 21st 1 to 3 pm.
-            </p>
+        {/* Right: AI result panel */}
+        {generatedDescription && (
+          <div
+            className="mls-ai-section__result"
+            onClick={() => setIsEditingDescription(true)}
+            style={{
+              flex: '1 0 0', minWidth: 0,
+              background: '#FAFAFA', borderRadius: 12,
+              padding: 24, alignSelf: 'stretch',
+              cursor: 'text',
+              border: isEditingDescription ? '2px solid #4F46E5' : '2px solid transparent',
+              transition: 'border-color 0.15s',
+            }}
+          >
+            {isEditingDescription ? (
+              <textarea
+                autoFocus
+                value={generatedDescription}
+                onChange={e => setGeneratedDescription(e.target.value)}
+                onBlur={() => setIsEditingDescription(false)}
+                style={{
+                  width: '100%', height: '100%', minHeight: 160, resize: 'vertical',
+                  fontFamily: 'Inter', fontSize: 16, fontWeight: 400,
+                  color: '#0A0A0A', lineHeight: '27px', letterSpacing: '-0.44px',
+                  border: 'none', background: 'transparent', outline: 'none', padding: 0,
+                }}
+              />
+            ) : (
+              <p className="mls-ai-section__result-text" style={{
+                fontFamily: 'Inter', fontSize: 16, fontWeight: 400,
+                color: '#0A0A0A', lineHeight: '27px',
+                letterSpacing: '-0.44px', margin: 0,
+              }}>
+                {generatedDescription}
+              </p>
+            )}
           </div>
         )}
       </div>
+
+      {/* ─── Property Information Modal ───────────────────────────────────────── */}
+      {showPropertyModal && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(0,0,0,0.4)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 24,
+        }}>
+          <div style={{
+            background: '#FFFFFF', borderRadius: 16,
+            padding: '32px', width: '100%', maxWidth: 600,
+            maxHeight: '90vh', overflowY: 'auto',
+            display: 'flex', flexDirection: 'column', gap: 24,
+            boxSizing: 'border-box',
+          }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h2 style={{ fontFamily: 'Inter', fontSize: 24, fontWeight: 700, color: '#0A0A0A', margin: 0 }}>
+                Property Information
+              </h2>
+              <button
+                onClick={() => setShowPropertyModal(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: '#6B7280', padding: 4 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <p style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#6B7280', margin: 0 }}>
+              Please provide property details to generate an AI-powered marketing description.
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {/* Property type */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', border: '1px solid #E5E7EB', borderRadius: 10, background: '#F9FAFB' }}>
+                <span style={{ fontSize: 16 }}>🏠</span>
+                <select
+                  value={propertyFormData.propertyType}
+                  onChange={e => setPropertyFormData(p => ({ ...p, propertyType: e.target.value }))}
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontFamily: 'Inter', fontSize: 14, color: propertyFormData.propertyType ? '#0A0A0A' : '#9CA3AF', outline: 'none', cursor: 'pointer' }}
+                >
+                  <option value="">Property type</option>
+                  <option value="house">House</option>
+                  <option value="condo">Condo</option>
+                  <option value="townhouse">Townhouse</option>
+                  <option value="apartment">Apartment</option>
+                  <option value="commercial">Commercial</option>
+                </select>
+              </div>
+
+              {/* Intended buyer profile */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', border: '1px solid #E5E7EB', borderRadius: 10, background: '#F9FAFB' }}>
+                <span style={{ fontSize: 16 }}>👤</span>
+                <select
+                  value={propertyFormData.buyerProfile}
+                  onChange={e => setPropertyFormData(p => ({ ...p, buyerProfile: e.target.value }))}
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontFamily: 'Inter', fontSize: 14, color: propertyFormData.buyerProfile ? '#0A0A0A' : '#9CA3AF', outline: 'none', cursor: 'pointer' }}
+                >
+                  <option value="">Intended buyer profile</option>
+                  <option value="first-time">First-time buyer</option>
+                  <option value="investor">Investor</option>
+                  <option value="family">Family</option>
+                  <option value="professional">Young professional</option>
+                  <option value="retiree">Retiree</option>
+                </select>
+              </div>
+
+              {/* Intended use */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', border: '1px solid #E5E7EB', borderRadius: 10, background: '#F9FAFB' }}>
+                <span style={{ fontSize: 16 }}>🏷️</span>
+                <select
+                  value={propertyFormData.intendedUse}
+                  onChange={e => setPropertyFormData(p => ({ ...p, intendedUse: e.target.value }))}
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontFamily: 'Inter', fontSize: 14, color: propertyFormData.intendedUse ? '#0A0A0A' : '#9CA3AF', outline: 'none', cursor: 'pointer' }}
+                >
+                  <option value="">Intended use</option>
+                  <option value="primary">Primary residence</option>
+                  <option value="rental">Rental investment</option>
+                  <option value="vacation">Vacation home</option>
+                  <option value="commercial">Commercial use</option>
+                </select>
+              </div>
+
+              {/* Property address */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', border: '1px solid #E5E7EB', borderRadius: 10, background: '#F9FAFB' }}>
+                <span style={{ fontSize: 16 }}>📍</span>
+                <input
+                  type="text"
+                  placeholder="Property address"
+                  value={propertyFormData.propertyAddress}
+                  onChange={e => setPropertyFormData(p => ({ ...p, propertyAddress: e.target.value }))}
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontFamily: 'Inter', fontSize: 14, color: '#0A0A0A', outline: 'none' }}
+                />
+              </div>
+
+              {/* MLS listing link */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', border: '1px solid #E5E7EB', borderRadius: 10, background: '#F9FAFB' }}>
+                <span style={{ fontSize: 16 }}>🔗</span>
+                <input
+                  type="text"
+                  placeholder="MLS listing link if applicable"
+                  value={propertyFormData.mlsLink}
+                  onChange={e => setPropertyFormData(p => ({ ...p, mlsLink: e.target.value }))}
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontFamily: 'Inter', fontSize: 14, color: '#0A0A0A', outline: 'none' }}
+                />
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowPropertyModal(false)}
+                style={{
+                  padding: '12px 24px', borderRadius: 10,
+                  border: '1px solid #E5E7EB', background: '#F9FAFB',
+                  fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#374151',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleFormSubmit}
+                disabled={!isFormValid}
+                style={{
+                  padding: '12px 24px', borderRadius: 10,
+                  border: 'none',
+                  background: isFormValid ? '#4F46E5' : '#C4B5FD',
+                  fontFamily: 'Inter', fontSize: 14, fontWeight: 700, color: '#FFFFFF',
+                  cursor: isFormValid ? 'pointer' : 'not-allowed',
+                  textTransform: 'uppercase', letterSpacing: '0.02em',
+                }}
+              >
+                GENERATE DESCRIPTION
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
