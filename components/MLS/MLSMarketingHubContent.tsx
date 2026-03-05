@@ -292,7 +292,26 @@ export default function MLSMarketingHubContent() {
   const [watermarkEnabled, setWatermarkEnabled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
+  // ---------------------------------------------------------------------------
+  // AI Description state
+  // ---------------------------------------------------------------------------
+  // generatedDescription : the current AI-generated text shown to the user.
+  //                        Backend team: replace dummy text with real API response.
+  // showNoInfoWarning    : shown when user clicks Generate but no property info
+  //                        was submitted during the upload flow.
+  // showPropertyModal    : controls the "Provide Property Info" popup form.
+  // isEditingDescription : true when the user clicks the description to edit it.
+  // descriptionIndex     : tracks which dummy variant is shown (frontend-only).
+  //                        Backend team: remove this and use API call instead.
+  // propertyFormData     : form fields collected before calling the AI generator.
+  //                        Backend team: send these fields to the AI API endpoint.
+  // hasPropertyInfo      : flag indicating if property info was already submitted
+  //                        during upload. Backend team: derive this from the order/
+  //                        project data when loading the page.
+  // ---------------------------------------------------------------------------
+
   const [generatedDescription, setGeneratedDescription] = useState<string | null>(null);
+  const [descriptionIndex, setDescriptionIndex] = useState(0);
   const [showNoInfoWarning, setShowNoInfoWarning] = useState(false);
   const [showPropertyModal, setShowPropertyModal] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -303,30 +322,57 @@ export default function MLSMarketingHubContent() {
     propertyAddress: '',
     mlsLink: '',
   });
-  // Mock: set to true if property info was provided during upload
+
+  // TODO (backend): replace `hasPropertyInfo` with real data from the order/project.
+  // Set to true if the client filled in property details during the upload step.
   const hasPropertyInfo = false;
+
+  // ---------------------------------------------------------------------------
+  // Dummy AI descriptions — frontend placeholder only.
+  // TODO (backend): remove this array and call the AI generation API instead.
+  // ---------------------------------------------------------------------------
+  const DUMMY_DESCRIPTIONS = [
+    'One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees & cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show.',
+    'Nestled on a quiet tree-lined street, this bright and spacious 3-bed, 2-bath home is perfect for families or savvy investors. Featuring an open-concept living and dining area flooded with natural light, updated kitchen with stainless steel appliances, and a private backyard ideal for entertaining. Steps from top-rated schools, parks, and transit. This move-in ready gem won\'t last long — schedule your viewing today.',
+    'Welcome to this stunning corner unit condo with panoramic city views. This 1-bed + den layout offers maximum flexibility for a home office or guest space. Enjoy a chef-inspired kitchen, spa-like bathroom, and an oversized balcony perfect for morning coffee. Building amenities include a rooftop lounge, gym, and 24/7 concierge. Located in the heart of downtown, with the best restaurants, shops, and transit at your doorstep.',
+  ];
   const [watermarkFile, setWatermarkFile] = useState<File | null>(null);
   const [watermarkPreviewUrl, setWatermarkPreviewUrl] = useState<string | null>(null);
   const [watermarkSize, setWatermarkSize] = useState(50);
 
-  // ── AI Description handlers ───────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // AI Description handlers
+  // ---------------------------------------------------------------------------
+
+  // Whether at least one form field has been filled in.
   const isFormValid = Object.values(propertyFormData).some(v => v.trim() !== '');
 
+  // Called when the user clicks "TRY OUR AI DESCRIPTION GENERATOR" or "TRY ANOTHER".
+  // TODO (backend): replace the dummy text logic with an API call to the AI generator.
   const handleGenerateClick = () => {
     if (hasPropertyInfo || generatedDescription) {
-      // Scenario 1: auto-generate with existing info
-      setGeneratedDescription('One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees & cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show.');
+      // Scenario 1: property info exists — generate (or re-generate) description.
+      // Cycles through dummy variants so "Try Another" feels interactive.
+      // TODO (backend): call AI API here and await the response.
+      const nextIndex = (descriptionIndex + 1) % DUMMY_DESCRIPTIONS.length;
+      setDescriptionIndex(nextIndex);
+      setGeneratedDescription(DUMMY_DESCRIPTIONS[nextIndex]);
       setShowNoInfoWarning(false);
+      setIsEditingDescription(false);
     } else {
-      // Scenario 2: no info, show warning
+      // Scenario 2: no property info — show warning bar with "Provide Info" CTA.
       setShowNoInfoWarning(true);
     }
   };
 
+  // Called when the user submits the Property Information modal form.
+  // TODO (backend): send `propertyFormData` to the AI API and use the response
+  // as `generatedDescription` instead of the dummy text below.
   const handleFormSubmit = () => {
-    setGeneratedDescription('One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees & cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show.');
+    setGeneratedDescription(DUMMY_DESCRIPTIONS[descriptionIndex]);
     setShowPropertyModal(false);
     setShowNoInfoWarning(false);
+    setIsEditingDescription(false);
   };
 
   // ── Breakpoint detection via ResizeObserver on the container ─────────────
