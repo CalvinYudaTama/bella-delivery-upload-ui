@@ -740,44 +740,6 @@ export default function MLSMarketingHubContent() {
           </div>
         </div>
 
-        {/* ── MOBILE: Row 4 — Export Options card ───────────────────────────── */}
-        <div style={{
-          width: '100%', background: '#FFFFFF',
-          border: '1px solid #E5E7EB', borderRadius: 12,
-          padding: 17, boxSizing: 'border-box',
-          display: 'flex', flexDirection: 'column', gap: 8,
-        }}>
-          <span style={{
-            fontFamily: 'Inter', fontSize: 14, fontWeight: 600,
-            color: '#111827', lineHeight: '21px', letterSpacing: '-0.15px',
-          }}>
-            Export Options
-          </span>
-
-          {/* Download as ZIP — outlined indigo button with subtitle */}
-          <button style={{
-            width: '100%', padding: 8, borderRadius: 12,
-            border: '2px solid #4F46E5', background: '#FFFDFF',
-            cursor: 'pointer', boxSizing: 'border-box',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
-              <span style={{
-                fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-                color: '#4F46E5', lineHeight: '20px', letterSpacing: '-0.15px', textAlign: 'center', width: '100%',
-              }}>
-                Download as ZIP
-              </span>
-              <span style={{
-                fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
-                color: '#4F46E5', lineHeight: '16px',
-              }}>
-                {selectedPhotos.size > 0 ? selectedPhotos.size : MLS_PHOTOS.length} images • Square Post
-              </span>
-            </div>
-          </button>
-        </div>
-
         {/* ── MOBILE: Row 5 — Smart Marketing Description card ──────────────── */}
         <div style={{
           width: '100%', background: '#FFFFFF',
@@ -1018,48 +980,6 @@ export default function MLSMarketingHubContent() {
             </div>
           </div>
 
-          {/* ── Export Options (tablet: full-width stacked buttons) ─────────── */}
-          <div className="mls-export-section" style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
-            <h3 className="mls-export-section__title" style={{
-              fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#0A0A0A',
-              margin: 0, lineHeight: '21px', letterSpacing: '-0.15px',
-            }}>
-              Export Options
-            </h3>
-
-            {/* Download as ZIP — full width, filled */}
-            <button className="mls-export-section__zip-btn mls-export-section__zip-btn--tablet" style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              width: '100%', height: 45, padding: '0 16px',
-              border: 'none', borderRadius: 8,
-              background: '#4F46E5', cursor: 'pointer', boxSizing: 'border-box',
-            }}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 2V10.5M8 10.5L5 7.5M8 10.5L11 7.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M2.5 12.5H13.5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-              <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#FFFFFF', lineHeight: '21px' }}>
-                Download as ZIP
-              </span>
-            </button>
-
-            {/* Share via Link — full width, outlined */}
-            <button className="mls-export-section__share-btn" style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              width: '100%', height: 47, padding: '0 16px',
-              border: '1px solid #E5E7EB', borderRadius: 8,
-              background: '#FFFFFF', cursor: 'pointer', boxSizing: 'border-box',
-            }}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M6.667 8.667a3.333 3.333 0 0 0 5.06.373l2-2a3.333 3.333 0 0 0-4.714-4.714L7.72 3.613" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M9.333 7.333a3.333 3.333 0 0 0-5.06-.373l-2 2a3.333 3.333 0 0 0 4.714 4.714l1.286-1.287" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#4F46E5', lineHeight: '21px' }}>
-                Share via Link
-              </span>
-            </button>
-          </div>
-
           {/* ── Smart Marketing Description (tablet) ─────────────────────────── */}
           <div className="mls-ai-section mls-ai-section--tablet" style={{
             display: 'flex', flexDirection: 'column', gap: 16,
@@ -1282,33 +1202,6 @@ export default function MLSMarketingHubContent() {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* ─── CARD 2: Export Options ───────────────────────────────────────────── */}
-      <div className="mls-export-section" style={{
-        background: '#FFFFFF', borderRadius: 10,
-        border: '1px solid #E5E7EB', width: '100%',
-        boxSizing: 'border-box',
-        display: 'flex', flexDirection: 'column', gap: 16,
-        padding: '32px 24px',
-      }}>
-        <h3 className="mls-export-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
-          Export Options
-        </h3>
-        <button className="mls-export-section__zip-btn" style={{
-          display: 'inline-flex', flexDirection: 'column',
-          alignItems: 'flex-start', justifyContent: 'center',
-          gap: 8, padding: 16,
-          border: '2px solid #4F46E5', borderRadius: 12,
-          background: '#FFFDFF', cursor: 'pointer', alignSelf: 'flex-start',
-        }}>
-          <span className="mls-export-section__zip-label" style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 500, color: '#4F46E5', lineHeight: '20px', letterSpacing: '-0.15px' }}>
-            Download as ZIP
-          </span>
-          <span className="mls-export-section__zip-meta" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#4F46E5', lineHeight: '16px' }}>
-            {selectedPhotos.size > 0 ? selectedPhotos.size : MLS_PHOTOS.length} images • Square Post
-          </span>
-        </button>
       </div>
 
       {/* ─── CARD 3: Smart Marketing Description ─────────────────────────────── */}
