@@ -601,8 +601,12 @@ export default function MLSMarketingHubContent() {
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
           )}
-          {/* Uploaded logo — top left */}
-          <div style={{ position: 'absolute', top: '3%', left: '3%', pointerEvents: 'none' }}>
+          {/* Uploaded logo — top left, scales with watermarkSize slider */}
+          <div style={{
+            position: 'absolute', top: '3%', left: '3%', pointerEvents: 'none',
+            transformOrigin: 'top left',
+            transform: `scale(${0.3 + (watermarkSize / 100) * 0.7})`,
+          }}>
             {watermarkPreviewUrl ? (
               <img
                 src={watermarkPreviewUrl}
@@ -616,15 +620,20 @@ export default function MLSMarketingHubContent() {
             ) : (
               <div style={{
                 background: 'rgba(217,217,217,0.75)', borderRadius: 4,
-                padding: '4px 10px', display: 'inline-flex', alignItems: 'center',
+                padding: '6px 14px', display: 'inline-flex', alignItems: 'center',
               }}>
-                <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#000', lineHeight: '1.4' }}>Logo</span>
+                <span style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#000', lineHeight: '1.4' }}>Logo</span>
               </div>
             )}
           </div>
-          {/* Bella Virtual default logo — bottom left, always when watermark ON */}
-          <div style={{ position: 'absolute', bottom: '3%', left: '3%', pointerEvents: 'none' }}>
+          {/* Bella Virtual default logo — bottom RIGHT (Figma) */}
+          <div style={{ position: 'absolute', bottom: '3%', right: '3%', pointerEvents: 'none' }}>
             <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{ width: 90, height: 'auto', display: 'block', opacity: 0.95 }} />
+          </div>
+          {/* Area / crop guide lines — dashed blue border + crosshair center lines (Figma node 14485-267031) */}
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', border: '2px dashed #5BA4F8' }}>
+            <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', borderLeft: '1.5px dashed #5BA4F8' }} />
+            <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', borderTop: '1.5px dashed #5BA4F8' }} />
           </div>
         </div>
 
