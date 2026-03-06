@@ -1040,16 +1040,16 @@ export default function MLSMarketingHubContent() {
         {PreviewSection()}
 
         {/* ── MOBILE: Row 3 — Select Images to Export ────────────────────────── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
+        <div className="mls-photo-section mls-photo-section--mobile" style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{
+          <div className="mls-photo-section__header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span className="mls-photo-section__title" style={{
               fontFamily: 'Inter', fontSize: 15, fontWeight: 600,
               color: '#111827', lineHeight: '22.5px', letterSpacing: '-0.23px',
             }}>
               Select Images to Export
             </span>
-            <span style={{
+            <span className="mls-photo-section__count" style={{
               fontFamily: 'Inter', fontSize: 13, fontWeight: 500,
               color: '#6B7280', lineHeight: '19.5px', letterSpacing: '-0.08px',
             }}>
@@ -1058,7 +1058,7 @@ export default function MLSMarketingHubContent() {
           </div>
 
           {/* Photo grid — 3 columns, gap 8px */}
-          <div style={{
+          <div className="mls-photo-grid mls-photo-grid--mobile" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
             gap: 8,
@@ -1066,6 +1066,7 @@ export default function MLSMarketingHubContent() {
             {MLS_PHOTOS.map((photo) => (
               <div
                 key={photo.id}
+                className="mls-photo-card mls-photo-card--mobile"
                 onClick={() => togglePhoto(photo.id)}
                 style={{
                   position: 'relative',
@@ -1080,43 +1081,21 @@ export default function MLSMarketingHubContent() {
                 }}
               >
                 <img
+                  className="mls-photo-card__img"
                   src={photo.url}
                   alt={photo.label}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
-                {/* Uploaded logo overlay — top left */}
-                {watermarkEnabled && (
-                  <div style={{
-                    position: 'absolute', top: '8%', left: '4%',
-                    transformOrigin: 'top left',
-                    transform: `scale(${0.15 + (watermarkSize / 100) * 1.85})`,
-                    transition: 'transform 0.1s ease',
-                    pointerEvents: 'none',
-                  }}>
-                    {watermarkPreviewUrl ? (
-                      <img src={watermarkPreviewUrl} alt="watermark" style={{ width: 60, height: 'auto', objectFit: 'contain', opacity: 0.85, display: 'block' }} />
-                    ) : (
-                      <div style={{ background: 'rgba(217,217,217,0.65)', borderRadius: 3, padding: '2px 6px', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
-                        <span style={{ fontFamily: 'Inter', fontSize: 9, fontWeight: 500, color: '#000000', lineHeight: '14px' }}>Logo name</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-                {/* Bella Virtual default logo — bottom left */}
-                {watermarkEnabled && (
-                  <div style={{ position: 'absolute', bottom: '5%', left: '4%', pointerEvents: 'none' }}>
-                    <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{ width: 28, height: 'auto', display: 'block', opacity: 0.9 }} />
-                  </div>
-                )}
+                {/* No logo overlays on thumbnails — watermark preview is in PreviewSection only */}
                 {/* Dark overlay when selected */}
-                <div style={{
+                <div className="mls-photo-card__overlay" style={{
                   position: 'absolute', inset: 0,
                   background: selectedPhotos.has(photo.id) ? 'rgba(0,0,0,0.2)' : 'transparent',
                   transition: 'background 0.15s ease',
                 }} />
-                {/* Checkmark */}
+                {/* Checkmark badge */}
                 {selectedPhotos.has(photo.id) && (
-                  <div style={{
+                  <div className="mls-photo-card__check" style={{
                     position: 'absolute', top: 5, right: 5,
                     width: 18, height: 18, borderRadius: 4,
                     background: '#4F46E5',
