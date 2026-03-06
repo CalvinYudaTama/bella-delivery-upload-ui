@@ -628,12 +628,12 @@ export default function MLSMarketingHubContent() {
           </div>
           {/* Bella Virtual default logo — bottom RIGHT (Figma) */}
           <div style={{ position: 'absolute', bottom: '3%', right: '3%', pointerEvents: 'none' }}>
-            <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{ width: 90, height: 'auto', display: 'block', opacity: 0.95 }} />
+            <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{ width: 130, height: 'auto', display: 'block', opacity: 0.95 }} />
           </div>
-          {/* Area / crop guide lines — dashed blue border + crosshair center lines (Figma node 14485-267031) */}
-          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', border: '2px dashed #5BA4F8' }}>
-            <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', borderLeft: '1.5px dashed #5BA4F8' }} />
-            <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', borderTop: '1.5px dashed #5BA4F8' }} />
+          {/* Area / crop guide lines — Figma node 14485-267031 (Area.svg)
+              Inset matches Figma: top/bottom ≈9.76%, left/right ≈9.33% */}
+          <div style={{ position: 'absolute', inset: '9.76% 9.33%', pointerEvents: 'none' }}>
+            <img src="/area-guide.svg" alt="" style={{ width: '100%', height: '100%', display: 'block' }} />
           </div>
         </div>
 
@@ -1372,7 +1372,8 @@ export default function MLSMarketingHubContent() {
           </div>
         )}
 
-        {/* ── TABLET: Preview section (when open) — rendered inside platform card via PreviewSection guard */}
+        {/* ── TABLET: Preview section (when open) */}
+        {PreviewSection()}
 
         {/* ── TABLET: Content area ─────────────────────────────────────────── */}
         <div className="mls-content-card mls-content-card--tablet" style={{
@@ -1648,8 +1649,9 @@ export default function MLSMarketingHubContent() {
             <PlatformActions />
           </div>
         </div>
-        {/* Preview content — rendered inline inside this card */}
-        <PreviewSection />
+        {/* Preview content — called as function (not JSX element) to avoid React remounting on re-render,
+            which would break slider drag because every state change creates a new function reference */}
+        {PreviewSection()}
       </div>
 
       {/* ─── CARD 1: Select Images to Export ────────────────────────────────── */}
