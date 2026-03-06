@@ -73,16 +73,10 @@ function PhotoCard({
   photo,
   isSelected,
   onToggle,
-  watermarkEnabled = false,
-  watermarkPreviewUrl = null,
-  watermarkSize = 50,
 }: {
   photo: MLSPhoto;
   isSelected: boolean;
   onToggle: () => void;
-  watermarkEnabled?: boolean;
-  watermarkPreviewUrl?: string | null;
-  watermarkSize?: number;
 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -110,33 +104,6 @@ function PhotoCard({
         alt={photo.label}
         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
       />
-      {/* Uploaded logo overlay — top left */}
-      {watermarkEnabled && (
-        <div style={{
-          position: 'absolute', top: '8%', left: '4%',
-          transformOrigin: 'top left',
-          transform: `scale(${0.15 + (watermarkSize / 100) * 1.85})`,
-          transition: 'transform 0.1s ease',
-          pointerEvents: 'none',
-        }}>
-          {watermarkPreviewUrl ? (
-            <img src={watermarkPreviewUrl} alt="watermark" style={{ width: 60, height: 'auto', objectFit: 'contain', opacity: 0.85, display: 'block' }} />
-          ) : (
-            <div style={{ background: 'rgba(217,217,217,0.65)', borderRadius: 3, padding: '2px 6px', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
-              <span style={{ fontFamily: 'Inter', fontSize: 9, fontWeight: 500, color: '#000000', lineHeight: '14px' }}>Logo name</span>
-            </div>
-          )}
-        </div>
-      )}
-      {/* Bella Virtual default logo — bottom left, always present when watermark ON */}
-      {watermarkEnabled && (
-        <div style={{
-          position: 'absolute', bottom: '6%', left: '4%',
-          pointerEvents: 'none',
-        }}>
-          <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{ width: 38, height: 'auto', display: 'block', opacity: 0.9 }} />
-        </div>
-      )}
       <div
         className="mls-photo-card__overlay"
         style={{
@@ -591,55 +558,36 @@ export default function MLSMarketingHubContent() {
   );
 
   // ── Preview / Close Preview toggle button (shared across breakpoints) ────
-  // Only visible when watermark is enabled.
+  // Only visible when watermark is enabled. Always outlined gray per Figma.
   const PreviewToggleBtn = () => watermarkEnabled ? (
     <button
       className="mls-platform-header__preview-btn"
       onClick={() => setShowPreview(v => !v)}
       style={{
-        height: 38, padding: '0 16px',
+        height: 38, padding: '9px 16px',
         borderRadius: 8,
-        border: showPreview ? 'none' : '1px solid #4F46E5',
-        background: showPreview ? '#4F46E5' : 'transparent',
-        fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-        color: showPreview ? '#FFFFFF' : '#4F46E5',
+        border: '1px solid #D1D5DC',
+        background: 'transparent',
+        fontFamily: 'Inter', fontSize: 16, fontWeight: 500,
+        color: '#0A0A0A',
         cursor: 'pointer', whiteSpace: 'nowrap',
         letterSpacing: '-0.15px', lineHeight: '20px',
-        display: 'flex', alignItems: 'center', gap: 6,
-        transition: 'all 0.15s ease',
+        boxSizing: 'border-box',
       }}
     >
-      {showPreview ? (
-        <>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M12 4L4 12M4 4L12 12" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
-          Close Preview
-        </>
-      ) : (
-        <>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M1 8C1 8 3.5 3 8 3C12.5 3 15 8 15 8C15 8 12.5 13 8 13C3.5 13 1 8 1 8Z" stroke="#4F46E5" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="8" cy="8" r="2.5" stroke="#4F46E5" strokeWidth="1.4"/>
-          </svg>
-          Preview
-        </>
-      )}
+      {showPreview ? 'Close Preview' : 'Preview'}
     </button>
   ) : null;
 
-  // ── Preview section (desktop / tablet) ───────────────────────────────────
-  // Shows large image preview with logo overlays, pagination, and Image Settings card.
+  // ── Preview section content (desktop / tablet) ───────────────────────────
+  // Rendered INSIDE the combined platform-header card (no outer wrapper here).
   const PreviewSection = () => (!showPreview || !watermarkEnabled) ? null : (
     <div className="mls-preview-section" style={{
-      width: '100%', background: '#FFFFFF',
-      border: '1px solid #E5E7EB', borderRadius: 10,
-      padding: 24, boxSizing: 'border-box',
-      display: 'flex', gap: 24, alignItems: 'flex-start',
+      display: 'flex', gap: 24, alignItems: 'flex-start', width: '100%',
     }}>
       {/* ── Left: large image + pagination ─────────────────────────────── */}
-      <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* Image container — aspect ratio 903:671 (≈4:3) */}
+      <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {/* Image — aspect ratio 903:671 */}
         <div style={{
           position: 'relative', width: '100%',
           aspectRatio: '903 / 671',
@@ -653,166 +601,141 @@ export default function MLSMarketingHubContent() {
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
           )}
-
           {/* Uploaded logo — top left */}
-          {watermarkEnabled && (
-            <div style={{
-              position: 'absolute', top: '3%', left: '3%',
-              pointerEvents: 'none',
-              transformOrigin: 'top left',
-            }}>
-              {watermarkPreviewUrl ? (
-                <img
-                  src={watermarkPreviewUrl}
-                  alt="Your logo"
-                  style={{
-                    width: `${Math.round(24 + watermarkSize * 1.76)}px`,
-                    maxWidth: '35%', height: 'auto',
-                    objectFit: 'contain', opacity: 0.92, display: 'block',
-                  }}
-                />
-              ) : (
-                <div style={{
-                  background: 'rgba(217,217,217,0.75)', borderRadius: 4,
-                  padding: '4px 10px', display: 'inline-flex', alignItems: 'center',
-                }}>
-                  <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#000', lineHeight: '1.4' }}>Logo name</span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Bella Virtual default logo — bottom left, always present when watermark ON */}
-          {watermarkEnabled && (
-            <div style={{
-              position: 'absolute', bottom: '3%', left: '3%',
-              pointerEvents: 'none',
-            }}>
-              {/* /bella-staging-logo.svg — white paths on transparent, 90×24px */}
+          <div style={{ position: 'absolute', top: '3%', left: '3%', pointerEvents: 'none' }}>
+            {watermarkPreviewUrl ? (
               <img
-                src="/bella-staging-logo.svg"
-                alt="Bella Virtual"
-                style={{ width: 90, height: 'auto', display: 'block', opacity: 0.95 }}
+                src={watermarkPreviewUrl}
+                alt="Your logo"
+                style={{
+                  width: `${Math.round(24 + watermarkSize * 1.76)}px`,
+                  maxWidth: '35%', height: 'auto',
+                  objectFit: 'contain', opacity: 0.92, display: 'block',
+                }}
               />
-            </div>
-          )}
+            ) : (
+              <div style={{
+                background: 'rgba(217,217,217,0.75)', borderRadius: 4,
+                padding: '4px 10px', display: 'inline-flex', alignItems: 'center',
+              }}>
+                <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#000', lineHeight: '1.4' }}>Logo</span>
+              </div>
+            )}
+          </div>
+          {/* Bella Virtual default logo — bottom left, always when watermark ON */}
+          <div style={{ position: 'absolute', bottom: '3%', left: '3%', pointerEvents: 'none' }}>
+            <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{ width: 90, height: 'auto', display: 'block', opacity: 0.95 }} />
+          </div>
         </div>
 
-        {/* Pagination < N / total > */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-        }}>
-          <button
+        {/* Pagination — Figma style: small #F9FAFB chip buttons, text #858A8E 12px */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+          <div
             onClick={() => setPreviewIndex(prev => Math.max(0, prev - 1))}
-            disabled={previewIndex === 0}
             style={{
-              width: 34, height: 34, borderRadius: 8,
-              border: '1px solid #D1D5DC', background: '#FFFFFF',
-              cursor: previewIndex === 0 ? 'not-allowed' : 'pointer',
+              background: '#F9FAFB', borderRadius: 10, padding: 4,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              opacity: previewIndex === 0 ? 0.35 : 1, padding: 0, flexShrink: 0,
+              cursor: previewIndex === 0 ? 'not-allowed' : 'pointer',
+              opacity: previewIndex === 0 ? 0.35 : 1, flexShrink: 0,
             }}
-            aria-label="Previous image"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M10 12L6 8L10 4" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </button>
+          </div>
           <span style={{
-            fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-            color: '#374151', minWidth: 48, textAlign: 'center',
+            fontFamily: 'Inter', fontSize: 12, fontWeight: 400,
+            color: '#858A8E', minWidth: 28, textAlign: 'center',
           }}>
-            {previewIndex + 1} / {photosToPreview.length}
+            {previewIndex + 1}/{photosToPreview.length}
           </span>
-          <button
+          <div
             onClick={() => setPreviewIndex(prev => Math.min(photosToPreview.length - 1, prev + 1))}
-            disabled={previewIndex === photosToPreview.length - 1}
             style={{
-              width: 34, height: 34, borderRadius: 8,
-              border: '1px solid #D1D5DC', background: '#FFFFFF',
-              cursor: previewIndex === photosToPreview.length - 1 ? 'not-allowed' : 'pointer',
+              background: '#F9FAFB', borderRadius: 10, padding: 4,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              opacity: previewIndex === photosToPreview.length - 1 ? 0.35 : 1, padding: 0, flexShrink: 0,
+              cursor: previewIndex === photosToPreview.length - 1 ? 'not-allowed' : 'pointer',
+              opacity: previewIndex === photosToPreview.length - 1 ? 0.35 : 1, flexShrink: 0,
             }}
-            aria-label="Next image"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M6 12L10 8L6 4" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </button>
+          </div>
         </div>
       </div>
 
-      {/* ── Right: Image Settings card ──────────────────────────────────── */}
-      <div style={{
-        width: 248, flexShrink: 0,
-        background: '#F9FAFB', borderRadius: 12,
-        padding: '20px', boxSizing: 'border-box',
-        display: 'flex', flexDirection: 'column', gap: 20,
-        border: '1px solid #E5E7EB',
-      }}>
-        <span style={{
-          fontFamily: 'Inter', fontSize: 16, fontWeight: 600,
-          color: '#111827', lineHeight: '24px',
+      {/* ── Right: Image Settings card + Export button ──────────────────── */}
+      <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 24 }}>
+        {/* Image Settings card — bg #F9FAFB, border #E5E7EB, borderRadius 14px (Figma) */}
+        <div style={{
+          background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 14,
+          padding: 24, boxSizing: 'border-box',
+          display: 'flex', flexDirection: 'column', gap: 16,
         }}>
-          Image Settings
-        </span>
+          {/* Heading — #4F46E5, bold 16px (Figma) */}
+          <span style={{
+            fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+            color: '#4F46E5', lineHeight: '1.4',
+          }}>
+            Image Settings
+          </span>
 
-        {/* Logo Size slider */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#374151' }}>Logo Size</span>
-            <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#4F46E5' }}>{watermarkSize}%</span>
+          {/* Logo Size row */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#52595F', lineHeight: '1.4' }}>Logo Size</span>
+              <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#4F46E5', lineHeight: '1.4' }}>{watermarkSize}%</span>
+            </div>
+            <style>{sliderCSS}</style>
+            <input
+              className="mls-watermark-slider"
+              type="range" min={0} max={100} value={watermarkSize}
+              onChange={(e) => setWatermarkSize(Number(e.target.value))}
+              style={{ width: '100%' }}
+            />
           </div>
-          <style>{sliderCSS}</style>
-          <input
-            className="mls-watermark-slider"
-            type="range" min={0} max={100} value={watermarkSize}
-            onChange={(e) => setWatermarkSize(Number(e.target.value))}
-            style={{ width: '100%' }}
-          />
-        </div>
 
-        {/* Apply to All Photos checkbox */}
-        {/* TODO (backend): when applyToAll is true, export all images with the same watermark settings */}
-        <div
-          role="button"
-          onClick={() => setApplyToAll(v => !v)}
-          style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', userSelect: 'none' }}
-        >
+          {/* Apply to All Photos — checkbox 24px, text #52595F 16px (Figma) */}
+          {/* TODO (backend): when applyToAll is true, apply watermarkSize to all exported photos */}
           <div
-            style={{
-              width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+            role="button"
+            onClick={() => setApplyToAll(v => !v)}
+            style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', userSelect: 'none' }}
+          >
+            <div style={{
+              width: 24, height: 24, borderRadius: 4, flexShrink: 0,
               border: applyToAll ? 'none' : '2px solid #D1D5DC',
               background: applyToAll ? '#4F46E5' : '#FFFFFF',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-          >
-            {applyToAll && (
-              <svg width="11" height="11" viewBox="0 0 20 20" fill="none">
-                <path d="M4 10L8 14L16 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            )}
+              boxSizing: 'border-box',
+            }}>
+              {applyToAll && (
+                <svg width="13" height="13" viewBox="0 0 20 20" fill="none">
+                  <path d="M4 10L8 14L16 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+            </div>
+            <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#52595F', lineHeight: '1.4' }}>
+              Apply to All Photos
+            </span>
           </div>
-          <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#374151' }}>
-            Apply to All Photos
-          </span>
         </div>
 
-        {/* Export All button */}
-        {/* TODO (backend): trigger export of all photosToPreview with logo overlays applied */}
+        {/* Export All button — #4F46E5, rounded 10px, bold 16px, height 48px (Figma) */}
+        {/* TODO (backend): call export API with photosToPreview + watermark settings */}
         <button
-          onClick={() => { /* TODO (backend): call export API with photosToPreview + watermark settings */ }}
+          onClick={() => { /* TODO (backend): trigger batch export */ }}
           style={{
-            height: 48, borderRadius: 12, border: 'none',
+            height: 48, borderRadius: 10, border: 'none',
             background: '#4F46E5', color: '#FFFFFF',
-            fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
-            cursor: 'pointer',
+            fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+            cursor: 'pointer', lineHeight: '1.4',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            boxSizing: 'border-box',
+            boxSizing: 'border-box', width: '100%',
           }}
         >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <svg width="20" height="20" viewBox="0 0 18 18" fill="none">
             <path d="M9 2.25V11.25M9 11.25L6 8.25M9 11.25L12 8.25" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M2.25 13.5V14.625C2.25 15.246 2.754 15.75 3.375 15.75H14.625C15.246 15.75 15.75 15.246 15.75 14.625V13.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
           </svg>
@@ -1317,8 +1240,8 @@ export default function MLSMarketingHubContent() {
 
         {/* ── TABLET: Platform header row (compact, with chevron) ────────────── */}
         <div className="mls-platform-header mls-platform-header--tablet" style={{
-          width: '100%', background: '#EFF6FF',
-          border: '1px solid #BEDBFF', borderRadius: '10px 10px 0 0',
+          width: '100%', background: '#FFFFFF',
+          border: '1px solid #E5E7EB', borderRadius: '10px 10px 0 0',
           padding: '8px 13px', boxSizing: 'border-box',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           minHeight: 57,
@@ -1395,7 +1318,7 @@ export default function MLSMarketingHubContent() {
         {/* ── TABLET: Watermark row ─────────────────────────────────────────── */}
         <div className="mls-topbar mls-topbar--tablet" style={{
           width: '100%', background: '#FFFFFF',
-          border: '1px solid #BEDBFF', borderTop: 'none',
+          border: '1px solid #E5E7EB', borderTop: 'none',
           borderRadius: '0 0 10px 10px',
           padding: '13px', boxSizing: 'border-box',
         }}>
@@ -1440,12 +1363,7 @@ export default function MLSMarketingHubContent() {
           </div>
         )}
 
-        {/* ── TABLET: Preview section (when open) ─────────────────────────── */}
-        {showPreview && watermarkEnabled && (
-          <div style={{ marginTop: 12 }}>
-            <PreviewSection />
-          </div>
-        )}
+        {/* ── TABLET: Preview section (when open) — rendered inside platform card via PreviewSection guard */}
 
         {/* ── TABLET: Content area ─────────────────────────────────────────── */}
         <div className="mls-content-card mls-content-card--tablet" style={{
@@ -1483,9 +1401,6 @@ export default function MLSMarketingHubContent() {
                       photo={photo}
                       isSelected={selectedPhotos.has(photo.id)}
                       onToggle={() => togglePhoto(photo.id)}
-                      watermarkEnabled={watermarkEnabled}
-                      watermarkPreviewUrl={watermarkPreviewUrl}
-                      watermarkSize={watermarkSize}
                     />
                   ))}
                 </div>
@@ -1699,14 +1614,15 @@ export default function MLSMarketingHubContent() {
         {watermarkFile && <WatermarkBar />}
       </div>
 
-      {/* ─── PLATFORM HEADER CARD ────────────────────────────────────────────── */}
+      {/* ─── PLATFORM HEADER + PREVIEW — one combined card (Figma: white bg, border #E5E7EB) ── */}
       <div className="mls-platform-header" style={{
-        width: '100%', background: '#EFF6FF',
-        border: '1px solid #BEDBFF', borderRadius: 10,
-        padding: 16, boxSizing: 'border-box',
-        height: 85, display: 'flex', alignItems: 'center',
+        width: '100%', background: '#FFFFFF',
+        border: '1px solid #E5E7EB', borderRadius: 10,
+        padding: '16px 24px', boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', gap: 24,
       }}>
-        <div className="mls-platform-header__inner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+        {/* Header row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="mls-platform-header__info" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <InstagramIcon />
             <div className="mls-platform-header__text" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -1723,10 +1639,9 @@ export default function MLSMarketingHubContent() {
             <PlatformActions />
           </div>
         </div>
+        {/* Preview content — rendered inline inside this card */}
+        <PreviewSection />
       </div>
-
-      {/* ─── PREVIEW SECTION (desktop) — below platform header when open ────── */}
-      <PreviewSection />
 
       {/* ─── CARD 1: Select Images to Export ────────────────────────────────── */}
       <div className="mls-content-card" style={{
@@ -1754,9 +1669,6 @@ export default function MLSMarketingHubContent() {
                     photo={photo}
                     isSelected={selectedPhotos.has(photo.id)}
                     onToggle={() => togglePhoto(photo.id)}
-                    watermarkEnabled={watermarkEnabled}
-                    watermarkPreviewUrl={watermarkPreviewUrl}
-                    watermarkSize={watermarkSize}
                   />
                 ))}
               </div>
