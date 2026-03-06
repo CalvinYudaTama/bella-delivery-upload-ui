@@ -407,10 +407,22 @@ export default function MLSMarketingHubContent() {
   };
 
   // ── Preview photos: selected photos if any, otherwise all photos ─────────
-  // TODO (backend): the export should use this same list when generating files.
+  // Used for the preview carousel only — shows all photos when nothing is selected
+  // so the user can still browse and preview the watermark placement.
   const photosToPreview = selectedPhotos.size > 0
     ? MLS_PHOTOS.filter(p => selectedPhotos.has(p.id))
     : MLS_PHOTOS;
+
+  // ── Export selection helpers ───────────────────────────────────────────────
+  // hasSelection : true when at least 1 photo is checked in the grid below.
+  // selectedCount: the exact number of photos that will be exported.
+  //
+  // TODO (backend): use selectedCount / selectedPhotos for the export API call.
+  //   Export payload (see export button onClick comments for full spec):
+  //     photoIds      → Array.from(selectedPhotos)   (string[])
+  //     watermarkEnabled, watermarkFile, watermarkSize, applyToAll, selectedResize
+  const selectedCount = selectedPhotos.size;
+  const hasSelection  = selectedCount > 0;
 
   // Clamp previewIndex whenever the preview list length changes
   // (e.g., user deselects a photo that was being previewed)
@@ -630,11 +642,14 @@ export default function MLSMarketingHubContent() {
           <div style={{ position: 'absolute', bottom: '3%', right: '3%', pointerEvents: 'none' }}>
             <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{ width: 130, height: 'auto', display: 'block', opacity: 0.95 }} />
           </div>
-          {/* Area / crop guide lines — Figma node 14485-267031 (Area.svg)
-              Inset matches Figma: top/bottom ≈9.76%, left/right ≈9.33% */}
-          <div style={{ position: 'absolute', inset: '9.76% 9.33%', pointerEvents: 'none' }}>
-            <img src="/area-guide.svg" alt="" style={{ width: '100%', height: '100%', display: 'block' }} />
-          </div>
+          {/* Area / crop guide lines — Figma node 14485-267031 (area-guide.svg)
+              Inset: top/bottom ≈9.76%, left/right ≈9.33% per Figma measurements.
+              ─ Temporarily hidden — enable by changing `false` to `true` below ─ */}
+          {false && (
+            <div style={{ position: 'absolute', inset: '9.76% 9.33%', pointerEvents: 'none' }}>
+              <img src="/area-guide.svg" alt="" style={{ width: '100%', height: '100%', display: 'block' }} />
+            </div>
+          )}
         </div>
 
         {/* Pagination — Figma style: small #F9FAFB chip buttons, text #858A8E 12px */}
@@ -731,25 +746,45 @@ export default function MLSMarketingHubContent() {
           </div>
         </div>
 
-        {/* Export All button — #4F46E5, rounded 10px, bold 16px, height 48px (Figma) */}
-        {/* TODO (backend): call export API with photosToPreview + watermark settings */}
+        {/* ── Export button — disabled until the user selects at least 1 photo ── */}
+        {/*
+         * TODO (backend): On click, trigger the export API with this payload:
+         *   photoIds         → Array.from(selectedPhotos)   // string[] of selected photo IDs
+         *   watermarkEnabled → watermarkEnabled             // boolean
+         *   watermarkFile    → watermarkFile                // File | null  (null = use Bella default logo)
+         *   watermarkSize    → watermarkSize                // number 0–100 (logo scale %)
+         *   applyToAll       → applyToAll                   // boolean (apply same size to all images)
+         *   resizeOption     → selectedResize               // string  (e.g. "Instagram – 1,080 × 1,080px (1:1)")
+         */}
         <button
-          onClick={() => { /* TODO (backend): trigger batch export */ }}
+          disabled={!hasSelection}
+          onClick={() => { /* TODO (backend): call export API — see payload comment above */ }}
           style={{
             height: 48, borderRadius: 10, border: 'none',
-            background: '#4F46E5', color: '#FFFFFF',
+            background: hasSelection ? '#4F46E5' : '#E5E7EB',
+            color: hasSelection ? '#FFFFFF' : '#9CA3AF',
             fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
-            cursor: 'pointer', lineHeight: '1.4',
+            cursor: hasSelection ? 'pointer' : 'not-allowed', lineHeight: '1.4',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             boxSizing: 'border-box', width: '100%',
+            transition: 'background 0.2s ease, color 0.2s ease',
           }}
         >
           <svg width="20" height="20" viewBox="0 0 18 18" fill="none">
-            <path d="M9 2.25V11.25M9 11.25L6 8.25M9 11.25L12 8.25" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M2.25 13.5V14.625C2.25 15.246 2.754 15.75 3.375 15.75H14.625C15.246 15.75 15.75 15.246 15.75 14.625V13.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+            <path d="M9 2.25V11.25M9 11.25L6 8.25M9 11.25L12 8.25" stroke={hasSelection ? 'white' : '#9CA3AF'} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M2.25 13.5V14.625C2.25 15.246 2.754 15.75 3.375 15.75H14.625C15.246 15.75 15.75 15.246 15.75 14.625V13.5" stroke={hasSelection ? 'white' : '#9CA3AF'} strokeWidth="1.7" strokeLinecap="round"/>
           </svg>
-          Export All ({photosToPreview.length} Images)
+          {hasSelection ? `Export Selected (${selectedCount} Images)` : 'Select images to export'}
         </button>
+        {/* Hint shown when nothing is selected */}
+        {!hasSelection && (
+          <p style={{
+            fontFamily: 'Inter', fontSize: 13, fontWeight: 400,
+            color: '#9CA3AF', textAlign: 'center', margin: 0, lineHeight: '1.5',
+          }}>
+            Select photos from the grid below to export
+          </p>
+        )}
       </div>
     </div>
   );
@@ -1015,22 +1050,35 @@ export default function MLSMarketingHubContent() {
                   style={{ width: '100%' }}
                 />
               </div>
-              {/* Export All */}
+              {/* Export button — disabled until at least 1 photo is selected */}
+              {/* TODO (backend): see payload spec in the desktop PreviewSection export button comment */}
               <button
-                onClick={() => { /* TODO (backend): trigger export */ }}
+                disabled={!hasSelection}
+                onClick={() => { /* TODO (backend): call export API */ }}
                 style={{
                   height: 46, borderRadius: 12, border: 'none',
-                  background: '#4F46E5', color: '#FFFFFF',
+                  background: hasSelection ? '#4F46E5' : '#E5E7EB',
+                  color: hasSelection ? '#FFFFFF' : '#9CA3AF',
                   fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  cursor: hasSelection ? 'pointer' : 'not-allowed',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  width: '100%', transition: 'background 0.2s ease, color 0.2s ease',
                 }}
               >
                 <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-                  <path d="M9 2.25V11.25M9 11.25L6 8.25M9 11.25L12 8.25" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2.25 13.5V14.625C2.25 15.246 2.754 15.75 3.375 15.75H14.625C15.246 15.75 15.75 15.246 15.75 14.625V13.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+                  <path d="M9 2.25V11.25M9 11.25L6 8.25M9 11.25L12 8.25" stroke={hasSelection ? 'white' : '#9CA3AF'} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2.25 13.5V14.625C2.25 15.246 2.754 15.75 3.375 15.75H14.625C15.246 15.75 15.75 15.246 15.75 14.625V13.5" stroke={hasSelection ? 'white' : '#9CA3AF'} strokeWidth="1.7" strokeLinecap="round"/>
                 </svg>
-                Export All ({photosToPreview.length} Images)
+                {hasSelection ? `Export Selected (${selectedCount} Images)` : 'Select images to export'}
               </button>
+              {!hasSelection && (
+                <p style={{
+                  fontFamily: 'Inter', fontSize: 12, fontWeight: 400,
+                  color: '#9CA3AF', textAlign: 'center', margin: 0, lineHeight: '1.5',
+                }}>
+                  Select photos from the grid below to export
+                </p>
+              )}
             </div>
           </div>
         )}
