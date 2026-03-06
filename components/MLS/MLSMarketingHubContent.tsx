@@ -591,171 +591,154 @@ export default function MLSMarketingHubContent() {
     </button>
   ) : null;
 
-  // ── Preview section content (desktop / tablet) ───────────────────────────
-  // Rendered INSIDE the combined platform-header card (no outer wrapper here).
-  const PreviewSection = () => (!showPreview || !watermarkEnabled) ? null : (
-    <div className="mls-preview-section" style={{
-      display: 'flex', gap: 24, alignItems: 'flex-start', width: '100%',
-    }}>
-      {/* ── Left: large image + pagination ─────────────────────────────── */}
-      <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {/* Image — aspect ratio 903:671 */}
-        <div style={{
-          position: 'relative', width: '100%',
-          aspectRatio: '903 / 671',
-          borderRadius: 10, overflow: 'hidden',
-          background: '#F3F4F6',
-        }}>
-          {photosToPreview.length > 0 && (
-            <img
-              src={photosToPreview[previewIndex]?.url ?? ''}
-              alt={photosToPreview[previewIndex]?.label ?? ''}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            />
-          )}
-          {/* Uploaded logo — top left, scales with watermarkSize slider */}
-          <div style={{
-            position: 'absolute', top: '3%', left: '3%', pointerEvents: 'none',
-            transformOrigin: 'top left',
-            transform: `scale(${0.3 + (watermarkSize / 100) * 0.7})`,
-          }}>
-            {watermarkPreviewUrl ? (
-              <img
-                src={watermarkPreviewUrl}
-                alt="Your logo"
-                style={{
-                  width: `${Math.round(24 + watermarkSize * 1.76)}px`,
-                  maxWidth: '35%', height: 'auto',
-                  objectFit: 'contain', opacity: 0.92, display: 'block',
-                }}
-              />
-            ) : (
-              <div style={{
-                background: 'rgba(217,217,217,0.75)', borderRadius: 4,
-                padding: '6px 14px', display: 'inline-flex', alignItems: 'center',
-              }}>
-                <span style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#000', lineHeight: '1.4' }}>Logo</span>
-              </div>
-            )}
-          </div>
-          {/* Bella Virtual default logo — bottom RIGHT (Figma) */}
-          <div style={{ position: 'absolute', bottom: '3%', right: '3%', pointerEvents: 'none' }}>
-            <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{ width: 130, height: 'auto', display: 'block', opacity: 0.95 }} />
-          </div>
-          {/* Area / crop guide lines — Figma node 14485-267031 (area-guide.svg)
-              Inset: top/bottom ≈9.76%, left/right ≈9.33% per Figma measurements.
-              ─ Temporarily hidden — enable by changing `false` to `true` below ─ */}
-          {false && (
-            <div style={{ position: 'absolute', inset: '9.76% 9.33%', pointerEvents: 'none' }}>
-              <img src="/area-guide.svg" alt="" style={{ width: '100%', height: '100%', display: 'block' }} />
-            </div>
-          )}
-        </div>
+  // ── Preview section — breakpoint-aware ────────────────────────────────────
+  // Desktop  : side-by-side (image left, settings card right) — rendered INSIDE platform-header card
+  // Tablet/Mobile: stacked card (Figma node 14469-44653) — rendered as own standalone card
+  // Called as {PreviewSection()} (not <PreviewSection/>) to avoid React remount on state change.
+  const PreviewSection = (): JSX.Element | null => {
+    if (!showPreview || !watermarkEnabled) return null;
 
-        {/* Pagination — Figma style: small #F9FAFB chip buttons, text #858A8E 12px */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-          <div
-            onClick={() => setPreviewIndex(prev => Math.max(0, prev - 1))}
+    // ── Shared: logo overlay (top-left, scales with watermarkSize) ─────────
+    const logoOverlay = (
+      <div style={{
+        position: 'absolute', top: '3%', left: '3%', pointerEvents: 'none',
+        transformOrigin: 'top left',
+        transform: `scale(${0.3 + (watermarkSize / 100) * 0.7})`,
+      }}>
+        {watermarkPreviewUrl ? (
+          <img
+            src={watermarkPreviewUrl}
+            alt="Your logo"
             style={{
-              background: '#F9FAFB', borderRadius: 10, padding: 4,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: previewIndex === 0 ? 'not-allowed' : 'pointer',
-              opacity: previewIndex === 0 ? 0.35 : 1, flexShrink: 0,
+              width: `${Math.round(24 + watermarkSize * 1.76)}px`,
+              maxWidth: '35%', height: 'auto',
+              objectFit: 'contain', opacity: 0.92, display: 'block',
             }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M10 12L6 8L10 4" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <span style={{
-            fontFamily: 'Inter', fontSize: 12, fontWeight: 400,
-            color: '#858A8E', minWidth: 28, textAlign: 'center',
+          />
+        ) : (
+          <div style={{
+            background: 'rgba(217,217,217,0.75)', borderRadius: 4,
+            padding: '6px 14px', display: 'inline-flex', alignItems: 'center',
           }}>
-            {previewIndex + 1}/{photosToPreview.length}
-          </span>
-          <div
-            onClick={() => setPreviewIndex(prev => Math.min(photosToPreview.length - 1, prev + 1))}
-            style={{
-              background: '#F9FAFB', borderRadius: 10, padding: 4,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: previewIndex === photosToPreview.length - 1 ? 'not-allowed' : 'pointer',
-              opacity: previewIndex === photosToPreview.length - 1 ? 0.35 : 1, flexShrink: 0,
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M6 12L10 8L6 4" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <span style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#000', lineHeight: '1.4' }}>Logo</span>
           </div>
+        )}
+      </div>
+    );
+
+    // ── Shared: Bella Virtual logo (bottom-right) ─────────────────────────
+    const bellaLogo = (logoSize: number) => (
+      <div style={{ position: 'absolute', bottom: '3%', right: '3%', pointerEvents: 'none' }}>
+        <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{ width: logoSize, height: 'auto', display: 'block', opacity: 0.95 }} />
+      </div>
+    );
+
+    // ── Shared: area guide (hidden — flip `false` to `true` to enable) ────
+    const areaGuide = (
+      <>
+        {false && (
+          <div style={{ position: 'absolute', inset: '9.76% 9.33%', pointerEvents: 'none' }}>
+            <img src="/area-guide.svg" alt="" style={{ width: '100%', height: '100%', display: 'block' }} />
+          </div>
+        )}
+      </>
+    );
+
+    // ── Shared: pagination chips ──────────────────────────────────────────
+    const pagination = (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+        <div
+          onClick={() => setPreviewIndex(prev => Math.max(0, prev - 1))}
+          style={{
+            background: '#F9FAFB', borderRadius: 10, padding: 4,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: previewIndex === 0 ? 'not-allowed' : 'pointer',
+            opacity: previewIndex === 0 ? 0.35 : 1, flexShrink: 0,
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 12L6 8L10 4" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 400, color: '#858A8E', minWidth: 28, textAlign: 'center' }}>
+          {previewIndex + 1}/{photosToPreview.length}
+        </span>
+        <div
+          onClick={() => setPreviewIndex(prev => Math.min(photosToPreview.length - 1, prev + 1))}
+          style={{
+            background: '#F9FAFB', borderRadius: 10, padding: 4,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: previewIndex === photosToPreview.length - 1 ? 'not-allowed' : 'pointer',
+            opacity: previewIndex === photosToPreview.length - 1 ? 0.35 : 1, flexShrink: 0,
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 12L10 8L6 4" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
       </div>
+    );
 
-      {/* ── Right: Image Settings card + Export button ──────────────────── */}
-      <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 24 }}>
-        {/* Image Settings card — bg #F9FAFB, border #E5E7EB, borderRadius 14px (Figma) */}
-        <div style={{
-          background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 14,
-          padding: 24, boxSizing: 'border-box',
-          display: 'flex', flexDirection: 'column', gap: 16,
-        }}>
-          {/* Heading — #4F46E5, bold 16px (Figma) */}
-          <span style={{
-            fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
-            color: '#4F46E5', lineHeight: '1.4',
-          }}>
-            Image Settings
-          </span>
-
-          {/* Logo Size row */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#52595F', lineHeight: '1.4' }}>Logo Size</span>
-              <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#4F46E5', lineHeight: '1.4' }}>{watermarkSize}%</span>
-            </div>
-            <style>{sliderCSS}</style>
-            <input
-              className="mls-watermark-slider"
-              type="range" min={0} max={100} value={watermarkSize}
-              onChange={(e) => setWatermarkSize(Number(e.target.value))}
-              style={{ width: '100%' }}
-            />
+    // ── Shared: Image Settings card ───────────────────────────────────────
+    const imageSettingsCard = (cardPadding: number) => (
+      <div style={{
+        background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 14,
+        padding: cardPadding, boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', gap: 16,
+      }}>
+        <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 700, color: '#4F46E5', lineHeight: '1.4' }}>
+          Image Settings
+        </span>
+        {/* Logo Size */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#52595F', lineHeight: '1.4' }}>Logo Size</span>
+            <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#4F46E5', lineHeight: '1.4' }}>{watermarkSize}%</span>
           </div>
-
-          {/* Apply to All Photos — checkbox 24px, text #52595F 16px (Figma) */}
-          {/* TODO (backend): when applyToAll is true, apply watermarkSize to all exported photos */}
-          <div
-            role="button"
-            onClick={() => setApplyToAll(v => !v)}
-            style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', userSelect: 'none' }}
-          >
-            <div style={{
-              width: 24, height: 24, borderRadius: 4, flexShrink: 0,
-              border: applyToAll ? 'none' : '2px solid #D1D5DC',
-              background: applyToAll ? '#4F46E5' : '#FFFFFF',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxSizing: 'border-box',
-            }}>
-              {applyToAll && (
-                <svg width="13" height="13" viewBox="0 0 20 20" fill="none">
-                  <path d="M4 10L8 14L16 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              )}
-            </div>
-            <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#52595F', lineHeight: '1.4' }}>
-              Apply to All Photos
-            </span>
-          </div>
+          <style>{sliderCSS}</style>
+          <input
+            className="mls-watermark-slider"
+            type="range" min={0} max={100} value={watermarkSize}
+            onChange={(e) => setWatermarkSize(Number(e.target.value))}
+            style={{ width: '100%' }}
+          />
         </div>
+        {/* Apply to All — TODO (backend): use applyToAll flag in export API */}
+        <div
+          role="button"
+          onClick={() => setApplyToAll(v => !v)}
+          style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', userSelect: 'none' }}
+        >
+          <div style={{
+            width: 24, height: 24, borderRadius: 4, flexShrink: 0,
+            border: applyToAll ? 'none' : '2px solid #D1D5DC',
+            background: applyToAll ? '#4F46E5' : '#FFFFFF',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxSizing: 'border-box',
+          }}>
+            {applyToAll && (
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none">
+                <path d="M4 10L8 14L16 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
+          </div>
+          <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#52595F', lineHeight: '1.4' }}>
+            Apply to All Photos
+          </span>
+        </div>
+      </div>
+    );
 
-        {/* ── Export button — disabled until the user selects at least 1 photo ── */}
-        {/*
-         * TODO (backend): On click, trigger the export API with this payload:
-         *   photoIds         → Array.from(selectedPhotos)   // string[] of selected photo IDs
-         *   watermarkEnabled → watermarkEnabled             // boolean
-         *   watermarkFile    → watermarkFile                // File | null  (null = use Bella default logo)
-         *   watermarkSize    → watermarkSize                // number 0–100 (logo scale %)
-         *   applyToAll       → applyToAll                   // boolean (apply same size to all images)
-         *   resizeOption     → selectedResize               // string  (e.g. "Instagram – 1,080 × 1,080px (1:1)")
-         */}
+    // ── Shared: Export button + hint ──────────────────────────────────────
+    // TODO (backend): On click, trigger the export API with this payload:
+    //   photoIds         → Array.from(selectedPhotos)   // string[] of selected photo IDs
+    //   watermarkEnabled → watermarkEnabled             // boolean
+    //   watermarkFile    → watermarkFile                // File | null  (null = use Bella default logo)
+    //   watermarkSize    → watermarkSize                // number 0–100 (logo scale %)
+    //   applyToAll       → applyToAll                   // boolean (apply same size to all images)
+    //   resizeOption     → selectedResize               // string  (e.g. "Instagram – 1,080 × 1,080px (1:1)")
+    const exportButton = (
+      <>
         <button
           disabled={!hasSelection}
           onClick={() => { /* TODO (backend): call export API — see payload comment above */ }}
@@ -776,7 +759,6 @@ export default function MLSMarketingHubContent() {
           </svg>
           {hasSelection ? `Export Selected (${selectedCount} Images)` : 'Select images to export'}
         </button>
-        {/* Hint shown when nothing is selected */}
         {!hasSelection && (
           <p style={{
             fontFamily: 'Inter', fontSize: 13, fontWeight: 400,
@@ -785,9 +767,108 @@ export default function MLSMarketingHubContent() {
             Select photos from the grid below to export
           </p>
         )}
+      </>
+    );
+
+    // ── MOBILE / TABLET: stacked layout (Figma node 14469-44653) ──────────
+    if (isCompact || isMobile) {
+      return (
+        <div className="mls-preview-section mls-preview-section--mobile" style={{
+          width: '100%', background: '#FFFFFF',
+          border: '1px solid #E5E7EB', borderRadius: 10,
+          padding: 16, boxSizing: 'border-box',
+          display: 'flex', flexDirection: 'column', gap: 16,
+        }}>
+          {/* Header: "Preview" title + close chevron */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{
+              fontFamily: 'Inter', fontSize: 16, fontWeight: 500,
+              color: '#000B14', lineHeight: '21px', letterSpacing: '-0.15px',
+            }}>
+              Preview
+            </span>
+            <button
+              onClick={() => setShowPreview(false)}
+              style={{
+                background: 'transparent', border: 'none', padding: 4,
+                cursor: 'pointer', display: 'flex', alignItems: 'center',
+              }}
+              aria-label="Close preview"
+            >
+              <ChevronDownIcon color="#374151" size={20} />
+            </button>
+          </div>
+
+          {/* Content column: Image Settings (above) → Image → Pagination */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {/* Image Settings card — ABOVE image per Figma */}
+            {imageSettingsCard(16)}
+
+            {/* Image (1:1 square, full width) + pagination */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{
+                position: 'relative', width: '100%',
+                aspectRatio: '1 / 1',
+                borderRadius: 10, overflow: 'hidden',
+                background: '#F3F4F6',
+              }}>
+                {photosToPreview.length > 0 && (
+                  <img
+                    src={photosToPreview[previewIndex]?.url ?? ''}
+                    alt={photosToPreview[previewIndex]?.label ?? ''}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                )}
+                {logoOverlay}
+                {bellaLogo(90)}
+                {areaGuide}
+              </div>
+              {pagination}
+            </div>
+          </div>
+
+          {/* Export button at bottom of card */}
+          {exportButton}
+        </div>
+      );
+    }
+
+    // ── DESKTOP: side-by-side layout ──────────────────────────────────────
+    // Rendered INSIDE the combined platform-header card (no outer card wrapper needed).
+    return (
+      <div className="mls-preview-section" style={{
+        display: 'flex', gap: 24, alignItems: 'flex-start', width: '100%',
+      }}>
+        {/* Left: large image (903:671 aspect ratio) + pagination */}
+        <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{
+            position: 'relative', width: '100%',
+            aspectRatio: '903 / 671',
+            borderRadius: 10, overflow: 'hidden',
+            background: '#F3F4F6',
+          }}>
+            {photosToPreview.length > 0 && (
+              <img
+                src={photosToPreview[previewIndex]?.url ?? ''}
+                alt={photosToPreview[previewIndex]?.label ?? ''}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            )}
+            {logoOverlay}
+            {bellaLogo(130)}
+            {areaGuide}
+          </div>
+          {pagination}
+        </div>
+
+        {/* Right: Image Settings card + Export button */}
+        <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {imageSettingsCard(24)}
+          {exportButton}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // ────────────────────────────────────────────────────────────────────────────
   //  MOBILE LAYOUT  (< 480px)
@@ -954,134 +1035,8 @@ export default function MLSMarketingHubContent() {
         {/* Watermark file confirmation bar */}
         {watermarkFile && <WatermarkBar />}
 
-        {/* ── MOBILE: Preview section ───────────────────────────────────────── */}
-        {showPreview && watermarkEnabled && (
-          <div className="mls-preview-section mls-preview-section--mobile" style={{
-            width: '100%', background: '#FFFFFF',
-            border: '1px solid #E5E7EB', borderRadius: 10,
-            padding: 16, boxSizing: 'border-box',
-            display: 'flex', flexDirection: 'column', gap: 16,
-          }}>
-            {/* Image */}
-            <div style={{
-              position: 'relative', width: '100%',
-              aspectRatio: '903 / 671', borderRadius: 8, overflow: 'hidden',
-              background: '#F3F4F6',
-            }}>
-              {photosToPreview.length > 0 && (
-                <img
-                  src={photosToPreview[previewIndex]?.url ?? ''}
-                  alt={photosToPreview[previewIndex]?.label ?? ''}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                />
-              )}
-              {/* Uploaded logo — top left */}
-              {watermarkPreviewUrl ? (
-                <img src={watermarkPreviewUrl} alt="Your logo" style={{
-                  position: 'absolute', top: '3%', left: '3%',
-                  width: `${Math.round(16 + watermarkSize)}px`, maxWidth: '28%',
-                  height: 'auto', objectFit: 'contain', pointerEvents: 'none', opacity: 0.92,
-                }} />
-              ) : (
-                <div style={{
-                  position: 'absolute', top: '3%', left: '3%',
-                  background: 'rgba(217,217,217,0.75)', borderRadius: 3, padding: '3px 8px', pointerEvents: 'none',
-                }}>
-                  <span style={{ fontFamily: 'Inter', fontSize: 10, fontWeight: 500, color: '#000' }}>Logo name</span>
-                </div>
-              )}
-              {/* Bella Virtual logo — bottom left */}
-              <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{
-                position: 'absolute', bottom: '3%', left: '3%',
-                width: 60, height: 'auto', display: 'block', pointerEvents: 'none', opacity: 0.95,
-              }} />
-            </div>
-
-            {/* Pagination */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-              <button
-                onClick={() => setPreviewIndex(prev => Math.max(0, prev - 1))}
-                disabled={previewIndex === 0}
-                style={{
-                  width: 32, height: 32, borderRadius: 8,
-                  border: '1px solid #D1D5DC', background: '#FFFFFF',
-                  cursor: previewIndex === 0 ? 'not-allowed' : 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  opacity: previewIndex === 0 ? 0.35 : 1, padding: 0,
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                  <path d="M10 12L6 8L10 4" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-              <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#374151', minWidth: 44, textAlign: 'center' }}>
-                {previewIndex + 1} / {photosToPreview.length}
-              </span>
-              <button
-                onClick={() => setPreviewIndex(prev => Math.min(photosToPreview.length - 1, prev + 1))}
-                disabled={previewIndex === photosToPreview.length - 1}
-                style={{
-                  width: 32, height: 32, borderRadius: 8,
-                  border: '1px solid #D1D5DC', background: '#FFFFFF',
-                  cursor: previewIndex === photosToPreview.length - 1 ? 'not-allowed' : 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  opacity: previewIndex === photosToPreview.length - 1 ? 0.35 : 1, padding: 0,
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                  <path d="M6 12L10 8L6 4" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-            </div>
-
-            {/* Image Settings (mobile: stacked) */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <span style={{ fontFamily: 'Inter', fontSize: 15, fontWeight: 600, color: '#111827' }}>Image Settings</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#374151' }}>Logo Size</span>
-                  <span style={{ fontFamily: 'Inter', fontSize: 13, color: '#4F46E5' }}>{watermarkSize}%</span>
-                </div>
-                <style>{sliderCSS}</style>
-                <input
-                  className="mls-watermark-slider"
-                  type="range" min={0} max={100} value={watermarkSize}
-                  onChange={(e) => setWatermarkSize(Number(e.target.value))}
-                  style={{ width: '100%' }}
-                />
-              </div>
-              {/* Export button — disabled until at least 1 photo is selected */}
-              {/* TODO (backend): see payload spec in the desktop PreviewSection export button comment */}
-              <button
-                disabled={!hasSelection}
-                onClick={() => { /* TODO (backend): call export API */ }}
-                style={{
-                  height: 46, borderRadius: 12, border: 'none',
-                  background: hasSelection ? '#4F46E5' : '#E5E7EB',
-                  color: hasSelection ? '#FFFFFF' : '#9CA3AF',
-                  fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
-                  cursor: hasSelection ? 'pointer' : 'not-allowed',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  width: '100%', transition: 'background 0.2s ease, color 0.2s ease',
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-                  <path d="M9 2.25V11.25M9 11.25L6 8.25M9 11.25L12 8.25" stroke={hasSelection ? 'white' : '#9CA3AF'} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2.25 13.5V14.625C2.25 15.246 2.754 15.75 3.375 15.75H14.625C15.246 15.75 15.75 15.246 15.75 14.625V13.5" stroke={hasSelection ? 'white' : '#9CA3AF'} strokeWidth="1.7" strokeLinecap="round"/>
-                </svg>
-                {hasSelection ? `Export Selected (${selectedCount} Images)` : 'Select images to export'}
-              </button>
-              {!hasSelection && (
-                <p style={{
-                  fontFamily: 'Inter', fontSize: 12, fontWeight: 400,
-                  color: '#9CA3AF', textAlign: 'center', margin: 0, lineHeight: '1.5',
-                }}>
-                  Select photos from the grid below to export
-                </p>
-              )}
-            </div>
-          </div>
-        )}
+        {/* ── MOBILE: Preview section — uses shared PreviewSection() with mobile/tablet stacked layout */}
+        {PreviewSection()}
 
         {/* ── MOBILE: Row 3 — Select Images to Export ────────────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
