@@ -457,6 +457,7 @@ export default function MLSMarketingHubContent() {
       width: 100%; height: 4px; border-radius: 99px;
       background: linear-gradient(to right, #4F46E5 0%, #4F46E5 ${watermarkSize}%, #E5E7EB ${watermarkSize}%, #E5E7EB 100%);
       outline: none; cursor: pointer; border: none; padding: 0; margin: 0;
+      touch-action: none;
     }
     .mls-watermark-slider::-webkit-slider-thumb {
       -webkit-appearance: none; appearance: none;
