@@ -137,7 +137,7 @@ function SidebarInner({ projectId: propProjectId }: SidebarProps) {
       }}
     >
       {/* Navigation */}
-      <nav style={{ padding: '8px 10px', flex: 1 }}>
+      <nav style={{ padding: '8px 16px', flex: 1 }}>
 
         {/* Virtual Staging Delivery */}
         <div>

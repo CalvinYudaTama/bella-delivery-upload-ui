@@ -689,7 +689,7 @@ export const DeliveryContent: React.FC = () => {
           justifyContent: 'space-between',
           gap: isTabletOrMobile ? '4px' : '0',
           width: '100%',
-          marginBottom: isTabletOrMobile ? '12px' : '16px',
+          marginBottom: isTabletOrMobile ? '12px' : '24px',
         }}
       >
         {/* Page Title */}
@@ -697,11 +697,11 @@ export const DeliveryContent: React.FC = () => {
           className="delivery-page-header__title"
           style={{
             color: '#000B14',
-            fontFamily: 'Inter',
+            fontFamily: "'Tenor Sans', sans-serif",
             fontSize: isTabletOrMobile ? '18px' : '24px',
             fontStyle: 'normal',
-            fontWeight: 600,
-            lineHeight: isTabletOrMobile ? '1.4' : '32px',
+            fontWeight: 400,
+            lineHeight: '1.4',
             margin: 0,
           }}
         >
@@ -741,11 +741,11 @@ export const DeliveryContent: React.FC = () => {
           flexDirection: isTabletOrMobile ? 'column' : 'row',
           alignItems: isTabletOrMobile ? 'stretch' : 'center',
           gap: isTabletOrMobile ? '12px' : '24px',
-          padding: isTabletOrMobile ? '12px' : '12px 16px',
-          borderRadius: '8px',
-          border: '1px solid #E9EAEB',
+          padding: isTabletOrMobile ? '12px' : '17px 16px',
+          borderRadius: '10px',
+          border: '1px solid #E5E7EB',
           background: '#FFFFFF',
-          marginBottom: isTabletOrMobile ? '16px' : '20px',
+          marginBottom: isTabletOrMobile ? '16px' : '24px',
           width: '100%',
           boxSizing: 'border-box',
         }}
@@ -766,10 +766,10 @@ export const DeliveryContent: React.FC = () => {
               <path d="M10.667 16L14.0003 19.3333L21.3337 12" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-              <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
-                {inProgressImages.length} Photos Delivered
+              <span style={{ color: '#101828', fontFamily: 'Inter', fontSize: '14px', fontWeight: 500, lineHeight: '20px', letterSpacing: '-0.1504px' }}>
+                Total {inProgressImages.length} Photos Delivered
               </span>
-              <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
+              <span style={{ color: '#6A7282', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
                 Ready for review
               </span>
             </div>
@@ -780,16 +780,18 @@ export const DeliveryContent: React.FC = () => {
 
           {/* Stat: Total File Size */}
           <div className="delivery-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-              <rect width="32" height="32" rx="16" fill="#EFF6FF" />
-              <path d="M16 10V18M16 18L13 15M16 18L19 15" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M11 20H21" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/>
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 20C0 8.95431 8.95431 0 20 0C31.0457 0 40 8.95431 40 20C40 31.0457 31.0457 40 20 40C8.95431 40 0 31.0457 0 20Z" fill="#DBEAFE"/>
+            <path d="M22.5007 11.666H15.0007C14.5586 11.666 14.1347 11.8416 13.8221 12.1542C13.5096 12.4667 13.334 12.8907 13.334 13.3327V26.666C13.334 27.108 13.5096 27.532 13.8221 27.8445C14.1347 28.1571 14.5586 28.3327 15.0007 28.3327H25.0007C25.4427 28.3327 25.8666 28.1571 26.1792 27.8445C26.4917 27.532 26.6673 27.108 26.6673 26.666V15.8327L22.5007 11.666Z" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21.666 11.666V14.9993C21.666 15.4414 21.8416 15.8653 22.1542 16.1779C22.4667 16.4904 22.8907 16.666 23.3327 16.666H26.666" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18.3327 21.6673C19.2532 21.6673 19.9993 20.9211 19.9993 20.0007C19.9993 19.0802 19.2532 18.334 18.3327 18.334C17.4122 18.334 16.666 19.0802 16.666 20.0007C16.666 20.9211 17.4122 21.6673 18.3327 21.6673Z" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M26.6667 24.1662L25.5867 23.0862C25.21 22.7096 24.6993 22.498 24.1667 22.498C23.6341 22.498 23.1233 22.7096 22.7467 23.0862L17.5 28.3328" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-              <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
+              <span style={{ color: '#101828', fontFamily: 'Inter', fontSize: '14px', fontWeight: 500, lineHeight: '20px', letterSpacing: '-0.1504px' }}>
                 2.4GB Total
               </span>
-              <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
+              <span style={{ color: '#6A7282', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
                 Available to download
               </span>
             </div>
@@ -799,7 +801,7 @@ export const DeliveryContent: React.FC = () => {
           {!isTabletOrMobile && <div className="delivery-stats-bar__spacer" style={{ flex: 1 }} />}
 
           {/* Desktop: Approve All Button inline */}
-          {!isTabletOrMobile && hasApprovableImages() && (
+          {!isTabletOrMobile && (
             <button
               className="delivery-stats-bar__approve-btn"
               type="button"
@@ -811,7 +813,7 @@ export const DeliveryContent: React.FC = () => {
                 borderRadius: '6px',
                 background: (isDownloading || !hasApprovableImages()) ? '#C1C2C3' : '#00A63E',
                 border: 'none', color: '#FFFFFF',
-                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 500, lineHeight: '20px',
                 whiteSpace: 'nowrap',
                 cursor: (isDownloading || !hasApprovableImages()) ? 'not-allowed' : 'pointer',
                 flexShrink: 0,
@@ -837,7 +839,7 @@ export const DeliveryContent: React.FC = () => {
                 justifyContent: 'center', alignItems: 'center', gap: '8px',
                 borderRadius: '6px', border: '1.5px solid #4F46E5',
                 background: '#FFFFFF', color: '#4F46E5',
-                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px',
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 500, lineHeight: '20px',
                 whiteSpace: 'nowrap',
                 cursor: (isDownloading || inProgressImages.length === 0) ? 'not-allowed' : 'pointer',
                 opacity: (isDownloading || inProgressImages.length === 0) ? 0.5 : 1,
@@ -1191,9 +1193,10 @@ export const DeliveryContent: React.FC = () => {
         style={{
           display: 'flex', flexDirection: 'column', gap: '0',
           marginTop: isTabletOrMobile ? '16px' : '0',
-          background: isTabletOrMobile ? '#FFFFFF' : undefined,
-          borderRadius: isTabletOrMobile ? '12px' : undefined,
-          padding: isTabletOrMobile ? '16px 0' : undefined,
+          background: '#FFFFFF',
+          borderRadius: isTabletOrMobile ? '12px' : '10px',
+          border: isTabletOrMobile ? 'none' : '1px solid #E5E7EB',
+          padding: isTabletOrMobile ? '16px 0' : '24px',
           boxSizing: 'border-box',
         }}
       >
@@ -1243,42 +1246,28 @@ export const DeliveryContent: React.FC = () => {
               <div
                 style={{
                   display: 'flex',
-                  padding: isTabletOrMobile ? '1px 8px' : 'var(--spacing-xxs, 0px) 12px',
+                  padding: isTabletOrMobile ? '1px 8px' : '2px 12px',
                   alignItems: 'center',
                   borderRadius: 'var(--radius-full, 9999px)',
                   background: 'var(--Neutral-Dark900, #000B14)',
                   color: '#FFF',
                   fontFamily: 'var(--Font-family-font-family-body, Inter)',
-                  fontSize: isTabletOrMobile ? '12px' : 'var(--Font-size-text-md, 16px)',
+                  fontSize: isTabletOrMobile ? '12px' : '14px',
                   fontStyle: 'normal',
-                  fontWeight: 600,
-                  lineHeight: isTabletOrMobile ? '18px' : 'var(--Line-height-text-md, 24px)',
+                  fontWeight: 500,
+                  lineHeight: isTabletOrMobile ? '18px' : '20px',
                 }}
               >
                 {inProgressImages.length}
               </div>
             </div>
             
-            {/* Description text for Photo In Progress - below title, above border */}
-            <div
-              className="delivery-section-description"
-              style={{
-                color: 'var(--Neutral-Dark500, #858A8E)',
-                fontFamily: 'Inter',
-                fontSize: '14px',
-                fontStyle: 'normal',
-                fontWeight: 400,
-                lineHeight: '140%',
-              }}
-            >
-              We will refine the images you&apos;re not satisfied with based on your comments. New versions will be delivered within 1-2 days.
-            </div>
           </div>
         </div>
 
         {/* Image Gallery - In Progress — Figma dummy images dari node 13543:48733 */}
         {/* TODO (Riley): replace DRAFT_GALLERY_IMAGES with real state.images from API */}
-        <div className="draft-gallery-wrapper" style={{ marginTop: isTabletOrMobile ? '12px' : '24px', width: '100%' }}>
+        <div className="draft-gallery-wrapper" style={{ marginTop: isTabletOrMobile ? '12px' : '20px', width: '100%' }}>
           {isTabletOrMobile ? (
             /* Tablet/Mobile: 3-column CSS grid, aspect-ratio cards (Figma: h-[146.542px] in 3-col) */
             <div
@@ -1312,7 +1301,7 @@ export const DeliveryContent: React.FC = () => {
             /* Desktop: flex-wrap with fixed-size DraftGalleryCard */
             <div
               className="draft-gallery-grid"
-              style={{ display: 'flex', flexWrap: 'wrap', gap: '24px' }}
+              style={{ display: 'flex', flexWrap: 'wrap', columnGap: '24px', rowGap: '40px' }}
             >
               {DRAFT_GALLERY_IMAGES.map((img) => (
                 <DraftGalleryCard key={img.id} url={img.url} label={img.label} />
@@ -1327,7 +1316,7 @@ export const DeliveryContent: React.FC = () => {
               display: 'flex',
               justifyContent: isTabletOrMobile ? 'stretch' : 'flex-end',
               gap: '8px',
-              marginTop: '24px',
+              marginTop: isTabletOrMobile ? '24px' : '40px',
               paddingBottom: '8px',
             }}
           >
@@ -1338,8 +1327,8 @@ export const DeliveryContent: React.FC = () => {
                 flex: isTabletOrMobile ? 1 : 'none',
                 display: 'flex', height: '38px', padding: '0 32px',
                 alignItems: 'center', justifyContent: 'center', gap: '8px', borderRadius: '6px',
-                border: '2px solid #4F46E5', background: '#FFFDFF',
-                color: '#4F46E5', fontFamily: 'Inter', fontSize: '14px',
+                border: '1.5px solid #4F46E5', background: '#FFFDFF',
+                color: '#4F46E5', fontFamily: 'Inter', fontSize: '16px',
                 fontWeight: 700, cursor: 'pointer',
               }}
             >
@@ -1353,7 +1342,7 @@ export const DeliveryContent: React.FC = () => {
                 display: 'flex', height: '38px', padding: '0 32px',
                 alignItems: 'center', justifyContent: 'center', gap: '8px', borderRadius: '6px',
                 border: 'none', background: '#2BC556',
-                color: '#FFFFFF', fontFamily: 'Inter', fontSize: '14px',
+                color: '#FFFFFF', fontFamily: 'Inter', fontSize: '16px',
                 fontWeight: 700, cursor: 'pointer',
               }}
             >
@@ -1424,7 +1413,7 @@ export const DeliveryContent: React.FC = () => {
                   <div
                     style={{
                       display: 'flex',
-                      padding: isTabletOrMobile ? '1px 8px' : 'var(--spacing-xxs, 0px) 12px',
+                      padding: isTabletOrMobile ? '1px 8px' : '2px 12px',
                       alignItems: 'center',
                       borderRadius: 'var(--radius-full, 9999px)',
                       background: 'var(--Neutral-Dark900, #000B14)',
@@ -1432,7 +1421,7 @@ export const DeliveryContent: React.FC = () => {
                       fontFamily: 'var(--Font-family-font-family-body, Inter)',
                       fontSize: isTabletOrMobile ? '12px' : 'var(--Font-size-text-md, 16px)',
                       fontStyle: 'normal',
-                      fontWeight: 600,
+                      fontWeight: 500,
                       lineHeight: 'var(--Line-height-text-md, 24px)',
                     }}
                   >

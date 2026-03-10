@@ -40,6 +40,27 @@ const DownloadIcon = ({ color = '#4F46E5' }: { color?: string }) => (
   </svg>
 );
 
+// Thumbs up icon (green variant) for "Like the project?" badge
+const ThumbsUpGreenIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4.66602 6.66602V14.666" stroke="#00A63E" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M10.0007 3.92065L9.33398 6.66732H13.2207C13.4276 6.66732 13.6318 6.71551 13.8169 6.80808C14.0021 6.90065 14.1631 7.03506 14.2873 7.20065C14.4115 7.36625 14.4954 7.55848 14.5325 7.76214C14.5695 7.96579 14.5586 8.17527 14.5007 8.37398L12.9473 13.7073C12.8665 13.9843 12.6981 14.2276 12.4673 14.4007C12.2365 14.5737 11.9558 14.6673 11.6673 14.6673H2.66732C2.3137 14.6673 1.97456 14.5268 1.72451 14.2768C1.47446 14.0267 1.33398 13.6876 1.33398 13.334V8.00065C1.33398 7.64703 1.47446 7.30789 1.72451 7.05784C1.97456 6.80779 2.3137 6.66732 2.66732 6.66732H4.50732C4.75537 6.66719 4.99848 6.59786 5.20929 6.46713C5.4201 6.3364 5.59027 6.14946 5.70065 5.92732L8.00065 1.33398C8.31504 1.33788 8.62448 1.41276 8.90585 1.55305C9.18723 1.69333 9.43327 1.89539 9.62559 2.14412C9.81791 2.39285 9.95153 2.68182 10.0165 2.98945C10.0814 3.29708 10.076 3.61541 10.0007 3.92065Z" stroke="#00A63E" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+// Star icons for rating
+const StarFilledIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="#FBBF24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#FBBF24" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const StarEmptyIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="#D1D5DC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
 // ─── Figma design placeholder assets (from Figma MCP — local dev only) ────────
 // TODO (Riley): replace these with real hosted image URLs from your CDN/API
 const FIGMA_MAIN_IMAGE_URL    = '/images/delivery/main-living-room.png'; // living room wide
@@ -78,7 +99,7 @@ function GalleryImageCard({ image, isTabletOrMobile }: { image: DeliveryImage; i
       onMouseLeave={() => setHovered(false)}
       style={{
         position: 'relative',
-        borderRadius: '10px',
+        borderRadius: '12px',
         flexShrink: 0,
         overflow: 'hidden',
         border: image.isApproved ? '2px solid #16A34A' : '2px solid transparent',
@@ -98,7 +119,7 @@ function GalleryImageCard({ image, isTabletOrMobile }: { image: DeliveryImage; i
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          borderRadius: '10px',
+          borderRadius: '12px',
         }}
       />
 
@@ -108,7 +129,7 @@ function GalleryImageCard({ image, isTabletOrMobile }: { image: DeliveryImage; i
         style={{
           position: 'absolute',
           inset: 0,
-          borderRadius: '10px',
+          borderRadius: '12px',
           background: hovered
             ? 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.9) 100%)'
             : 'linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.4) 100%)',
@@ -251,10 +272,10 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
           className="revision-section-header__label"
           style={{
             fontFamily: 'Inter',
-            fontSize: '14px',
+            fontSize: '16px',
             fontWeight: 600,
             color: '#000B14',
-            lineHeight: '20px',
+            lineHeight: '24px',
           }}
         >
           {label}
@@ -265,7 +286,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
           style={{
             backgroundColor: '#000B14',
             borderRadius: '9999px',
-            padding: '1px 8px',
+            padding: '2px 10px',
             display: 'flex',
             alignItems: 'center',
           }}
@@ -274,10 +295,10 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
             className="revision-section-header__badge-count"
             style={{
               fontFamily: 'Inter',
-              fontSize: '12px',
+              fontSize: '14px',
               fontWeight: 500,
               color: '#FFFDFF',
-              lineHeight: '18px',
+              lineHeight: '20px',
             }}
           >
             {count}
@@ -319,6 +340,7 @@ export default function LatestRevisionContent({
     [inProgressImages, completedImages]
   );
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [starRating, setStarRating] = useState(0);
 
   const handlePreviousImage = () => {
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : allImages.length - 1));
@@ -354,10 +376,10 @@ export default function LatestRevisionContent({
           className="revision-page-header__title"
           style={{
             color: '#000B14',
-            fontFamily: 'Inter',
+            fontFamily: "'Tenor Sans', sans-serif",
             fontSize: isTabletOrMobile ? '18px' : '24px',
-            fontWeight: 600,
-            lineHeight: isTabletOrMobile ? '1.4' : '32px',
+            fontWeight: 400,
+            lineHeight: '1.4',
             margin: 0,
           }}
         >
@@ -389,143 +411,178 @@ export default function LatestRevisionContent({
           flexDirection: isTabletOrMobile ? 'column' : 'row',
           alignItems: isTabletOrMobile ? 'stretch' : 'center',
           gap: isTabletOrMobile ? '12px' : '24px',
-          padding: isTabletOrMobile ? '12px' : '12px 16px',
-          borderRadius: '8px',
-          border: '1px solid #E9EAEB',
+          padding: isTabletOrMobile ? '12px' : '17px',
+          borderRadius: '10px',
+          border: '1px solid #E5E7EB',
           background: '#FFFFFF',
-          marginBottom: isTabletOrMobile ? '16px' : '20px',
+          marginBottom: isTabletOrMobile ? '16px' : '24px',
           width: '100%',
           boxSizing: 'border-box',
         }}
       >
-        {/* Top row: stats */}
+        {/* ── Stats row (left) — flexShrink:0 so it never squishes ── */}
         <div style={{
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
           gap: isTabletOrMobile ? '12px' : '24px',
-          flex: isTabletOrMobile ? 'none' : 1,
+          flexShrink: 0,
         }}>
           {/* Stat: Photos Delivered */}
-          <div className="revision-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ flexShrink: 0 }}>
+          <div className="revision-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+            <svg width="40" height="40" viewBox="0 0 32 32" fill="none" style={{ flexShrink: 0 }}>
               <rect width="32" height="32" rx="16" fill="#DCFCE7"/>
               <path d="M10.667 16L14.0003 19.3333L21.3337 12" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
               {/* TODO (Riley): replace with real count from API */}
-              <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
-                {totalPhotos} Photos Delivered
+              <span style={{ color: '#101828', fontFamily: 'Inter', fontSize: '16px', fontWeight: 400, lineHeight: '1.4', whiteSpace: 'nowrap' }}>
+                Total {totalPhotos} Photos Delivered
               </span>
-              <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
-                Ready for review
+              <span style={{ color: '#6A7282', fontFamily: 'Inter', fontSize: '14px', fontWeight: 400, lineHeight: '1.4', whiteSpace: 'nowrap' }}>
+                Project delivered
               </span>
             </div>
           </div>
 
           {/* Divider */}
-          <div className="revision-stats-bar__divider" style={{ width: '1px', height: '36px', background: '#E9EAEB', flexShrink: 0 }} />
+          <div className="revision-stats-bar__divider" style={{ width: '1px', height: '40px', background: '#E5E7EB', flexShrink: 0 }} />
 
-          {/* Stat: Total File Size */}
-          <div className="revision-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ flexShrink: 0 }}>
-              <rect width="32" height="32" rx="16" fill="#EFF6FF"/>
-              <path d="M16 10V18M16 18L13 15M16 18L19 15" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M11 20H21" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round"/>
+          {/* Stat: Photos Need to be Reviewed */}
+          <div className="revision-stats-bar__stat" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 20C0 8.95431 8.95431 0 20 0C31.0457 0 40 8.95431 40 20C40 31.0457 31.0457 40 20 40C8.95431 40 0 31.0457 0 20Z" fill="#DBEAFE"/>
+            <path d="M22.5007 11.666H15.0007C14.5586 11.666 14.1347 11.8416 13.8221 12.1542C13.5096 12.4667 13.334 12.8907 13.334 13.3327V26.666C13.334 27.108 13.5096 27.532 13.8221 27.8445C14.1347 28.1571 14.5586 28.3327 15.0007 28.3327H25.0007C25.4427 28.3327 25.8666 28.1571 26.1792 27.8445C26.4917 27.532 26.6673 27.108 26.6673 26.666V15.8327L22.5007 11.666Z" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21.666 11.666V14.9993C21.666 15.4414 21.8416 15.8653 22.1542 16.1779C22.4667 16.4904 22.8907 16.666 23.3327 16.666H26.666" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18.3327 21.6673C19.2532 21.6673 19.9993 20.9211 19.9993 20.0007C19.9993 19.0802 19.2532 18.334 18.3327 18.334C17.4122 18.334 16.666 19.0802 16.666 20.0007C16.666 20.9211 17.4122 21.6673 18.3327 21.6673Z" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M26.6667 24.1662L25.5867 23.0862C25.21 22.7096 24.6993 22.498 24.1667 22.498C23.6341 22.498 23.1233 22.7096 22.7467 23.0862L17.5 28.3328" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
               {/* TODO (Riley): replace with real file size from API */}
-              <span style={{ color: '#000B14', fontFamily: 'Inter', fontSize: '14px', fontWeight: 600, lineHeight: '20px' }}>
-                2.4GB Total
+              <span style={{ color: '#101828', fontFamily: 'Inter', fontSize: '16px', fontWeight: 400, lineHeight: '1.4', whiteSpace: 'nowrap' }}>
+                3 Photos Need to be Reviewed
               </span>
-              <span style={{ color: '#858A8E', fontFamily: 'Inter', fontSize: '12px', fontWeight: 400, lineHeight: '16px' }}>
-                Available to download
+              <span style={{ color: '#6A7282', fontFamily: 'Inter', fontSize: '14px', fontWeight: 400, lineHeight: '1.4', whiteSpace: 'nowrap' }}>
+                Revision pending
               </span>
             </div>
           </div>
-
-          {/* Spacer — only on desktop to push buttons right */}
-          {!isTabletOrMobile && <div className="revision-stats-bar__spacer" style={{ flex: 1 }} />}
-
-          {/* Desktop: Approve All Button inline */}
-          {!isTabletOrMobile && (
-            <button
-              className="revision-stats-bar__approve-btn"
-              type="button"
-              onClick={onApproveAll}
-              disabled={inProgressImages.length === 0}
-              style={{
-                display: 'flex', height: '36px', padding: '0 16px',
-                alignItems: 'center', gap: '8px', borderRadius: '6px',
-                background: inProgressImages.length === 0 ? '#C1C2C3' : '#00A63E',
-                border: 'none', color: '#FFFFFF',
-                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
-                cursor: inProgressImages.length === 0 ? 'not-allowed' : 'pointer',
-                flexShrink: 0, whiteSpace: 'nowrap',
-              }}
-            >
-              <ThumbsUpIcon />
-              Approve All
-            </button>
-          )}
-
-          {/* Desktop: Download All Button inline */}
-          {!isTabletOrMobile && (
-            <button
-              className="revision-stats-bar__download-btn"
-              type="button"
-              onClick={onDownloadInProgress}
-              style={{
-                display: 'flex', height: '36px', padding: '0 16px',
-                alignItems: 'center', gap: '8px', borderRadius: '6px',
-                border: '1.5px solid #4F46E5', background: '#FFFFFF', color: '#4F46E5',
-                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
-                cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap',
-              }}
-            >
-              <DownloadIcon />
-              Download All
-            </button>
-          )}
         </div>
 
-        {/* Mobile/Tablet bottom row: full-width action buttons */}
-        {isTabletOrMobile && (
-          <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
-            {inProgressImages.length > 0 && (
-              <button
-                type="button"
-                onClick={onApproveAll}
-                style={{
-                  flex: 1, height: '38px', padding: '0 12px',
-                  display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px',
-                  borderRadius: '8px', border: 'none',
-                  background: '#00A63E', color: '#FFFFFF',
-                  fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
-                  cursor: 'pointer', whiteSpace: 'nowrap',
-                }}
-              >
-                <ThumbsUpIcon />
-                Approve All
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={onDownloadInProgress}
-              style={{
-                flex: 1, height: '38px', padding: '0 12px',
-                display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px',
-                borderRadius: '8px', border: '1.5px solid #4F46E5',
-                background: '#FFFFFF', color: '#4F46E5',
-                fontFamily: 'Inter', fontSize: '14px', fontWeight: 600,
-                cursor: 'pointer', whiteSpace: 'nowrap',
-              }}
-            >
-              <DownloadIcon />
-              Download All
-            </button>
+        {/* ── Desktop: "Like the project?" + stars (right) ──
+            flex: 1 0 0 = grows to fill remaining space, justify-end = align to far right */}
+        {!isTabletOrMobile && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 0 0', justifyContent: 'flex-end' }}>
+            {/* Like badge */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: '#DCFCE7', borderRadius: '6px',
+              height: '36px', padding: '0 8px', flexShrink: 0,
+            }}>
+              <ThumbsUpGreenIcon />
+              <span style={{
+                fontFamily: 'Inter', fontSize: '16px', fontWeight: 700,
+                color: '#00A63E', lineHeight: '1.4', whiteSpace: 'nowrap',
+              }}>
+                Like the project?
+              </span>
+            </div>
+            {/* Star rating */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {[1, 2, 3, 4, 5].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStarRating(s)}
+                  style={{
+                    width: 30, height: 30, borderRadius: '40px', border: 'none',
+                    background: s === starRating ? '#FFFDD2' : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', padding: 6, flexShrink: 0,
+                  }}
+                >
+                  {s <= starRating ? <StarFilledIcon size={24} /> : <StarEmptyIcon size={24} />}
+                </button>
+              ))}
+            </div>
           </div>
         )}
+
+        {/* Mobile/Tablet bottom row: "Like the project?" + star rating */}
+        {isTabletOrMobile && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'flex-end' }}>
+            {/* Like badge */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: '#DCFCE7', borderRadius: '6px',
+              height: '36px', padding: '0 8px', flexShrink: 0,
+            }}>
+              <ThumbsUpGreenIcon />
+              <span style={{
+                fontFamily: 'Inter', fontSize: '14px', fontWeight: 700,
+                color: '#00A63E', lineHeight: '1.4', whiteSpace: 'nowrap',
+              }}>
+                Like the project?
+              </span>
+            </div>
+            {/* Star rating */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {[1, 2, 3, 4, 5].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStarRating(s)}
+                  style={{
+                    width: 28, height: 28, borderRadius: '40px', border: 'none',
+                    background: s === starRating ? '#FFFDD2' : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', padding: 4, flexShrink: 0,
+                  }}
+                >
+                  {s <= starRating ? <StarFilledIcon size={20} /> : <StarEmptyIcon size={20} />}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ─── NOTIFICATION BANNER ─────────────────────────────────────────────── */}
+      <div
+        className="revision-notification-banner"
+        style={{
+          background: '#EFF6FF',
+          border: '1px solid #BEDBFF',
+          borderRadius: '10px',
+          padding: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px',
+          marginBottom: isTabletOrMobile ? '12px' : '24px',
+          width: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
+        <p style={{
+          color: '#1C398E',
+          fontFamily: 'Inter',
+          fontSize: isTabletOrMobile ? '16px' : '18px',
+          fontWeight: 500,
+          lineHeight: '27px',
+          margin: 0,
+        }}>
+          You Have Photos to Review
+        </p>
+        <p style={{
+          color: '#4F46E5',
+          fontFamily: 'Inter',
+          fontSize: '14px',
+          fontWeight: 400,
+          lineHeight: '20px',
+          margin: 0,
+        }}>
+          Review your photos in two weeks with unlimited revisions.
+        </p>
       </div>
 
       {/* ─── MAIN PREVIEW IMAGE (carousel) — landscape, same as DeliveryContent ─
@@ -546,7 +603,7 @@ export default function LatestRevisionContent({
           width: '100%',
           height: isTabletOrMobile ? undefined : '622px',
           aspectRatio: isTabletOrMobile ? '390 / 249' : undefined,
-          borderRadius: isTabletOrMobile ? '8px' : '16px',
+          borderRadius: isTabletOrMobile ? '8px' : '12px',
           overflow: 'hidden',
           marginBottom: isTabletOrMobile ? '0' : '24px',
           position: 'relative',
@@ -730,7 +787,7 @@ export default function LatestRevisionContent({
           display: 'flex',
           flexDirection: 'column',
           gap: '12px',
-          marginTop: isTabletOrMobile ? '16px' : '24px',
+          marginTop: isTabletOrMobile ? '16px' : '0',
         }}
       >
 
@@ -745,7 +802,7 @@ export default function LatestRevisionContent({
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
               gap: isTabletOrMobile ? '12px' : '24px',
-              marginBottom: isTabletOrMobile ? '16px' : '24px',
+              marginBottom: isTabletOrMobile ? '16px' : '40px',
             }}
           >
             {inProgressImages.map((img) => (
@@ -769,11 +826,11 @@ export default function LatestRevisionContent({
               onClick={onDownloadInProgress}
               style={{
                 flex: isTabletOrMobile ? 1 : 'none',
-                display: 'flex', height: '38px', padding: '0 32px',
+                display: 'flex', height: '38px', padding: '12px 32px',
                 alignItems: 'center', justifyContent: 'center', gap: '8px',
                 borderRadius: '6px', border: '2px solid #4F46E5',
                 background: '#FFFDFF', color: '#4F46E5',
-                fontFamily: 'Inter', fontSize: '14px', fontWeight: 700,
+                fontFamily: 'Inter', fontSize: '16px', fontWeight: 700,
                 cursor: 'pointer',
               }}
             >
@@ -785,11 +842,11 @@ export default function LatestRevisionContent({
               onClick={onApproveAll}
               style={{
                 flex: isTabletOrMobile ? 1 : 'none',
-                display: 'flex', height: '38px', padding: '0 32px',
+                display: 'flex', height: '38px', padding: '12px 32px',
                 alignItems: 'center', justifyContent: 'center', gap: '8px',
                 borderRadius: '6px', border: 'none',
                 background: '#2BC556', color: '#FFFFFF',
-                fontFamily: 'Inter', fontSize: '14px', fontWeight: 700,
+                fontFamily: 'Inter', fontSize: '16px', fontWeight: 700,
                 cursor: 'pointer',
               }}
             >
@@ -809,7 +866,7 @@ export default function LatestRevisionContent({
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
               gap: isTabletOrMobile ? '12px' : '24px',
-              marginBottom: isTabletOrMobile ? '16px' : '24px',
+              marginBottom: isTabletOrMobile ? '16px' : '40px',
             }}
           >
             {completedImages.map((img) => (
@@ -832,11 +889,11 @@ export default function LatestRevisionContent({
               onClick={onDownloadCompleted}
               style={{
                 flex: isTabletOrMobile ? 1 : 'none',
-                display: 'flex', height: '38px', padding: '0 32px',
+                display: 'flex', height: '38px', padding: '12px 32px',
                 alignItems: 'center', justifyContent: 'center', gap: '8px',
                 borderRadius: '6px', border: '2px solid #4F46E5',
                 background: '#FFFDFF', color: '#4F46E5',
-                fontFamily: 'Inter', fontSize: '14px', fontWeight: 700,
+                fontFamily: 'Inter', fontSize: '16px', fontWeight: 700,
                 cursor: 'pointer',
               }}
             >

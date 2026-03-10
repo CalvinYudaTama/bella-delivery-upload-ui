@@ -4048,7 +4048,7 @@ body::-webkit-scrollbar {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Standard gap: preview header to preview container (16px) */
+  gap: 0px; /* Standard gap: preview header to preview container (16px) */
 }
 
 /* Preview Header - Desktop */

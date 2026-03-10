@@ -221,25 +221,22 @@ function UploadButton({
         onClick={() => watermarkInputRef.current?.click()}
         style={{
           display: 'flex', alignItems: 'center', gap: 8,
-          height: 38, padding: '0 13px',
-          border: watermarkFile ? '1px solid #00C950' : '1px solid #D1D5DC',
-          borderRadius: 10,
-          background: watermarkFile ? '#F0FDF4' : '#FFFFFF',
+          padding: '9.5px 17.5px',
+          border: '1.5px solid #D1D5DC',
+          borderRadius: 6,
+          background: '#FFFFFF',
           cursor: 'pointer',
-          fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-          color: watermarkFile ? '#328048' : '#4F46E5',
+          fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+          color: '#4F46E5',
           whiteSpace: 'nowrap',
-          transition: 'all 0.15s ease',
-          minWidth: 0, maxWidth: 220, overflow: 'hidden',
+          boxSizing: 'border-box',
         }}
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-          <path d="M7 9.5V2M7 2L4.5 4.5M7 2L9.5 4.5" stroke={watermarkFile ? '#328048' : '#4F46E5'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M1.75 10.5V11.375C1.75 11.9963 2.25368 12.5 2.875 12.5H11.125C11.7463 12.5 12.25 11.9963 12.25 11.375V10.5" stroke={watermarkFile ? '#328048' : '#4F46E5'} strokeWidth="1.5" strokeLinecap="round"/>
+          <path d="M7 9.5V2M7 2L4.5 4.5M7 2L9.5 4.5" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M1.75 10.5V11.375C1.75 11.9963 2.25368 12.5 2.875 12.5H11.125C11.7463 12.5 12.25 11.9963 12.25 11.375V10.5" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round"/>
         </svg>
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {watermarkFile ? watermarkFile.name : 'Upload my logo'}
-        </span>
+        <span>Upload my logo</span>
       </button>
     </>
   );
@@ -520,19 +517,52 @@ export default function MLSMarketingHubContent() {
   ) : null;
 
   // ── Platform header action buttons (shared logic) ─────────────────────────
+  // Photo section select/deselect buttons — shown inside the "Select Images to Export" header
+  const PhotoSectionActions = () => !allSelected ? (
+    <button
+      className="mls-photo-section__select-btn"
+      onClick={toggleSelectAll}
+      style={{
+        padding: '6px 16px', borderRadius: 6,
+        border: '1.5px solid #4F46E5', background: 'transparent',
+        fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+        color: '#4F46E5', cursor: 'pointer', whiteSpace: 'nowrap',
+        lineHeight: '24px', boxSizing: 'border-box',
+      }}
+    >
+      Select all
+    </button>
+  ) : (
+    <button
+      className="mls-photo-section__deselect-btn"
+      onClick={() => setSelectedPhotos(new Set())}
+      style={{
+        padding: '6px 16px', borderRadius: 6,
+        border: '1.5px solid #D1D5DC', background: 'transparent',
+        fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+        color: '#52595F', cursor: 'pointer', whiteSpace: 'nowrap',
+        lineHeight: '24px', boxSizing: 'border-box',
+      }}
+    >
+      Deselect All
+    </button>
+  );
+
+  // Legacy platform header actions — kept for tablet/mobile layouts
   const PlatformActions = () => selectedPhotos.size === 0 ? (
     <button
       className="mls-platform-header__select-btn"
       onClick={toggleSelectAll}
       style={{
-        height: 38, padding: '9px 16px', borderRadius: 8, border: 'none',
-        background: '#2BC556', color: '#FFFFFF',
-        fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+        height: 38, padding: '9px 16px', borderRadius: 6,
+        border: '1.5px solid #4F46E5', background: 'transparent',
+        color: '#4F46E5',
+        fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
         cursor: 'pointer', whiteSpace: 'nowrap',
         letterSpacing: '-0.15px', lineHeight: '20px',
       }}
     >
-      Select All
+      Select all
     </button>
   ) : (
     <>
@@ -540,10 +570,10 @@ export default function MLSMarketingHubContent() {
         className="mls-platform-header__deselect-btn"
         onClick={() => setSelectedPhotos(new Set())}
         style={{
-          height: 38, padding: '9px 16px', borderRadius: 8,
-          border: '1px solid #D1D5DC', background: 'transparent',
-          fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-          color: '#0A0A0A', cursor: 'pointer', whiteSpace: 'nowrap',
+          height: 38, padding: '9px 16px', borderRadius: 6,
+          border: '1.5px solid #D1D5DC', background: 'transparent',
+          fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+          color: '#52595F', cursor: 'pointer', whiteSpace: 'nowrap',
           letterSpacing: '-0.15px', lineHeight: '20px',
         }}
       >
@@ -579,10 +609,10 @@ export default function MLSMarketingHubContent() {
       style={{
         height: 38, padding: '9px 16px',
         borderRadius: 8,
-        border: '1px solid #D1D5DC',
+        border: '1.5px solid #D1D5DC',
         background: 'transparent',
-        fontFamily: 'Inter', fontSize: 16, fontWeight: 500,
-        color: '#0A0A0A',
+        fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+        color: '#52595F',
         cursor: 'pointer', whiteSpace: 'nowrap',
         letterSpacing: '-0.15px', lineHeight: '20px',
         boxSizing: 'border-box',
@@ -1509,21 +1539,30 @@ export default function MLSMarketingHubContent() {
   //  DESKTOP LAYOUT  (≥ 768px)  — unchanged from original
   // ────────────────────────────────────────────────────────────────────────────
   return (
-    <div ref={containerRef} className="mls-hub" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div ref={containerRef} className="mls-hub" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 24 }}>
+
+      {/* ─── PAGE TITLE ─── */}
+      <p style={{ fontFamily: "'Tenor Sans', sans-serif", fontSize: 24, fontWeight: 400, color: '#000B14', lineHeight: '1.4', margin: 0, width: '100%' }}>
+        MLS Marketing Hub
+      </p>
 
       {/* ─── TOP BAR: Resize to + Watermark (+ file confirmation bar inside) ─── */}
       <div className="mls-topbar" style={{
         width: '100%', background: '#FFFFFF',
         border: '1px solid #E5E7EB', borderRadius: 10,
-        padding: 16, boxSizing: 'border-box',
-        display: 'flex', flexDirection: 'column', gap: 16,
+        padding: 24, boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', gap: 24,
       }}>
+        {/* Section title */}
+        <span style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 600, color: '#000B14', lineHeight: '27px' }}>
+          Image Resize &amp; Watermark Customization
+        </span>
         {/* Row 1: controls */}
-        <div className="mls-topbar__inner" style={{ display: 'flex', alignItems: 'flex-start', gap: 24 }}>
+        <div className="mls-topbar__inner" style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
 
           {/* Resize to dropdown */}
-          <div className="mls-topbar__resize" style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 314 }}>
-            <label className="mls-topbar__resize-label" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#000B14', lineHeight: '20px' }}>
+          <div className="mls-topbar__resize" style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }}>
+            <label className="mls-topbar__resize-label" style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 500, color: '#364153', lineHeight: '24px' }}>
               Resize to:
             </label>
             <div className="mls-topbar__resize-dropdown" style={{ position: 'relative' }}>
@@ -1533,9 +1572,10 @@ export default function MLSMarketingHubContent() {
                 style={{
                   width: 314, height: 38,
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '0 12px', border: '1px solid #D1D5DB', borderRadius: 6,
+                  padding: '9px 12px', border: '1.5px solid #99A1AF', borderRadius: 6,
                   background: '#FFFFFF', cursor: 'pointer',
-                  fontFamily: 'Inter', fontSize: 14, color: '#000B14',
+                  fontFamily: 'Inter', fontSize: 14, color: '#4A5565',
+                  boxSizing: 'border-box',
                 }}
               >
                 <span className="mls-topbar__resize-value" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -1576,66 +1616,89 @@ export default function MLSMarketingHubContent() {
           </div>
 
           {/* Vertical divider */}
-          <div className="mls-topbar__divider" style={{ width: 1, height: 60, background: '#E9EAEB', flexShrink: 0, marginTop: 4 }} />
+          <div className="mls-topbar__divider" style={{ width: 1, height: 32, background: '#E9EAEB', flexShrink: 0 }} />
 
-          {/* Watermark toggle */}
-          <div className="mls-topbar__watermark" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div className="mls-topbar__watermark-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span className="mls-topbar__watermark-label" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#000B14' }}>
-                Watermark:
+          {/* Watermark + upload area — fills remaining space */}
+          <div style={{ flex: '1 0 0', display: 'flex', gap: 36, alignItems: 'center', alignSelf: 'stretch' }}>
+            {/* Left col: label+toggle (top) and hint (bottom) */}
+            <div className="mls-topbar__watermark" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignSelf: 'stretch', flexShrink: 0 }}>
+              <div className="mls-topbar__watermark-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span className="mls-topbar__watermark-label" style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 500, color: '#364153', lineHeight: '20px', letterSpacing: '-0.1504px', whiteSpace: 'nowrap' }}>
+                  Watermark:
+                </span>
+                <WatermarkToggle enabled={watermarkEnabled} onToggle={handleWatermarkToggle} />
+              </div>
+              <span className="mls-topbar__watermark-hint" style={{ fontFamily: 'Inter', fontSize: 14, color: '#858A8E', lineHeight: '19.5px', width: 224 }}>
+                Accepted formats: png, jpeg, jpg, with maximum 10MB.
               </span>
-              <WatermarkToggle enabled={watermarkEnabled} onToggle={handleWatermarkToggle} />
             </div>
-            <span className="mls-topbar__watermark-hint" style={{ fontFamily: 'Inter', fontSize: 12, color: '#858A8E', lineHeight: '16px' }}>
-              Accepted formats: png, jpeg, jpg, with maximum 10MB.
-            </span>
+
+            {/* Right col: upload button + compact file info */}
+            {watermarkEnabled && (
+              <div className="mls-topbar__watermark-upload" style={{ flex: '1 0 0', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start', justifyContent: 'center', minWidth: 0 }}>
+                <UploadButton
+                  watermarkFile={watermarkFile}
+                  watermarkInputRef={watermarkInputRef}
+                  handleWatermarkUpload={handleWatermarkUpload}
+                />
+                {watermarkFile && (
+                  <div style={{ background: '#FAFAFA', display: 'flex', alignItems: 'center', gap: 4, padding: 4 }}>
+                    <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#858A8E', lineHeight: '19.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 200 }}>
+                      {watermarkFile.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleWatermarkClear}
+                      style={{ fontFamily: 'Inter', fontSize: 9, fontWeight: 500, color: '#858A8E', background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0, lineHeight: 1 }}
+                    >
+                      X
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-
-          {/* Upload button — size slider moved to Preview section */}
-          {watermarkEnabled && (
-            <div className="mls-topbar__watermark-upload" style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
-              <UploadButton
-                watermarkFile={watermarkFile}
-                watermarkInputRef={watermarkInputRef}
-                handleWatermarkUpload={handleWatermarkUpload}
-              />
-            </div>
-          )}
         </div>
-
-        {/* Row 2: file confirmation bar — inside topbar card, only when file uploaded */}
-        {watermarkFile && <WatermarkBar />}
       </div>
 
-      {/* ─── PLATFORM HEADER + PREVIEW — one combined card (Figma: white bg, border #E5E7EB) ── */}
-      <div className="mls-platform-header" style={{
+      {/* ─── PLATFORM HEADER + PREVIEW — only shown when watermark is enabled ── */}
+      {watermarkEnabled && <div className="mls-platform-header" style={{
         width: '100%', background: '#FFFFFF',
         border: '1px solid #E5E7EB', borderRadius: 10,
-        padding: '16px 24px', boxSizing: 'border-box',
+        padding: 24, boxSizing: 'border-box',
         display: 'flex', flexDirection: 'column', gap: 24,
       }}>
         {/* Header row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="mls-platform-header__info" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <InstagramIcon />
+            {/* MLS purple icon — bg-[#4f46e5] rounded-[10px] size-[40px] */}
+            <div style={{
+              width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+              background: '#4F46E5',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 22V12h6v10" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
             <div className="mls-platform-header__text" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span className="mls-platform-header__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#1C398E', lineHeight: '27px', letterSpacing: '-0.44px' }}>
-                Instagram • Square Post
+              <span className="mls-platform-header__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 600, color: '#1C398E', lineHeight: '27px', letterSpacing: '-0.44px' }}>
+                MLS • 4:3 Ratio
               </span>
               <span className="mls-platform-header__subtitle" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#4F46E5', lineHeight: '20px', letterSpacing: '-0.15px' }}>
-                Images will be resized to 1080 × 1080px (1:1 aspect ratio)
+                Images will be resized to MLS standard 4:3 ratio
               </span>
             </div>
           </div>
           <div className="mls-platform-header__actions" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <PreviewToggleBtn />
-            <PlatformActions />
           </div>
         </div>
         {/* Preview content — called as function (not JSX element) to avoid React remounting on re-render,
             which would break slider drag because every state change creates a new function reference */}
         {PreviewSection()}
-      </div>
+      </div>}
 
       {/* ─── CARD 1: Select Images to Export ────────────────────────────────── */}
       <div className="mls-content-card" style={{
@@ -1645,18 +1708,21 @@ export default function MLSMarketingHubContent() {
       }}>
         <div className="mls-photo-section" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div className="mls-photo-section__header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h2 className="mls-photo-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
+            <h2 className="mls-photo-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 600, color: '#000B14', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
               Select Images to Export
             </h2>
-            <span className="mls-photo-section__count" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#6A7282', lineHeight: '20px', letterSpacing: '-0.15px' }}>
-              {selectedPhotos.size} of {MLS_PHOTOS.length} selected
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <span className="mls-photo-section__count" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#6A7282', lineHeight: '20px' }}>
+                {selectedPhotos.size} of {MLS_PHOTOS.length} selected
+              </span>
+              <PhotoSectionActions />
+            </div>
           </div>
 
-          {/* Photo grid — 3 columns, 3 rows */}
+          {/* Photo grid — 3 columns, 3 rows; row 1 gap 16px, rows 2-3 gap 22px (Figma) */}
           <div className="mls-photo-grid" style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
             {[MLS_PHOTOS.slice(0, 3), MLS_PHOTOS.slice(3, 6), MLS_PHOTOS.slice(6, 9)].map((row, ri) => (
-              <div key={ri} className="mls-photo-grid__row" style={{ display: 'flex', gap: 22 }}>
+              <div key={ri} className="mls-photo-grid__row" style={{ display: 'flex', gap: ri === 0 ? 16 : 22 }}>
                 {row.map((photo) => (
                   <PhotoCard
                     key={photo.id}
@@ -1684,10 +1750,10 @@ export default function MLSMarketingHubContent() {
       }}>
         {/* Left: title + desc + button */}
         <div className="mls-ai-section__left" style={{ display: 'flex', flexDirection: 'column', gap: 16, flexShrink: 0 }}>
-          <h3 className="mls-ai-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#0A0A0A', margin: 0, lineHeight: '27px', letterSpacing: '-0.44px' }}>
+          <h3 className="mls-ai-section__title" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 600, color: '#000B14', margin: 0, lineHeight: '1.4' }}>
             Smart Marketing Description
           </h3>
-          <p className="mls-ai-section__description" style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#858A8E', lineHeight: '27px', margin: 0, maxWidth: 429, letterSpacing: '-0.44px' }}>
+          <p className="mls-ai-section__description" style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#858A8E', lineHeight: '1.4', margin: 0, maxWidth: 429 }}>
             Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you
           </p>
           <div className="mls-ai-section__cta">
@@ -1696,14 +1762,13 @@ export default function MLSMarketingHubContent() {
               onClick={handleGenerateClick}
               style={{
                 height: 46, padding: '12px 24px',
-                borderRadius: 12, border: 'none',
-                background: '#4F46E5', color: '#FFFFFF',
+                borderRadius: 6, border: 'none',
+                background: '#4F46E5', color: '#FFFDFF',
                 fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
-                textTransform: 'uppercase', cursor: 'pointer',
-                letterSpacing: '0.02em',
+                cursor: 'pointer', lineHeight: '1.4',
               }}
             >
-              {generatedDescription ? 'TRY ANOTHER' : 'TRY OUR AI DESCRIPTION GENERATOR'}
+              {generatedDescription ? 'Try our AI description generator' : 'Try our AI description generator'}
             </button>
           </div>
         </div>
