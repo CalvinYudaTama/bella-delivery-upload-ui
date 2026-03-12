@@ -116,6 +116,12 @@ export default function MLSTabletLayout({
   const [activeTab, setActiveTab] = useState<ActiveTab>('resize-watermark');
   const [propertyModalOpen, setPropertyModalOpen] = useState(false);
 
+  // ── Property modal field states ────────────────────────────────────────────
+  const [propType, setPropType] = useState('');
+  const [buyerProfile, setBuyerProfile] = useState('');
+  const [intendedUse, setIntendedUse] = useState('');
+  const [activePropField, setActivePropField] = useState<string | null>(null);
+
   // ── Dummy description text (Figma node 14654:65160) ───────────────────────
   const DUMMY_DESCRIPTION = "One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees & cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show. Open house Saturday Feb 21st 1 to 3 pm.";
 
@@ -929,7 +935,7 @@ export default function MLSTabletLayout({
             background: '#FFFFFF', borderRadius: 16,
             boxShadow: '0px 25px 50px -12px rgba(0,0,0,0.25)',
             width: '100%', maxWidth: 700,
-            overflow: 'hidden', boxSizing: 'border-box',
+            boxSizing: 'border-box',
           }}>
 
             {/* ── Header ──────────────────────────────────────────────────── */}
@@ -973,93 +979,183 @@ export default function MLSTabletLayout({
                 boxSizing: 'border-box',
               }}>
 
-                {/* Property type */}
-                <div className="mls-t__prop-field" style={{
-                  background: '#FFFFFF', border: '1px solid #ECEFF0',
-                  borderRadius: 16, height: 40,
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '4px 12px', boxSizing: 'border-box',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
-                      <path d="M1 6.5L7 1.5L13 6.5V13.5H9V9.5H5V13.5H1V6.5Z" stroke="#858A8E" strokeWidth="1" strokeLinejoin="round"/>
-                    </svg>
-                    <select style={{
-                      fontFamily: 'Inter', fontSize: 16, fontWeight: 500, color: '#858A8E',
-                      border: 'none', outline: 'none', background: 'transparent',
-                      appearance: 'none', WebkitAppearance: 'none', flex: 1, cursor: 'pointer',
-                      lineHeight: '22px',
+                {/* Property type — custom dropdown */}
+                <div className="mls-t__prop-field-wrap" style={{ position: 'relative' }}>
+                  <div
+                    className="mls-t__prop-field"
+                    onClick={() => setActivePropField(activePropField === 'type' ? null : 'type')}
+                    style={{
+                      background: '#FFFFFF', border: `1px solid ${activePropField === 'type' ? '#4F46E5' : '#ECEFF0'}`,
+                      borderRadius: activePropField === 'type' ? '16px 16px 0 0' : 16, height: 40,
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '4px 12px', boxSizing: 'border-box', cursor: 'pointer',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+                        <path d="M1 6.5L7 1.5L13 6.5V13.5H9V9.5H5V13.5H1V6.5Z" stroke="#858A8E" strokeWidth="1" strokeLinejoin="round"/>
+                      </svg>
+                      <span style={{
+                        fontFamily: 'Inter', fontSize: 16, fontWeight: 500,
+                        color: propType ? '#0A0A0A' : '#858A8E', lineHeight: '22px',
+                      }}>
+                        {propType || 'Property type'}
+                      </span>
+                    </div>
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{
+                      flexShrink: 0,
+                      transform: activePropField === 'type' ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s ease',
                     }}>
-                      <option value="">Property type</option>
-                      <option>Condo</option>
-                      <option>Townhouse</option>
-                      <option>Detached</option>
-                      <option>Other</option>
-                    </select>
+                      <path d="M3.5 5.5L7.5 9.5L11.5 5.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0 }}>
-                    <path d="M3.5 5.5L7.5 9.5L11.5 5.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  {activePropField === 'type' && (
+                    <div className="mls-t__prop-dropdown" style={{
+                      position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20,
+                      background: '#FFFFFF', border: '1px solid #4F46E5', borderTop: 'none',
+                      borderRadius: '0 0 16px 16px',
+                      boxShadow: '0 6px 16px rgba(0,0,0,0.1)', overflow: 'hidden',
+                    }}>
+                      {['Condo', 'Townhouse', 'Detached', 'Other'].map((opt) => (
+                        <button
+                          key={opt} type="button"
+                          onClick={() => { setPropType(opt); setActivePropField(null); }}
+                          style={{
+                            width: '100%', padding: '11px 16px', textAlign: 'left',
+                            background: propType === opt ? '#F5F3FF' : '#FFFFFF',
+                            border: 'none', borderBottom: '1px solid #F3F4F6',
+                            cursor: 'pointer', display: 'block',
+                            fontFamily: 'Inter', fontSize: 14,
+                            color: propType === opt ? '#4F46E5' : '#374151',
+                            fontWeight: propType === opt ? 500 : 400,
+                          }}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Intended buyer profile */}
-                <div className="mls-t__prop-field" style={{
-                  background: '#FFFFFF', border: '1px solid #ECEFF0',
-                  borderRadius: 16, height: 40,
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '4px 12px', boxSizing: 'border-box',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
-                      <circle cx="7" cy="4.5" r="2.5" stroke="#858A8E" strokeWidth="1"/>
-                      <path d="M1.5 12.5C1.5 10.01 4.02 8 7 8C9.98 8 12.5 10.01 12.5 12.5" stroke="#858A8E" strokeWidth="1" strokeLinecap="round"/>
-                    </svg>
-                    <select style={{
-                      fontFamily: 'Inter', fontSize: 16, fontWeight: 500, color: '#858A8E',
-                      border: 'none', outline: 'none', background: 'transparent',
-                      appearance: 'none', WebkitAppearance: 'none', flex: 1, cursor: 'pointer',
-                      lineHeight: '22px',
+                {/* Intended buyer profile — custom dropdown */}
+                <div className="mls-t__prop-field-wrap" style={{ position: 'relative' }}>
+                  <div
+                    className="mls-t__prop-field"
+                    onClick={() => setActivePropField(activePropField === 'buyer' ? null : 'buyer')}
+                    style={{
+                      background: '#FFFFFF', border: `1px solid ${activePropField === 'buyer' ? '#4F46E5' : '#ECEFF0'}`,
+                      borderRadius: activePropField === 'buyer' ? '16px 16px 0 0' : 16, height: 40,
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '4px 12px', boxSizing: 'border-box', cursor: 'pointer',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+                        <circle cx="7" cy="4.5" r="2.5" stroke="#858A8E" strokeWidth="1"/>
+                        <path d="M1.5 12.5C1.5 10.01 4.02 8 7 8C9.98 8 12.5 10.01 12.5 12.5" stroke="#858A8E" strokeWidth="1" strokeLinecap="round"/>
+                      </svg>
+                      <span style={{
+                        fontFamily: 'Inter', fontSize: 16, fontWeight: 500,
+                        color: buyerProfile ? '#0A0A0A' : '#858A8E', lineHeight: '22px',
+                      }}>
+                        {buyerProfile || 'Intended buyer profile'}
+                      </span>
+                    </div>
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{
+                      flexShrink: 0,
+                      transform: activePropField === 'buyer' ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s ease',
                     }}>
-                      <option value="">Intended buyer profile</option>
-                      <option>First-time buyer</option>
-                      <option>Investor</option>
-                      <option>Family</option>
-                      <option>Other</option>
-                    </select>
+                      <path d="M3.5 5.5L7.5 9.5L11.5 5.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0 }}>
-                    <path d="M3.5 5.5L7.5 9.5L11.5 5.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  {activePropField === 'buyer' && (
+                    <div className="mls-t__prop-dropdown" style={{
+                      position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20,
+                      background: '#FFFFFF', border: '1px solid #4F46E5', borderTop: 'none',
+                      borderRadius: '0 0 16px 16px',
+                      boxShadow: '0 6px 16px rgba(0,0,0,0.1)', overflow: 'hidden',
+                    }}>
+                      {['First-time buyer', 'Investor', 'Family', 'Other'].map((opt) => (
+                        <button
+                          key={opt} type="button"
+                          onClick={() => { setBuyerProfile(opt); setActivePropField(null); }}
+                          style={{
+                            width: '100%', padding: '11px 16px', textAlign: 'left',
+                            background: buyerProfile === opt ? '#F5F3FF' : '#FFFFFF',
+                            border: 'none', borderBottom: '1px solid #F3F4F6',
+                            cursor: 'pointer', display: 'block',
+                            fontFamily: 'Inter', fontSize: 14,
+                            color: buyerProfile === opt ? '#4F46E5' : '#374151',
+                            fontWeight: buyerProfile === opt ? 500 : 400,
+                          }}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Intended use */}
-                <div className="mls-t__prop-field" style={{
-                  background: '#FFFFFF', border: '1px solid #ECEFF0',
-                  borderRadius: 16, height: 40,
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '4px 12px', boxSizing: 'border-box',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
-                      <path d="M1 1.5H6.5L11 6L6 11L1 6V1.5Z" stroke="#858A8E" strokeWidth="1" strokeLinejoin="round"/>
-                      <circle cx="3.5" cy="3.5" r="0.75" fill="#858A8E"/>
-                    </svg>
-                    <select style={{
-                      fontFamily: 'Inter', fontSize: 16, fontWeight: 500, color: '#858A8E',
-                      border: 'none', outline: 'none', background: 'transparent',
-                      appearance: 'none', WebkitAppearance: 'none', flex: 1, cursor: 'pointer',
-                      lineHeight: '22px',
+                {/* Intended use — custom dropdown */}
+                <div className="mls-t__prop-field-wrap" style={{ position: 'relative' }}>
+                  <div
+                    className="mls-t__prop-field"
+                    onClick={() => setActivePropField(activePropField === 'use' ? null : 'use')}
+                    style={{
+                      background: '#FFFFFF', border: `1px solid ${activePropField === 'use' ? '#4F46E5' : '#ECEFF0'}`,
+                      borderRadius: activePropField === 'use' ? '16px 16px 0 0' : 16, height: 40,
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '4px 12px', boxSizing: 'border-box', cursor: 'pointer',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+                        <path d="M1 1.5H6.5L11 6L6 11L1 6V1.5Z" stroke="#858A8E" strokeWidth="1" strokeLinejoin="round"/>
+                        <circle cx="3.5" cy="3.5" r="0.75" fill="#858A8E"/>
+                      </svg>
+                      <span style={{
+                        fontFamily: 'Inter', fontSize: 16, fontWeight: 500,
+                        color: intendedUse ? '#0A0A0A' : '#858A8E', lineHeight: '22px',
+                      }}>
+                        {intendedUse || 'Intended use'}
+                      </span>
+                    </div>
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{
+                      flexShrink: 0,
+                      transform: activePropField === 'use' ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s ease',
                     }}>
-                      <option value="">Intended use</option>
-                      <option>Primary residence</option>
-                      <option>Investment</option>
-                      <option>Vacation home</option>
-                      <option>Other</option>
-                    </select>
+                      <path d="M3.5 5.5L7.5 9.5L11.5 5.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0 }}>
-                    <path d="M3.5 5.5L7.5 9.5L11.5 5.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  {activePropField === 'use' && (
+                    <div className="mls-t__prop-dropdown" style={{
+                      position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20,
+                      background: '#FFFFFF', border: '1px solid #4F46E5', borderTop: 'none',
+                      borderRadius: '0 0 16px 16px',
+                      boxShadow: '0 6px 16px rgba(0,0,0,0.1)', overflow: 'hidden',
+                    }}>
+                      {['Primary residence', 'Investment', 'Vacation home', 'Other'].map((opt) => (
+                        <button
+                          key={opt} type="button"
+                          onClick={() => { setIntendedUse(opt); setActivePropField(null); }}
+                          style={{
+                            width: '100%', padding: '11px 16px', textAlign: 'left',
+                            background: intendedUse === opt ? '#F5F3FF' : '#FFFFFF',
+                            border: 'none', borderBottom: '1px solid #F3F4F6',
+                            cursor: 'pointer', display: 'block',
+                            fontFamily: 'Inter', fontSize: 14,
+                            color: intendedUse === opt ? '#4F46E5' : '#374151',
+                            fontWeight: intendedUse === opt ? 500 : 400,
+                          }}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Property address */}
