@@ -671,8 +671,8 @@ export default function MLSMobileLayout({
             display: 'flex', flexDirection: 'column', gap: 11,
             maxHeight: 'calc(100vh - 40px)', overflowY: 'auto',
           }}>
-            {/* Header row: icon + title/subtitle + close */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, flexShrink: 0 }}>
+            {/* Header: row 1 — icon + title + close button (same line, no overlap) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
               {/* Instagram icon — 30×30 purple rounded square */}
               <div style={{
                 width: 30, height: 30, background: '#4F46E5',
@@ -685,21 +685,14 @@ export default function MLSMobileLayout({
                   <circle cx="9" cy="3" r="0.7" fill="white"/>
                 </svg>
               </div>
-              {/* Title & subtitle */}
-              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                <span style={{
-                  fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
-                  color: '#1C398E', lineHeight: '1.4',
-                }}>
-                  Instagram
-                </span>
-                <span style={{
-                  fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
-                  color: '#4F46E5', lineHeight: '1.4',
-                }}>
-                  Images will be resized to 1080 × 1080px (1:1 aspect ratio)
-                </span>
-              </div>
+              {/* Title */}
+              <span style={{
+                flex: 1, minWidth: 0,
+                fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+                color: '#1C398E', lineHeight: '1.4',
+              }}>
+                Instagram
+              </span>
               {/* Close button */}
               <button
                 type="button"
@@ -716,6 +709,14 @@ export default function MLSMobileLayout({
                 </svg>
               </button>
             </div>
+            {/* Header: row 2 — subtitle (indented to align with title) */}
+            <span style={{
+              paddingLeft: 38, flexShrink: 0,
+              fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
+              color: '#4F46E5', lineHeight: '1.4',
+            }}>
+              Images will be resized to 1080 × 1080px (1:1 aspect ratio)
+            </span>
 
             {/* Image Settings card */}
             <div style={{
