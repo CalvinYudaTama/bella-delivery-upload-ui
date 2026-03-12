@@ -617,30 +617,39 @@ export default function MLSMobileLayout({
 
               {/* Warning: no property info */}
               {showNoInfoWarning && !generatedDescription && (
-                <div className="mls-m__sd-warning" style={{
-                  background: '#FFFBEB', border: '1px solid #F59E0B',
-                  borderRadius: 8, padding: 16, boxSizing: 'border-box',
-                  display: 'flex', flexDirection: 'column', gap: 10,
-                }}>
-                  <div className="mls-m__sd-warning-body" style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                    <span style={{ fontSize: 16, lineHeight: 1 }}>⚠️</span>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      <span className="mls-m__sd-warning-title" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: '#92400E' }}>No Property Information</span>
-                      <span className="mls-m__sd-warning-subtitle" style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#92400E' }}>Property information was not provided during upload.</span>
+                <div className="mls-m__sd-warning-wrap" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  <div className="mls-m__sd-warning" style={{
+                    background: '#FFF3CD', border: '1px solid #FFC107',
+                    borderRadius: 8, padding: '17px 17px 16px',
+                  }}>
+                    <div className="mls-m__sd-warning-body" style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <div className="mls-m__sd-warning-icon" style={{ width: 20, height: 20, flexShrink: 0 }}>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                          <path d="M8.58 2.91L1.39 15.5C0.649 16.83 1.62 18.5 3.14 18.5H17.52C19.04 18.5 20.01 16.83 19.27 15.5L12.08 2.91C11.34 1.58 9.32 1.58 8.58 2.91Z" stroke="#856404" strokeWidth="1.3" strokeLinejoin="round"/>
+                          <path d="M9.14 8V11.5" stroke="#856404" strokeWidth="1.4" strokeLinecap="round"/>
+                          <circle cx="9.14" cy="13.5" r="0.75" fill="#856404"/>
+                        </svg>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span className="mls-m__sd-warning-title" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#856404' }}>No Property Information</span>
+                        <span className="mls-m__sd-warning-subtitle" style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#856404' }}>Property information was not provided during upload.</span>
+                      </div>
                     </div>
                   </div>
                   <button
                     type="button"
-                    className="mls-m__sd-warning-btn"
+                    className="mls-m__sd-provide-btn"
                     onClick={() => setPropertyModalOpen(true)}
                     style={{
-                      alignSelf: 'flex-start', padding: '8px 16px',
-                      borderRadius: 8, border: '1px solid #F59E0B',
-                      background: '#FFFFFF', cursor: 'pointer',
-                      fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#92400E',
+                      height: 46, padding: '12px 24px',
+                      borderRadius: 12, border: '2px solid #4F46E5',
+                      background: '#FFFDFF', cursor: 'pointer',
+                      alignSelf: 'flex-start',
                     }}
                   >
-                    Provide information now
+                    <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 700, color: '#4F46E5', textTransform: 'capitalize' }}>
+                      Provide information now
+                    </span>
                   </button>
                 </div>
               )}
