@@ -334,45 +334,41 @@ export default function MLSMobileLayout({
       {/* ── Single padded container matching Figma px-[20px] gap-[16px] ── */}
       <div style={{
         display: 'flex', flexDirection: 'column', gap: 16,
-        padding: '0 20px 20px', boxSizing: 'border-box',
+        padding: '0 8px 8px', boxSizing: 'border-box',
       }}>
 
         {/* ── TAB BAR ──────────────────────────────────────────────────── */}
+        {/* Pill: full-width flex so buttons split available space equally */}
         <div style={{
-          width: '100%', height: 36,
-          borderBottom: '1px solid #E9EAEB',
+          display: 'flex', alignItems: 'center', gap: 2, width: '100%',
+          background: '#FAFAFA', border: '1px solid #E9EAEB', borderRadius: 8,
           boxSizing: 'border-box',
-          display: 'flex', alignItems: 'flex-start',
         }}>
-          {/* Pill */}
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 2,
-            background: '#FAFAFA', border: '1px solid #E9EAEB', borderRadius: 8,
-          }}>
-            {(['resize-watermark', 'smart-description'] as ActiveTab[]).map((tab) => {
-              const isActive = activeTab === tab;
-              const label = tab === 'resize-watermark' ? 'Resize & Watermark' : 'Smart Description';
-              return (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  style={{
-                    height: 36, padding: '8px 12px',
-                    border: isActive ? '1px solid #D5D7DA' : '1px solid transparent',
-                    borderRadius: 8,
-                    background: isActive ? '#FFFFFF' : 'transparent',
-                    boxShadow: isActive ? '0px 1px 2px rgba(10,13,18,0.05)' : 'none',
-                    fontFamily: 'Inter', fontSize: 16, fontWeight: 600,
-                    color: isActive ? '#414651' : '#717680',
-                    cursor: 'pointer', lineHeight: '1.35',
-                    whiteSpace: 'nowrap', boxSizing: 'border-box',
-                  }}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+          {(['resize-watermark', 'smart-description'] as ActiveTab[]).map((tab) => {
+            const isActive = activeTab === tab;
+            const label = tab === 'resize-watermark' ? 'Resize & Watermark' : 'Smart Description';
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  flex: 1, minWidth: 0,
+                  height: 36, padding: '8px 12px',
+                  border: isActive ? '1px solid #D5D7DA' : '1px solid transparent',
+                  borderRadius: 8,
+                  background: isActive ? '#FFFFFF' : 'transparent',
+                  boxShadow: isActive ? '0px 1px 2px rgba(10,13,18,0.05)' : 'none',
+                  fontFamily: 'Inter', fontSize: 16, fontWeight: 600,
+                  color: isActive ? '#414651' : '#717680',
+                  cursor: 'pointer', lineHeight: '1.35',
+                  whiteSpace: 'nowrap', boxSizing: 'border-box',
+                  textAlign: 'center',
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
 
         {/* ══════════════════════════════════════════════════════════════ */}
