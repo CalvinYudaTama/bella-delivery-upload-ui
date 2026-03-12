@@ -114,6 +114,10 @@ export default function MLSMobileLayout({
 }: MLSMobileLayoutProps) {
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('resize-watermark');
+  const [propertyModalOpen, setPropertyModalOpen] = useState(false);
+
+  // ── Dummy description text ──────────────────────────────────────────────────
+  const DUMMY_DESCRIPTION = "One of the prettiest streets in Mount Pleasant West, this beautifully maintained 2-bed, 2-bath TH offers the perfect blend of comfort and space. Surrounded by mature trees & cherry blossoms, this setting feels peaceful and established while remaining in the heart of the city. Unique floor plan offers a generous dining area with high ceilings off the kitchen, ideal for hosting. Each bdrm on its own level for some solitude with 3 private outdoor spaces to suit your mood. 4-unit strata offering a boutique feel with a strong sense of community. Walkable to Cambie Village, Main Street, Canada Line and community gardens. Easy to show. Open house Saturday Feb 21st 1 to 3 pm.";
 
   // ── Logo overlay for preview ────────────────────────────────────────────────
   const logoOverlay = (
@@ -622,7 +626,7 @@ export default function MLSMobileLayout({
                   <button
                     type="button"
                     className="mls-m__sd-warning-btn"
-                    onClick={() => setShowPropertyModal(true)}
+                    onClick={() => setPropertyModalOpen(true)}
                     style={{
                       alignSelf: 'flex-start', padding: '8px 16px',
                       borderRadius: 8, border: '1px solid #F59E0B',
@@ -679,6 +683,250 @@ export default function MLSMobileLayout({
         )}
 
       </div>{/* end mls-m__inner */}
+
+      {/* ── Property Information Modal — fixed overlay ───────────────────── */}
+      {propertyModalOpen && (
+        <div className="mls-m__prop-overlay" style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: 'rgba(0,0,0,0.4)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px 16px', boxSizing: 'border-box',
+        }}>
+          <div className="mls-m__prop-modal" style={{
+            background: '#FFFFFF', borderRadius: 16,
+            boxShadow: '0px 25px 50px -12px rgba(0,0,0,0.25)',
+            width: '100%', maxWidth: 380,
+            maxHeight: 'calc(100vh - 40px)', overflowY: 'auto',
+            boxSizing: 'border-box',
+          }}>
+
+            {/* Header */}
+            <div className="mls-m__prop-header" style={{
+              height: 56, borderBottom: '1px solid #E5E7EB',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '0 16px', boxSizing: 'border-box', flexShrink: 0,
+            }}>
+              <span className="mls-m__prop-header-title" style={{
+                fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+                color: '#0A0A0A', lineHeight: '1.4',
+              }}>
+                Property Information
+              </span>
+              <button
+                type="button"
+                className="mls-m__prop-close"
+                onClick={() => setPropertyModalOpen(false)}
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: 'none', background: 'transparent',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  padding: 0, flexShrink: 0,
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                  <path d="M15 5L5 15M5 5L15 15" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="mls-m__prop-body" style={{
+              padding: 16, display: 'flex', flexDirection: 'column', gap: 14,
+              boxSizing: 'border-box',
+            }}>
+
+              {/* Subtitle */}
+              <p className="mls-m__prop-subtitle" style={{
+                fontFamily: 'Inter', fontSize: 13, fontWeight: 400,
+                color: '#6A7282', lineHeight: '1.5', margin: 0,
+              }}>
+                Please provide property details to generate an AI-powered marketing description.
+              </p>
+
+              {/* Fields */}
+              <div className="mls-m__prop-fields" style={{
+                background: '#FAFAFA', borderRadius: 12,
+                padding: 12, display: 'flex', flexDirection: 'column', gap: 10,
+                boxSizing: 'border-box',
+              }}>
+
+                {/* Property type */}
+                <div className="mls-m__prop-field" style={{
+                  background: '#FFFFFF', border: '1px solid #ECEFF0',
+                  borderRadius: 12, height: 40,
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '4px 12px', boxSizing: 'border-box',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+                      <path d="M1 6.5L7 1.5L13 6.5V13.5H9V9.5H5V13.5H1V6.5Z" stroke="#858A8E" strokeWidth="1" strokeLinejoin="round"/>
+                    </svg>
+                    <select style={{
+                      fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#858A8E',
+                      border: 'none', outline: 'none', background: 'transparent',
+                      appearance: 'none', WebkitAppearance: 'none', flex: 1, cursor: 'pointer',
+                      lineHeight: '1.4',
+                    }}>
+                      <option value="">Property type</option>
+                      <option>Condo</option>
+                      <option>Townhouse</option>
+                      <option>Detached</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0 }}>
+                    <path d="M3.5 5.5L7.5 9.5L11.5 5.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+
+                {/* Intended buyer profile */}
+                <div className="mls-m__prop-field" style={{
+                  background: '#FFFFFF', border: '1px solid #ECEFF0',
+                  borderRadius: 12, height: 40,
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '4px 12px', boxSizing: 'border-box',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+                      <circle cx="7" cy="4.5" r="2.5" stroke="#858A8E" strokeWidth="1"/>
+                      <path d="M1.5 12.5C1.5 10.01 4.02 8 7 8C9.98 8 12.5 10.01 12.5 12.5" stroke="#858A8E" strokeWidth="1" strokeLinecap="round"/>
+                    </svg>
+                    <select style={{
+                      fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#858A8E',
+                      border: 'none', outline: 'none', background: 'transparent',
+                      appearance: 'none', WebkitAppearance: 'none', flex: 1, cursor: 'pointer',
+                      lineHeight: '1.4',
+                    }}>
+                      <option value="">Intended buyer profile</option>
+                      <option>First-time buyer</option>
+                      <option>Investor</option>
+                      <option>Family</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0 }}>
+                    <path d="M3.5 5.5L7.5 9.5L11.5 5.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+
+                {/* Intended use */}
+                <div className="mls-m__prop-field" style={{
+                  background: '#FFFFFF', border: '1px solid #ECEFF0',
+                  borderRadius: 12, height: 40,
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '4px 12px', boxSizing: 'border-box',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+                      <path d="M1 1.5H6.5L11 6L6 11L1 6V1.5Z" stroke="#858A8E" strokeWidth="1" strokeLinejoin="round"/>
+                      <circle cx="3.5" cy="3.5" r="0.75" fill="#858A8E"/>
+                    </svg>
+                    <select style={{
+                      fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#858A8E',
+                      border: 'none', outline: 'none', background: 'transparent',
+                      appearance: 'none', WebkitAppearance: 'none', flex: 1, cursor: 'pointer',
+                      lineHeight: '1.4',
+                    }}>
+                      <option value="">Intended use</option>
+                      <option>Primary residence</option>
+                      <option>Investment</option>
+                      <option>Vacation home</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0 }}>
+                    <path d="M3.5 5.5L7.5 9.5L11.5 5.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+
+                {/* Property address */}
+                <div className="mls-m__prop-field" style={{
+                  background: '#FFFFFF', border: '1px solid #ECEFF0',
+                  borderRadius: 12, height: 40,
+                  display: 'flex', alignItems: 'center',
+                  padding: '4px 12px', gap: 8, boxSizing: 'border-box',
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+                    <path d="M7 1C4.79 1 3 2.79 3 5C3 7.25 6 11 7 13C8 11 11 7.25 11 5C11 2.79 9.21 1 7 1Z" stroke="#858A8E" strokeWidth="1"/>
+                    <circle cx="7" cy="5" r="1.5" stroke="#858A8E" strokeWidth="1"/>
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Property address"
+                    style={{
+                      flex: 1, border: 'none', outline: 'none', background: 'transparent',
+                      fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#858A8E',
+                      lineHeight: '1.4',
+                    }}
+                  />
+                </div>
+
+                {/* MLS listing link */}
+                <div className="mls-m__prop-field" style={{
+                  background: '#FFFFFF', border: '1px solid #ECEFF0',
+                  borderRadius: 12, height: 40,
+                  display: 'flex', alignItems: 'center',
+                  padding: '4px 12px', gap: 8, boxSizing: 'border-box',
+                }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+                    <path d="M5 7C5.55 7.55 6.45 7.55 7 7L9 5C9.55 4.45 9.55 3.55 9 3C8.45 2.45 7.55 2.45 7 3L6 4" stroke="#858A8E" strokeWidth="1" strokeLinecap="round"/>
+                    <path d="M7 5C6.45 4.45 5.55 4.45 5 5L3 7C2.45 7.55 2.45 8.45 3 9C3.55 9.55 4.45 9.55 5 9L6 8" stroke="#858A8E" strokeWidth="1" strokeLinecap="round"/>
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="MLS listing link if applicable"
+                    style={{
+                      flex: 1, border: 'none', outline: 'none', background: 'transparent',
+                      fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#858A8E',
+                      lineHeight: '1.4',
+                    }}
+                  />
+                </div>
+
+              </div>{/* /mls-m__prop-fields */}
+
+              {/* Footer buttons */}
+              <div className="mls-m__prop-footer" style={{
+                display: 'flex', gap: 10, justifyContent: 'flex-end', alignItems: 'center',
+              }}>
+                <button
+                  type="button"
+                  className="mls-m__prop-cancel-btn"
+                  onClick={() => setPropertyModalOpen(false)}
+                  style={{
+                    height: 40, padding: '0 16px',
+                    borderRadius: 8, border: 'none',
+                    background: '#F3F4F6', cursor: 'pointer',
+                    fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#4A5565',
+                    lineHeight: '1.4', whiteSpace: 'nowrap',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="mls-m__prop-submit-btn"
+                  onClick={() => {
+                    setGeneratedDescription(DUMMY_DESCRIPTION);
+                    setPropertyModalOpen(false);
+                  }}
+                  style={{
+                    height: 40, padding: '0 16px',
+                    borderRadius: 8, border: 'none',
+                    background: '#4F46E5', cursor: 'pointer',
+                    fontFamily: 'Inter', fontSize: 13, fontWeight: 700, color: '#FFFFFF',
+                    textTransform: 'uppercase', lineHeight: '1.4', whiteSpace: 'nowrap',
+                  }}
+                >
+                  Generate Description
+                </button>
+              </div>
+
+            </div>{/* /mls-m__prop-body */}
+
+          </div>
+        </div>
+      )}
 
       {/* ── Preview Modal — fixed overlay (Page 3) ───────────────────────── */}
       {showPreview && watermarkEnabled && (
@@ -757,7 +1005,7 @@ export default function MLSMobileLayout({
               }}>
                 Image Settings
               </span>
-              <div className="mls-m__preview-settings-slider-col" style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              <div className="mls-m__preview-settings-slider-col" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div className="mls-m__preview-settings-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span className="mls-m__preview-settings-label" style={{
                     fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
