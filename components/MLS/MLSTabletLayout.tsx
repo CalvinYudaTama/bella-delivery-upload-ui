@@ -59,6 +59,7 @@ export interface MLSTabletLayoutProps {
   isEditingDescription: boolean;
   setIsEditingDescription: (v: boolean) => void;
   showNoInfoWarning: boolean;
+  resetNoInfoWarning: () => void;
   handleGenerateClick: () => void;
   setShowPropertyModal: (v: boolean) => void;
 
@@ -106,6 +107,7 @@ export default function MLSTabletLayout({
   isEditingDescription,
   setIsEditingDescription,
   showNoInfoWarning,
+  resetNoInfoWarning,
   handleGenerateClick,
   setShowPropertyModal,
   containerRef,
@@ -317,7 +319,11 @@ export default function MLSTabletLayout({
               <button
                 key={tab}
                 className={`mls-tablet__tab${isActive ? ' mls-tablet__tab--active' : ''}`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  // Reset warning state on every tab switch (unless AI result already generated)
+                  if (!generatedDescription) resetNoInfoWarning();
+                }}
                 style={{
                   height: 36,
                   padding: '8px 12px',

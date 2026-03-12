@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import MLSTabletLayout from './MLSTabletLayout';
+import MLSMobileLayout from './MLSMobileLayout';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -903,6 +904,51 @@ export default function MLSMarketingHubContent() {
   // ────────────────────────────────────────────────────────────────────────────
   if (isMobile) {
     return (
+      <MLSMobileLayout
+        containerRef={containerRef as React.RefObject<HTMLDivElement>}
+        selectedResize={selectedResize}
+        setSelectedResize={setSelectedResize}
+        dropdownOpen={dropdownOpen}
+        setDropdownOpen={setDropdownOpen}
+        watermarkEnabled={watermarkEnabled}
+        handleWatermarkToggle={handleWatermarkToggle}
+        watermarkFile={watermarkFile}
+        watermarkPreviewUrl={watermarkPreviewUrl}
+        watermarkInputRef={watermarkInputRef}
+        handleWatermarkUpload={handleWatermarkUpload}
+        handleWatermarkClear={handleWatermarkClear}
+        watermarkSize={watermarkSize}
+        setWatermarkSize={setWatermarkSize}
+        formatFileSize={formatFileSize}
+        showPreview={showPreview}
+        setShowPreview={setShowPreview}
+        previewIndex={previewIndex}
+        setPreviewIndex={setPreviewIndex}
+        applyToAll={applyToAll}
+        setApplyToAll={setApplyToAll}
+        photosToPreview={photosToPreview}
+        sliderCSS={sliderCSS}
+        selectedPhotos={selectedPhotos}
+        setSelectedPhotos={setSelectedPhotos}
+        togglePhoto={togglePhoto}
+        toggleSelectAll={toggleSelectAll}
+        allSelected={allSelected}
+        selectedCount={selectedCount}
+        hasSelection={hasSelection}
+        generatedDescription={generatedDescription}
+        setGeneratedDescription={setGeneratedDescription}
+        isEditingDescription={isEditingDescription}
+        setIsEditingDescription={setIsEditingDescription}
+        showNoInfoWarning={showNoInfoWarning}
+        handleGenerateClick={handleGenerateClick}
+        setShowPropertyModal={setShowPropertyModal}
+      />
+    );
+  }
+
+  // ── OLD MOBILE BLOCK REMOVED — now delegated to MLSMobileLayout above ──
+  if (false) {
+    return (
       <div ref={containerRef} className="mls-hub mls-hub--mobile" style={{
         width: '100%', display: 'flex', flexDirection: 'column', gap: 16,
         boxSizing: 'border-box',
@@ -1223,7 +1269,7 @@ export default function MLSMarketingHubContent() {
               {isEditingDescription ? (
                 <textarea
                   autoFocus
-                  value={generatedDescription}
+                  value={generatedDescription ?? ''}
                   onChange={e => setGeneratedDescription(e.target.value)}
                   onBlur={() => setIsEditingDescription(false)}
                   style={{
@@ -1291,6 +1337,7 @@ export default function MLSMarketingHubContent() {
         isEditingDescription={isEditingDescription}
         setIsEditingDescription={setIsEditingDescription}
         showNoInfoWarning={showNoInfoWarning}
+        resetNoInfoWarning={() => setShowNoInfoWarning(false)}
         handleGenerateClick={handleGenerateClick}
         setShowPropertyModal={setShowPropertyModal}
       />
