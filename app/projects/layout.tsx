@@ -233,7 +233,7 @@ function ProjectsLayoutInner({ children }: { children: React.ReactNode }) {
         style={{
           flex: 1,
           minWidth: 0,
-          overflowX: 'hidden',
+          overflowX: 'clip',
           backgroundColor: '#F9FAFB',
           paddingTop: isDesktop ? 24 : 16,
           paddingLeft: isDesktop ? 32 : 0,
