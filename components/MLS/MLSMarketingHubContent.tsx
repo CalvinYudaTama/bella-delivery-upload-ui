@@ -356,10 +356,11 @@ export default function MLSMarketingHubContent() {
   // Compact (tablet/mobile) : width < 768px
   // Desktop                 : width ≥ 768px
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(
-    typeof window !== 'undefined' ? window.innerWidth : 1280
-  );
+  // Always start with 1280 so SSR and first client render match,
+  // then update to the real width after mount to avoid hydration mismatch.
+  const [containerWidth, setContainerWidth] = useState<number>(1280);
   useEffect(() => {
+    setContainerWidth(window.innerWidth);
     const handleResize = () => setContainerWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
