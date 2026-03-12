@@ -185,143 +185,8 @@ export default function MLSMobileLayout({
     </div>
   );
 
-  // ── Preview Modal (Page 3) ──────────────────────────────────────────────────
-  if (showPreview && watermarkEnabled) {
-    return (
-      <div
-        ref={containerRef}
-        className="mls-hub mls-hub--mobile mls-hub--preview"
-        style={{
-          width: '100%', display: 'flex', flexDirection: 'column',
-          gap: 0, boxSizing: 'border-box', background: '#FAFAFA',
-        }}
-      >
-        {/* ── Preview Modal Header ─────────────────────────────────────── */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 20px', background: '#FFFFFF',
-          borderBottom: '1px solid #E5E7EB', boxSizing: 'border-box',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <InstagramIcon size={24} />
-            <span style={{
-              fontFamily: 'Inter', fontSize: 14, fontWeight: 600,
-              color: '#111827', lineHeight: '1.4',
-            }}>
-              Instagram
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowPreview(false)}
-            style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              padding: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#374151',
-            }}
-            aria-label="Close preview"
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M15 5L5 15M5 5L15 15" stroke="#374151" strokeWidth="1.75" strokeLinecap="round"/>
-            </svg>
-          </button>
-        </div>
-
-        {/* ── Subtitle ─────────────────────────────────────────────────── */}
-        <div style={{ padding: '10px 20px 0', boxSizing: 'border-box' }}>
-          <span style={{
-            fontFamily: 'Inter', fontSize: 12, fontWeight: 400,
-            color: '#6366F1', lineHeight: '1.5',
-          }}>
-            Images will be resized to 1080 × 1080px (1:1 aspect ratio)
-          </span>
-        </div>
-
-        {/* ── Content ──────────────────────────────────────────────────── */}
-        <div style={{ padding: '12px 20px 20px', display: 'flex', flexDirection: 'column', gap: 12, boxSizing: 'border-box' }}>
-
-          {/* Image Settings section */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <span style={{
-              fontFamily: 'Inter', fontSize: 14, fontWeight: 600,
-              color: '#111827', lineHeight: '1.4',
-            }}>
-              Image Settings
-            </span>
-
-            {/* Logo size slider row */}
-            <div style={{
-              background: '#FFFFFF', border: '1px solid #E5E7EB',
-              borderRadius: 10, padding: '12px 16px', boxSizing: 'border-box',
-              display: 'flex', flexDirection: 'column', gap: 10,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{
-                  fontFamily: 'Inter', fontSize: 13, fontWeight: 400,
-                  color: '#374151', lineHeight: '1.4',
-                }}>
-                  Slide to adjust the logo size
-                </span>
-                <span style={{
-                  fontFamily: 'Inter', fontSize: 13, fontWeight: 600,
-                  color: '#6366F1', lineHeight: '1.4',
-                }}>
-                  {watermarkSize}%
-                </span>
-              </div>
-              <style>{sliderCSS}</style>
-              <input
-                className="mls-watermark-slider"
-                type="range" min={0} max={100} value={watermarkSize}
-                onChange={(e) => setWatermarkSize(Number(e.target.value))}
-                style={{ width: '100%' }}
-              />
-            </div>
-          </div>
-
-          {/* Image preview with dashed border */}
-          <div style={{
-            border: '2px dashed #6366F1',
-            borderRadius: 10, overflow: 'hidden',
-            position: 'relative', width: '100%',
-            aspectRatio: '1 / 1', background: '#F3F4F6',
-          }}>
-            {photosToPreview.length > 0 && (
-              <img
-                src={photosToPreview[previewIndex]?.url ?? ''}
-                alt={photosToPreview[previewIndex]?.label ?? ''}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-            )}
-            {logoOverlay}
-            {bellaLogo}
-          </div>
-
-          {/* Pagination */}
-          {pagination}
-
-          {/* Confirm button */}
-          <button
-            type="button"
-            onClick={() => setShowPreview(false)}
-            style={{
-              width: '100%', height: 46, borderRadius: 8, border: 'none',
-              background: '#6366F1', color: '#FFFFFF',
-              fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
-              cursor: 'pointer', lineHeight: '1.4',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxSizing: 'border-box',
-            }}
-          >
-            Confirm
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // ────────────────────────────────────────────────────────────────────────────
-  //  MAIN LAYOUT (Page 1 / Page 2 / Page 4)
+  //  MAIN LAYOUT (Page 1 / Page 2 / Page 4) + Preview Modal overlay
   // ────────────────────────────────────────────────────────────────────────────
   return (
     <div
@@ -788,6 +653,144 @@ export default function MLSMobileLayout({
         )}
 
       </div>{/* end unified padded container */}
+
+      {/* ── Preview Modal — fixed overlay (Page 3) ───────────────────────── */}
+      {showPreview && watermarkEnabled && (
+        <div style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(133,138,142,0.6)',
+          zIndex: 100,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px 16px', boxSizing: 'border-box',
+        }}>
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: 7, border: '1px solid #E5E7EB',
+            width: '100%', maxWidth: 350,
+            padding: 16, boxSizing: 'border-box',
+            display: 'flex', flexDirection: 'column', gap: 11,
+            maxHeight: 'calc(100vh - 40px)', overflowY: 'auto',
+          }}>
+            {/* Header row: icon + title/subtitle + close */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, flexShrink: 0 }}>
+              {/* Instagram icon — 30×30 purple rounded square */}
+              <div style={{
+                width: 30, height: 30, background: '#4F46E5',
+                borderRadius: 7, flexShrink: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="15" height="15" viewBox="0 0 12 12" fill="none">
+                  <rect x="1.5" y="1.5" width="9" height="9" rx="2.5" stroke="white" strokeWidth="1.2"/>
+                  <circle cx="6" cy="6" r="2.2" stroke="white" strokeWidth="1.2"/>
+                  <circle cx="9" cy="3" r="0.7" fill="white"/>
+                </svg>
+              </div>
+              {/* Title & subtitle */}
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                <span style={{
+                  fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+                  color: '#1C398E', lineHeight: '1.4',
+                }}>
+                  Instagram
+                </span>
+                <span style={{
+                  fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
+                  color: '#4F46E5', lineHeight: '1.4',
+                }}>
+                  Images will be resized to 1080 × 1080px (1:1 aspect ratio)
+                </span>
+              </div>
+              {/* Close button */}
+              <button
+                type="button"
+                onClick={() => setShowPreview(false)}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  padding: 0, flexShrink: 0, width: 24, height: 24,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+                aria-label="Close preview"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6L18 18" stroke="#374151" strokeWidth="1.75" strokeLinecap="round"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Image Settings card */}
+            <div style={{
+              background: '#F9FAFB', border: '1px solid #E5E7EB',
+              borderRadius: 10, padding: 11, boxSizing: 'border-box',
+              display: 'flex', flexDirection: 'column', gap: 11, flexShrink: 0,
+            }}>
+              <span style={{
+                fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+                color: '#4F46E5', lineHeight: '1.4',
+              }}>
+                Image Settings
+              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{
+                    fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+                    color: '#52595F', lineHeight: '1.5',
+                  }}>
+                    Slide to adjust the logo size
+                  </span>
+                  <span style={{
+                    fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+                    color: '#4F46E5', lineHeight: '1.5',
+                  }}>
+                    {watermarkSize}%
+                  </span>
+                </div>
+                <style>{sliderCSS}</style>
+                <input
+                  className="mls-watermark-slider"
+                  type="range" min={0} max={100} value={watermarkSize}
+                  onChange={(e) => setWatermarkSize(Number(e.target.value))}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+
+            {/* Image preview + pagination */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'center', flexShrink: 0 }}>
+              <div style={{
+                width: '100%', height: 285, overflow: 'hidden',
+                position: 'relative', flexShrink: 0,
+              }}>
+                {photosToPreview.length > 0 && (
+                  <img
+                    src={photosToPreview[previewIndex]?.url ?? ''}
+                    alt={photosToPreview[previewIndex]?.label ?? ''}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                )}
+                {logoOverlay}
+                {bellaLogo}
+              </div>
+              {pagination}
+            </div>
+
+            {/* Confirm button */}
+            <button
+              type="button"
+              onClick={() => setShowPreview(false)}
+              style={{
+                width: '100%', height: 33, borderRadius: 4, border: 'none',
+                background: '#4F46E5', color: '#FFFFFF',
+                fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
+                cursor: 'pointer', lineHeight: '1.5',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxSizing: 'border-box', flexShrink: 0,
+              }}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
