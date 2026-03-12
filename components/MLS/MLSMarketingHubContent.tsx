@@ -1,17 +1,18 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import MLSTabletLayout from './MLSTabletLayout';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface MLSPhoto {
+export interface MLSPhoto {
   id: string;
   url: string;
   label: string;
 }
 
 // ─── Dropdown options (from Figma comment by Violet) ─────────────────────────
-const RESIZE_OPTIONS = [
+export const RESIZE_OPTIONS = [
   'realtor.com – 2,000 × 1,500 px (4:3)',
   'Realtor.ca – 2,000 × 1,500 px (4:3)',
   'Zillow – 2,048 × 1,536 px (4:3)',
@@ -22,7 +23,7 @@ const RESIZE_OPTIONS = [
 
 // ─── Dummy photos (from Figma node 13563:31059) ───────────────────────────────
 // TODO (Riley): replace with real API images when available
-const MLS_PHOTOS: MLSPhoto[] = [
+export const MLS_PHOTOS: MLSPhoto[] = [
   { id: '1', url: '/images/mls/mls-photo-1.png', label: 'Kitchen' },
   { id: '2', url: '/images/mls/mls-photo-2.png', label: 'Bedroom' },
   { id: '3', url: '/images/mls/mls-photo-3.png', label: 'Living Room' },
@@ -40,14 +41,14 @@ const MLS_PHOTOS: MLSPhoto[] = [
 // Mobile   : < 480px
 
 // ─── Chevron Down Icon ────────────────────────────────────────────────────────
-const ChevronDownIcon = ({ color = '#535862', size = 16 }: { color?: string; size?: number }) => (
+export const ChevronDownIcon = ({ color = '#535862', size = 16 }: { color?: string; size?: number }) => (
   <svg className="mls-chevron-icon" width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M4 6L8 10L12 6" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 // ─── Instagram Icon ───────────────────────────────────────────────────────────
-const InstagramIcon = ({ size = 40 }: { size?: number }) => (
+export const InstagramIcon = ({ size = 40 }: { size?: number }) => (
   <div className="mls-platform-icon" style={{
     width: size, height: size, borderRadius: 10, flexShrink: 0,
     background: 'linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCAF45 100%)',
@@ -62,14 +63,14 @@ const InstagramIcon = ({ size = 40 }: { size?: number }) => (
 );
 
 // ─── Check Icon ──────────────────────────────────────────────────────────────
-const CheckIcon = () => (
+export const CheckIcon = () => (
   <svg className="mls-check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
     <path d="M4 10L8 14L16 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 // ─── Photo Card ───────────────────────────────────────────────────────────────
-function PhotoCard({
+export function PhotoCard({
   photo,
   isSelected,
   onToggle,
@@ -135,7 +136,7 @@ function PhotoCard({
 }
 
 // ─── Watermark Toggle Button (shared) ────────────────────────────────────────
-function WatermarkToggle({
+export function WatermarkToggle({
   enabled,
   onToggle,
 }: {
@@ -168,7 +169,7 @@ function WatermarkToggle({
 // ─── Watermark Size Slider ────────────────────────────────────────────────────
 // Defined OUTSIDE the main component so React never unmounts/remounts it on re-render.
 // (Inline component defs inside a function body cause remount every render → drag breaks.)
-function WatermarkSizeSlider({
+export function WatermarkSizeSlider({
   watermarkSize,
   setWatermarkSize,
   sliderCSS,
@@ -196,7 +197,7 @@ function WatermarkSizeSlider({
 // ─── Upload Button ────────────────────────────────────────────────────────────
 // Also defined OUTSIDE the main component for the same remount-prevention reason.
 // NOTE: Logo size slider is NOT here — it lives only in the Preview section.
-function UploadButton({
+export function UploadButton({
   watermarkFile,
   watermarkInputRef,
   handleWatermarkUpload,
@@ -1258,280 +1259,45 @@ export default function MLSMarketingHubContent() {
   // ────────────────────────────────────────────────────────────────────────────
   if (isCompact) {
     return (
-      <div ref={containerRef} className="mls-hub mls-hub--tablet" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0 }}>
-
-        {/* ── TABLET: Platform header row (compact, with chevron) ────────────── */}
-        <div className="mls-platform-header mls-platform-header--tablet" style={{
-          width: '100%', background: '#FFFFFF',
-          border: '1px solid #E5E7EB', borderRadius: '10px 10px 0 0',
-          padding: '8px 13px', boxSizing: 'border-box',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          minHeight: 57,
-        }}>
-          {/* Left: icon + title + subtitle + chevron — clickable to open resize dropdown */}
-          <div
-            className="mls-platform-header__info"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0, cursor: 'pointer' }}
-          >
-            <InstagramIcon size={20} />
-            <div className="mls-platform-header__text" style={{ display: 'flex', flexDirection: 'column', gap: 0, minWidth: 0 }}>
-              <span className="mls-platform-header__title" style={{
-                fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
-                color: '#1C398E', lineHeight: '21px', letterSpacing: '-0.15px',
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-              }}>
-                Instagram • Square Post
-              </span>
-              <span className="mls-platform-header__subtitle" style={{
-                fontFamily: 'Inter', fontSize: 12, fontWeight: 400,
-                color: '#4F46E5', lineHeight: '16px',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>
-                {selectedResize}
-              </span>
-            </div>
-            <div style={{
-              flexShrink: 0, marginLeft: 4,
-              transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: 'transform 0.2s ease',
-            }}>
-              <ChevronDownIcon color="#4F46E5" size={24} />
-            </div>
-          </div>
-
-          {/* Right: Preview toggle + Select All / Deselect + Export */}
-          <div className="mls-platform-header__actions" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 12 }}>
-            <PreviewToggleBtn />
-            <PlatformActions />
-          </div>
-        </div>
-
-        {/* ── TABLET: Resize dropdown — same style as desktop ── */}
-        {dropdownOpen && (
-          <div style={{
-            width: '100%', background: '#FFFFFF',
-            border: '1px solid #E9EAEB', borderRadius: 8,
-            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-            zIndex: 50, boxSizing: 'border-box', overflow: 'hidden',
-            marginTop: 2,
-          }}>
-            {RESIZE_OPTIONS.map((opt) => (
-              <button
-                key={opt}
-                onClick={() => { setSelectedResize(opt); setDropdownOpen(false); }}
-                style={{
-                  width: '100%', padding: '10px 12px', textAlign: 'left',
-                  background: opt === selectedResize ? '#F5F3FF' : 'transparent',
-                  border: 'none', cursor: 'pointer', display: 'block', boxSizing: 'border-box',
-                  fontFamily: 'Inter', fontSize: 14,
-                  color: opt === selectedResize ? '#4F46E5' : '#000B14',
-                  fontWeight: opt === selectedResize ? 500 : 400,
-                }}
-                onMouseEnter={(e) => { if (opt !== selectedResize) (e.currentTarget as HTMLElement).style.background = '#F9FAFB'; }}
-                onMouseLeave={(e) => { if (opt !== selectedResize) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* ── TABLET: Watermark row ─────────────────────────────────────────── */}
-        <div className="mls-topbar mls-topbar--tablet" style={{
-          width: '100%', background: '#FFFFFF',
-          border: '1px solid #E5E7EB', borderTop: 'none',
-          borderRadius: '0 0 10px 10px',
-          padding: '13px', boxSizing: 'border-box',
-        }}>
-          <div className="mls-topbar__watermark-row--tablet" style={{
-            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-          }}>
-            {/* Left: label + hint */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span className="mls-topbar__watermark-label" style={{
-                fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#364153', lineHeight: '20px',
-              }}>
-                Watermark
-              </span>
-              <span className="mls-topbar__watermark-hint" style={{
-                fontFamily: 'Inter', fontSize: 12, color: '#858A8E', lineHeight: '16.5px',
-              }}>
-                Accepts PNG, JPG • Max 2MB
-              </span>
-            </div>
-            {/* Right: toggle */}
-            <WatermarkToggle enabled={watermarkEnabled} onToggle={handleWatermarkToggle} />
-          </div>
-
-          {/* Upload button (visible when watermark ON) — slider moved to Preview section */}
-          {watermarkEnabled && (
-            <div className="mls-topbar__watermark-upload--tablet" style={{
-              display: 'flex', alignItems: 'center', gap: 12, marginTop: 10, flexWrap: 'wrap',
-            }}>
-              <UploadButton
-                watermarkFile={watermarkFile}
-                watermarkInputRef={watermarkInputRef}
-                handleWatermarkUpload={handleWatermarkUpload}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* ── TABLET: Watermark file confirmation bar ───────────────────────── */}
-        {watermarkFile && (
-          <div style={{ marginTop: 8 }}>
-            <WatermarkBar />
-          </div>
-        )}
-
-        {/* ── TABLET: Preview section (when open) */}
-        {PreviewSection()}
-
-        {/* ── TABLET: Content area ─────────────────────────────────────────── */}
-        <div className="mls-content-card mls-content-card--tablet" style={{
-          background: '#FFFFFF', borderRadius: 10,
-          border: '1px solid #E5E7EB', width: '100%',
-          boxSizing: 'border-box', display: 'flex',
-          flexDirection: 'column', gap: 24,
-          padding: 13, marginTop: 16,
-        }}>
-
-          {/* ── Select Images to Export ──────────────────────────────────────── */}
-          <div className="mls-photo-section" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div className="mls-photo-section__header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h2 className="mls-photo-section__title" style={{
-                fontFamily: 'Inter', fontSize: 15, fontWeight: 500, color: '#0A0A0A',
-                margin: 0, lineHeight: '22.5px', letterSpacing: '-0.15px',
-              }}>
-                Select Images to Export
-              </h2>
-              <span className="mls-photo-section__count" style={{
-                fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#6A7282',
-                lineHeight: '19.5px', letterSpacing: '-0.15px',
-              }}>
-                {selectedPhotos.size} of {MLS_PHOTOS.length} selected
-              </span>
-            </div>
-
-            {/* Photo grid — 3 columns, gap 12px on tablet */}
-            <div className="mls-photo-grid" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {[MLS_PHOTOS.slice(0, 3), MLS_PHOTOS.slice(3, 6), MLS_PHOTOS.slice(6, 9)].map((row, ri) => (
-                <div key={ri} className="mls-photo-grid__row" style={{ display: 'flex', gap: 12 }}>
-                  {row.map((photo) => (
-                    <PhotoCard
-                      key={photo.id}
-                      photo={photo}
-                      isSelected={selectedPhotos.has(photo.id)}
-                      onToggle={() => togglePhoto(photo.id)}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ── Smart Marketing Description (tablet) ─────────────────────────── */}
-          <div className="mls-ai-section mls-ai-section--tablet" style={{
-            display: 'flex', flexDirection: 'column', gap: 16,
-          }}>
-            <h3 style={{
-              fontFamily: 'Inter', fontSize: 15, fontWeight: 500, color: '#0A0A0A',
-              margin: 0, lineHeight: '22.5px', letterSpacing: '-0.15px',
-            }}>
-              Smart Marketing Description
-            </h3>
-            <p style={{
-              fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#858A8E',
-              lineHeight: '21px', margin: 0, letterSpacing: '-0.15px',
-            }}>
-              Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you.
-            </p>
-            <button
-              onClick={handleGenerateClick}
-              style={{
-                width: '100%', height: 46, padding: '12px 24px',
-                borderRadius: 12, border: 'none',
-                background: '#4F46E5', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxSizing: 'border-box',
-              }}
-            >
-              <span style={{
-                fontFamily: 'Inter', fontSize: 14, fontWeight: 700,
-                color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.02em',
-              }}>
-                {generatedDescription ? 'TRY ANOTHER' : 'TRY OUR AI DESCRIPTION GENERATOR'}
-              </span>
-            </button>
-
-            {/* Warning: no property info */}
-            {showNoInfoWarning && !generatedDescription && (
-              <div style={{
-                background: '#FFFBEB', border: '1px solid #F59E0B',
-                borderRadius: 12, padding: 16, boxSizing: 'border-box',
-                display: 'flex', flexDirection: 'column', gap: 10,
-              }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                  <span style={{ fontSize: 16, lineHeight: 1 }}>⚠️</span>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: '#92400E' }}>No Property Information</span>
-                    <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#92400E' }}>Property information was not provided during upload.</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowPropertyModal(true)}
-                  style={{
-                    alignSelf: 'flex-start', padding: '8px 16px',
-                    borderRadius: 8, border: '1px solid #F59E0B',
-                    background: '#FFFFFF', cursor: 'pointer',
-                    fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#92400E',
-                  }}
-                >
-                  Provide information now
-                </button>
-              </div>
-            )}
-
-            {/* AI result panel */}
-            {generatedDescription && (
-              <div
-                onClick={() => setIsEditingDescription(true)}
-                style={{
-                  background: '#FAFAFA', borderRadius: 12,
-                  padding: 16, boxSizing: 'border-box',
-                  cursor: 'text', border: isEditingDescription ? '2px solid #4F46E5' : '2px solid transparent',
-                  transition: 'border-color 0.15s',
-                }}
-              >
-                {isEditingDescription ? (
-                  <textarea
-                    autoFocus
-                    value={generatedDescription}
-                    onChange={e => setGeneratedDescription(e.target.value)}
-                    onBlur={() => setIsEditingDescription(false)}
-                    style={{
-                      width: '100%', minHeight: 120, resize: 'vertical',
-                      fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
-                      color: '#0A0A0A', lineHeight: '22px', letterSpacing: '-0.15px',
-                      border: 'none', background: 'transparent', outline: 'none', padding: 0,
-                    }}
-                  />
-                ) : (
-                  <p style={{
-                    fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
-                    color: '#0A0A0A', lineHeight: '22px',
-                    letterSpacing: '-0.15px', margin: 0,
-                  }}>
-                    {generatedDescription}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-
-        </div>
-      </div>
+      <MLSTabletLayout
+        containerRef={containerRef as React.RefObject<HTMLDivElement>}
+        selectedResize={selectedResize}
+        setSelectedResize={setSelectedResize}
+        dropdownOpen={dropdownOpen}
+        setDropdownOpen={setDropdownOpen}
+        watermarkEnabled={watermarkEnabled}
+        handleWatermarkToggle={handleWatermarkToggle}
+        watermarkFile={watermarkFile}
+        watermarkPreviewUrl={watermarkPreviewUrl}
+        watermarkInputRef={watermarkInputRef}
+        handleWatermarkUpload={handleWatermarkUpload}
+        handleWatermarkClear={handleWatermarkClear}
+        watermarkSize={watermarkSize}
+        setWatermarkSize={setWatermarkSize}
+        formatFileSize={formatFileSize}
+        showPreview={showPreview}
+        setShowPreview={setShowPreview}
+        previewIndex={previewIndex}
+        setPreviewIndex={setPreviewIndex}
+        applyToAll={applyToAll}
+        setApplyToAll={setApplyToAll}
+        photosToPreview={photosToPreview}
+        sliderCSS={sliderCSS}
+        selectedPhotos={selectedPhotos}
+        setSelectedPhotos={setSelectedPhotos}
+        togglePhoto={togglePhoto}
+        toggleSelectAll={toggleSelectAll}
+        allSelected={allSelected}
+        selectedCount={selectedCount}
+        hasSelection={hasSelection}
+        generatedDescription={generatedDescription}
+        setGeneratedDescription={setGeneratedDescription}
+        isEditingDescription={isEditingDescription}
+        setIsEditingDescription={setIsEditingDescription}
+        showNoInfoWarning={showNoInfoWarning}
+        handleGenerateClick={handleGenerateClick}
+        setShowPropertyModal={setShowPropertyModal}
+      />
     );
   }
 
