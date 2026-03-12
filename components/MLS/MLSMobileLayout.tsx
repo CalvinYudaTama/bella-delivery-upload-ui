@@ -331,10 +331,10 @@ export default function MLSMobileLayout({
         width: '100%', boxSizing: 'border-box', background: '#FAFAFA',
       }}
     >
-      {/* ── Unified padded container: gap 16 between all sections ──────── */}
+      {/* ── Single padded container matching Figma px-[20px] gap-[16px] ── */}
       <div style={{
         display: 'flex', flexDirection: 'column', gap: 16,
-        boxSizing: 'border-box',
+        padding: '0 20px 20px', boxSizing: 'border-box',
       }}>
 
         {/* ── TAB BAR ──────────────────────────────────────────────────── */}
@@ -343,7 +343,6 @@ export default function MLSMobileLayout({
           borderBottom: '1px solid #E9EAEB',
           boxSizing: 'border-box',
           display: 'flex', alignItems: 'flex-start',
-          padding: '0 20px',
         }}>
           {/* Pill */}
           <div style={{
@@ -380,7 +379,7 @@ export default function MLSMobileLayout({
         {/*  TAB 1: Resize & Watermark                                   */}
         {/* ══════════════════════════════════════════════════════════════ */}
         {activeTab === 'resize-watermark' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '0 20px 20px', boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, boxSizing: 'border-box' }}>
             {/* ── Platform selector card ──────────────────────────────── */}
             <div style={{ position: 'relative' }}>
               <div
@@ -679,7 +678,7 @@ export default function MLSMobileLayout({
         {/*  TAB 2: Smart Description (Page 4)                               */}
       {/* ══════════════════════════════════════════════════════════════════ */}
         {activeTab === 'smart-description' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '0 20px 20px', boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, boxSizing: 'border-box' }}>
 
           {/* Card */}
           <div style={{
