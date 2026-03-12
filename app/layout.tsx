@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Montserrat, Tenor_Sans } from "next/font/google";
 import "./globals.css";
 import { CollectionProvider } from "@/contexts/CollectionContext";
@@ -31,6 +31,13 @@ export const metadata: Metadata = {
     shortcut: '/Bella-favicon-square.svg',
     apple: '/Bella-favicon-square.svg',
   },
+};
+
+// viewport-fit=cover enables env(safe-area-inset-bottom) for the bottom nav bar on iPhone
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

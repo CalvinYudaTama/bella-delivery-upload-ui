@@ -1322,8 +1322,6 @@ export default function MLSMarketingHubContent() {
         watermarkSize={watermarkSize}
         setWatermarkSize={setWatermarkSize}
         formatFileSize={formatFileSize}
-        showPreview={showPreview}
-        setShowPreview={setShowPreview}
         previewIndex={previewIndex}
         setPreviewIndex={setPreviewIndex}
         applyToAll={applyToAll}

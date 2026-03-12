@@ -5426,3 +5426,9 @@ body::-webkit-scrollbar {
 }
 
 
+
+/* ── Floating bottom nav bar — iOS safe area support ─────────────────────── */
+.projects-floating-tab {
+  /* Extend padding into iPhone home indicator safe zone */
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+}

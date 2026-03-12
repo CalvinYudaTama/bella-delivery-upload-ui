@@ -35,8 +35,6 @@ export interface MLSTabletLayoutProps {
   formatFileSize: (bytes: number) => string;
 
   // Preview
-  showPreview: boolean;
-  setShowPreview: (v: boolean) => void;
   previewIndex: number;
   setPreviewIndex: (v: number) => void;
   applyToAll: boolean;
@@ -87,8 +85,6 @@ export default function MLSTabletLayout({
   watermarkSize,
   setWatermarkSize,
   formatFileSize,
-  showPreview,
-  setShowPreview,
   previewIndex,
   setPreviewIndex,
   applyToAll,
@@ -115,6 +111,8 @@ export default function MLSTabletLayout({
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('resize-watermark');
   const [propertyModalOpen, setPropertyModalOpen] = useState(false);
+  // Popup modal for "Adjust logo size" — replaces the inline collapsible on tablet
+  const [showSizePopup, setShowSizePopup] = useState(false);
 
   // ── Property modal field states ────────────────────────────────────────────
   const [propType, setPropType] = useState('');
@@ -207,91 +205,23 @@ export default function MLSTabletLayout({
     </div>
   );
 
-  // ── Image Settings card (inside preview) — Figma 14654:65183 ──────────────
-  const imageSettingsCard = (
-    <div className="mls-t__settings-card" style={{
-      background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 14,
-      padding: 16, boxSizing: 'border-box',
-      display: 'flex', flexDirection: 'column', gap: 16,
-    }}>
-      {/* Title row */}
-      <div className="mls-t__settings-title-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span className="mls-t__settings-title" style={{
-          flex: '1 0 0',
-          fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
-          color: '#4F46E5', lineHeight: '1.4',
-        }}>
-          Image Settings
-        </span>
-      </div>
-      {/* Slider section */}
-      <div className="mls-t__settings-slider-col" style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
-        <div className="mls-t__settings-slider-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 21 }}>
-          <span className="mls-t__settings-slider-label" style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#52595F', lineHeight: '1.4', whiteSpace: 'nowrap' }}>
-            Slide to adjust the logo size
-          </span>
-          <span className="mls-t__settings-slider-value" style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#4F46E5', lineHeight: '1.4' }}>
-            {watermarkSize}%
-          </span>
-        </div>
-        <style>{sliderCSS}</style>
-        <input
-          className="mls-watermark-slider mls-t__settings-slider"
-          type="range" min={0} max={100} value={watermarkSize}
-          onChange={(e) => setWatermarkSize(Number(e.target.value))}
-          style={{ width: '100%' }}
-        />
-      </div>
-      {/* Apply logo to all photos */}
-      <div
-        className="mls-t__settings-apply-row"
-        role="button"
-        onClick={() => setApplyToAll((v: boolean) => !v)}
-        style={{ display: 'flex', alignItems: 'center', gap: 12, height: 24, cursor: 'pointer', userSelect: 'none' }}
-      >
-        {/* Checkbox — 18×18, border 2px #D1D5DC when off, filled indigo when on */}
-        <div className="mls-t__settings-checkbox" style={{
-          width: 18, height: 18, borderRadius: 4, flexShrink: 0,
-          border: applyToAll ? 'none' : '2px solid #D1D5DC',
-          background: applyToAll ? '#4F46E5' : '#FFFFFF',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxSizing: 'border-box',
-        }}>
-          {applyToAll && (
-            <svg width="11" height="11" viewBox="0 0 20 20" fill="none">
-              <path d="M4 10L8 14L16 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          )}
-        </div>
-        <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#52595F', lineHeight: '1.4' }}>
-          Apply logo to all photos
-        </span>
-      </div>
-    </div>
-  );
 
-  // ── Export button ──────────────────────────────────────────────────────────
+  // ── Confirm button (inside popup) ─────────────────────────────────────────
   const exportButton = (
     <button
-      className={`mls-t__export-btn${hasSelection ? ' mls-t__export-btn--active' : ''}`}
-      disabled={!hasSelection}
-      onClick={() => { /* TODO (backend): call export API */ }}
+      type="button"
+      className="mls-t__export-btn"
+      onClick={() => setShowSizePopup(false)}
       style={{
-        height: 48, borderRadius: 6, border: 'none',
-        background: hasSelection ? '#4F46E5' : '#E5E7EB',
-        color: hasSelection ? '#FFFFFF' : '#9CA3AF',
+        width: '100%', height: 48, borderRadius: 6, border: 'none',
+        background: '#4F46E5', color: '#FFFFFF',
         fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
-        cursor: hasSelection ? 'pointer' : 'not-allowed', lineHeight: '1.4',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-        boxSizing: 'border-box', width: '100%',
-        transition: 'background 0.2s ease, color 0.2s ease',
+        cursor: 'pointer', lineHeight: '1.4',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxSizing: 'border-box', flexShrink: 0,
       }}
     >
-      <svg width="20" height="20" viewBox="0 0 18 18" fill="none">
-        <path d="M9 2.25V11.25M9 11.25L6 8.25M9 11.25L12 8.25" stroke={hasSelection ? 'white' : '#9CA3AF'} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M2.25 13.5V14.625C2.25 15.246 2.754 15.75 3.375 15.75H14.625C15.246 15.75 15.75 15.246 15.75 14.625V13.5" stroke={hasSelection ? 'white' : '#9CA3AF'} strokeWidth="1.7" strokeLinecap="round"/>
-      </svg>
-      {hasSelection ? `Export All (${selectedCount} Images)` : 'Select images to export'}
+      Confirm
     </button>
   );
 
@@ -572,7 +502,7 @@ export default function MLSTabletLayout({
                     <button
                       className="mls-t__adjust-logo-btn"
                       type="button"
-                      onClick={() => setShowPreview(true)}
+                      onClick={() => setShowSizePopup(true)}
                       style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                         padding: '9px 16px',
@@ -596,81 +526,6 @@ export default function MLSTabletLayout({
               )}
             </div>
           </div>
-
-          {/* ── Preview section (collapsible) — Figma 14654:65163 ──────── */}
-          {watermarkEnabled && (
-            <div
-              className="mls-t__preview-section"
-              style={{
-                width: '100%', background: '#FFFFFF',
-                border: '1px solid #E5E7EB', borderRadius: 10,
-                boxSizing: 'border-box',
-                padding: 16,
-                display: 'flex', flexDirection: 'column', gap: 16,
-              }}
-            >
-              {/* Preview header — always visible, click to toggle */}
-              <div
-                className="mls-t__preview-header"
-                onClick={() => setShowPreview(!showPreview)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 24,
-                  cursor: 'pointer',
-                }}
-              >
-                <span className="mls-t__preview-header-title" style={{
-                  flex: '1 0 0',
-                  fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
-                  color: '#000B14', lineHeight: '1.4',
-                }}>
-                  Preview
-                </span>
-                <div className="mls-t__preview-header-chevron" style={{
-                  transform: showPreview ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.2s ease',
-                  display: 'flex', alignItems: 'center',
-                }}>
-                  <ChevronDownIcon color="#374151" size={18} />
-                </div>
-              </div>
-
-              {/* Preview expanded content */}
-              {showPreview && (
-                <>
-                  {/* Inner column: Image Settings card + preview image */}
-                  <div className="mls-t__preview-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    {/* Image Settings card */}
-                    {imageSettingsCard}
-
-                    {/* Image preview + pagination */}
-                    <div className="mls-t__preview-image-col" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <div className="mls-t__preview-image-area" style={{
-                        position: 'relative', width: '100%',
-                        aspectRatio: '1 / 0.8',
-                        borderRadius: 10, overflow: 'hidden',
-                        background: '#F3F4F6',
-                      }}>
-                        {photosToPreview.length > 0 && (
-                          <img
-                            className="mls-t__preview-image"
-                            src={photosToPreview[previewIndex]?.url ?? ''}
-                            alt={photosToPreview[previewIndex]?.label ?? ''}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                          />
-                        )}
-                        {logoOverlay}
-                        {bellaLogo}
-                      </div>
-                      {pagination}
-                    </div>
-                  </div>
-
-                  {/* Export button — bottom of preview card */}
-                  {exportButton}
-                </>
-              )}
-            </div>
-          )}
 
           {/* ── Photo selection section ──────────────────────────────────── */}
           <div
@@ -798,7 +653,7 @@ export default function MLSTabletLayout({
 
             {/* Description text */}
             <p className="mls-t__sd-description" style={{
-              fontFamily: 'Inter', fontSize: 18, fontWeight: 600,
+              fontFamily: 'Inter', fontSize: 18, fontWeight: 400,
               color: '#858A8E', lineHeight: 1.4, margin: 0,
             }}>
               Try our AI description generator of your property, then simply copy past to whichever the social media platform works for you.
@@ -920,6 +775,146 @@ export default function MLSTabletLayout({
 
         </div>
       )}
+
+      {/* ════════════════════════════════════════════════════════════════════ */}
+      {/*  Adjust Logo Size Popup — triggered by "Adjust logo size" button    */}
+      {/*  Same popup pattern as mobile (mls-m__preview-overlay)              */}
+      {/* ════════════════════════════════════════════════════════════════════ */}
+      {showSizePopup && watermarkEnabled && (() => {
+        // Parse "Platform – W × H px (ratio)" → platformName + dims
+        const dashIdx = selectedResize.indexOf(' – ');
+        const platformName = dashIdx !== -1 ? selectedResize.slice(0, dashIdx) : selectedResize;
+        const platformDims = dashIdx !== -1 ? selectedResize.slice(dashIdx + 3) : '';
+        return (
+          <div
+            className="mls-t__size-popup-overlay"
+            style={{
+              position: 'fixed', inset: 0, zIndex: 9999,
+              background: 'rgba(133,138,142,0.6)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '20px', boxSizing: 'border-box',
+            }}
+            onClick={(e) => { if (e.target === e.currentTarget) setShowSizePopup(false); }}
+          >
+            <div
+              className="mls-t__size-popup-modal"
+              style={{
+                background: '#FFFFFF',
+                borderRadius: 10, border: '1px solid #E5E7EB',
+                width: '100%', maxWidth: 480,
+                padding: 20, boxSizing: 'border-box',
+                display: 'flex', flexDirection: 'column', gap: 14,
+                maxHeight: 'calc(100vh - 40px)', overflowY: 'auto',
+              }}
+            >
+              {/* ── Header row: platform icon + name + close ────────────── */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                {/* Platform icon — indigo rounded square */}
+                <div style={{
+                  width: 34, height: 34, background: '#4F46E5',
+                  borderRadius: 8, flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 12 12" fill="none">
+                    <rect x="1.5" y="1.5" width="9" height="9" rx="2.5" stroke="white" strokeWidth="1.2"/>
+                    <circle cx="6" cy="6" r="2.2" stroke="white" strokeWidth="1.2"/>
+                    <circle cx="9" cy="3" r="0.7" fill="white"/>
+                  </svg>
+                </div>
+                {/* Platform name */}
+                <span style={{
+                  flex: 1, minWidth: 0,
+                  fontFamily: 'Inter', fontSize: 18, fontWeight: 700,
+                  color: '#1C398E', lineHeight: '1.4',
+                }}>
+                  {platformName}
+                </span>
+                {/* Close button */}
+                <button
+                  type="button"
+                  onClick={() => setShowSizePopup(false)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    padding: 0, flexShrink: 0, width: 28, height: 28,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}
+                  aria-label="Close"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="#374151" strokeWidth="1.75" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              </div>
+
+              {/* ── Subtitle: resize dimensions ──────────────────────────── */}
+              {platformDims && (
+                <span style={{
+                  paddingLeft: 44, flexShrink: 0,
+                  fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
+                  color: '#4F46E5', lineHeight: '1.4',
+                }}>
+                  Images will be resized to {platformDims}
+                </span>
+              )}
+
+              {/* ── Image Settings card (reuses imageSettingsCard) ────────── */}
+              <div style={{
+                background: '#F9FAFB', border: '1px solid #E5E7EB',
+                borderRadius: 10, padding: 14, boxSizing: 'border-box',
+                display: 'flex', flexDirection: 'column', gap: 12, flexShrink: 0,
+              }}>
+                <span style={{
+                  fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
+                  color: '#4F46E5', lineHeight: '1.4',
+                }}>
+                  Image Settings
+                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 21 }}>
+                    <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#52595F', lineHeight: '1.5', whiteSpace: 'nowrap' }}>
+                      Slide to adjust the logo size
+                    </span>
+                    <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#4F46E5', lineHeight: '1.5' }}>
+                      {watermarkSize}%
+                    </span>
+                  </div>
+                  <style>{sliderCSS}</style>
+                  <input
+                    className="mls-watermark-slider mls-t__size-popup-slider"
+                    type="range" min={0} max={100} value={watermarkSize}
+                    onChange={(e) => setWatermarkSize(Number(e.target.value))}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+
+              {/* ── Image preview + pagination ───────────────────────────── */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+                <div style={{
+                  position: 'relative', width: '100%',
+                  aspectRatio: '1 / 0.8',
+                  borderRadius: 10, overflow: 'hidden',
+                  background: '#F3F4F6',
+                }}>
+                  {photosToPreview.length > 0 && (
+                    <img
+                      src={photosToPreview[previewIndex]?.url ?? ''}
+                      alt={photosToPreview[previewIndex]?.label ?? ''}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  )}
+                  {logoOverlay}
+                  {bellaLogo}
+                </div>
+                {pagination}
+              </div>
+
+              {/* ── Export button ────────────────────────────────────────── */}
+              {exportButton}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ════════════════════════════════════════════════════════════════════ */}
       {/*  Property Information Modal                                         */}
