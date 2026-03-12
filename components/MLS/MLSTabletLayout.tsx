@@ -793,8 +793,8 @@ export default function MLSTabletLayout({
               </span>
             </button>
 
-            {/* Warning + Provide Info – shown when no description yet */}
-            {!generatedDescription && (
+            {/* Warning + Provide Info – shown after generate click when no info provided */}
+            {showNoInfoWarning && !generatedDescription && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
 
                 {/* Warning box */}
