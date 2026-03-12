@@ -121,13 +121,17 @@ export default function MLSTabletLayout({
 
   // ── Logo overlay for preview ───────────────────────────────────────────────
   const logoOverlay = (
-    <div style={{
-      position: 'absolute', top: '3%', left: '3%', pointerEvents: 'none',
-      transformOrigin: 'top left',
-      transform: `scale(${0.3 + (watermarkSize / 100) * 0.7})`,
-    }}>
+    <div
+      className="mls-t__logo-overlay"
+      style={{
+        position: 'absolute', top: '3%', left: '3%', pointerEvents: 'none',
+        transformOrigin: 'top left',
+        transform: `scale(${0.3 + (watermarkSize / 100) * 0.7})`,
+      }}
+    >
       {watermarkPreviewUrl ? (
         <img
+          className="mls-t__logo-overlay-img"
           src={watermarkPreviewUrl}
           alt="Your logo"
           style={{
@@ -137,10 +141,13 @@ export default function MLSTabletLayout({
           }}
         />
       ) : (
-        <div style={{
-          background: 'rgba(217,217,217,0.75)', borderRadius: 4,
-          padding: '6px 14px', display: 'inline-flex', alignItems: 'center',
-        }}>
+        <div
+          className="mls-t__logo-overlay-placeholder"
+          style={{
+            background: 'rgba(217,217,217,0.75)', borderRadius: 4,
+            padding: '6px 14px', display: 'inline-flex', alignItems: 'center',
+          }}
+        >
           <span style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 500, color: '#000', lineHeight: '1.4' }}>Logo</span>
         </div>
       )}
@@ -149,15 +156,16 @@ export default function MLSTabletLayout({
 
   // ── Bella Virtual logo overlay ─────────────────────────────────────────────
   const bellaLogo = (
-    <div style={{ position: 'absolute', bottom: '3%', right: '3%', pointerEvents: 'none' }}>
+    <div className="mls-t__bella-logo" style={{ position: 'absolute', bottom: '3%', right: '3%', pointerEvents: 'none' }}>
       <img src="/bella-staging-logo.svg" alt="Bella Virtual" style={{ width: 90, height: 'auto', display: 'block', opacity: 0.95 }} />
     </div>
   );
 
   // ── Pagination controls ────────────────────────────────────────────────────
   const pagination = (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+    <div className="mls-t__pagination" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
       <div
+        className="mls-t__pagination-prev"
         onClick={() => setPreviewIndex(Math.max(0, previewIndex - 1))}
         style={{
           background: '#F9FAFB', borderRadius: 10, padding: 4,
@@ -170,10 +178,14 @@ export default function MLSTabletLayout({
           <path d="M10 12L6 8L10 4" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      <span style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 400, color: '#858A8E', minWidth: 28, textAlign: 'center' }}>
+      <span
+        className="mls-t__pagination-counter"
+        style={{ fontFamily: 'Inter', fontSize: 12, fontWeight: 400, color: '#858A8E', minWidth: 28, textAlign: 'center' }}
+      >
         {previewIndex + 1}/{photosToPreview.length}
       </span>
       <div
+        className="mls-t__pagination-next"
         onClick={() => setPreviewIndex(Math.min(photosToPreview.length - 1, previewIndex + 1))}
         style={{
           background: '#F9FAFB', borderRadius: 10, padding: 4,
@@ -191,14 +203,14 @@ export default function MLSTabletLayout({
 
   // ── Image Settings card (inside preview) — Figma 14654:65183 ──────────────
   const imageSettingsCard = (
-    <div style={{
+    <div className="mls-t__settings-card" style={{
       background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 14,
       padding: 16, boxSizing: 'border-box',
       display: 'flex', flexDirection: 'column', gap: 16,
     }}>
       {/* Title row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{
+      <div className="mls-t__settings-title-row" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span className="mls-t__settings-title" style={{
           flex: '1 0 0',
           fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
           color: '#4F46E5', lineHeight: '1.4',
@@ -207,18 +219,18 @@ export default function MLSTabletLayout({
         </span>
       </div>
       {/* Slider section */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 21 }}>
-          <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#52595F', lineHeight: '1.4', whiteSpace: 'nowrap' }}>
+      <div className="mls-t__settings-slider-col" style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+        <div className="mls-t__settings-slider-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 21 }}>
+          <span className="mls-t__settings-slider-label" style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#52595F', lineHeight: '1.4', whiteSpace: 'nowrap' }}>
             Slide to adjust the logo size
           </span>
-          <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#4F46E5', lineHeight: '1.4' }}>
+          <span className="mls-t__settings-slider-value" style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#4F46E5', lineHeight: '1.4' }}>
             {watermarkSize}%
           </span>
         </div>
         <style>{sliderCSS}</style>
         <input
-          className="mls-watermark-slider"
+          className="mls-watermark-slider mls-t__settings-slider"
           type="range" min={0} max={100} value={watermarkSize}
           onChange={(e) => setWatermarkSize(Number(e.target.value))}
           style={{ width: '100%' }}
@@ -226,12 +238,13 @@ export default function MLSTabletLayout({
       </div>
       {/* Apply logo to all photos */}
       <div
+        className="mls-t__settings-apply-row"
         role="button"
         onClick={() => setApplyToAll((v: boolean) => !v)}
         style={{ display: 'flex', alignItems: 'center', gap: 12, height: 24, cursor: 'pointer', userSelect: 'none' }}
       >
         {/* Checkbox — 18×18, border 2px #D1D5DC when off, filled indigo when on */}
-        <div style={{
+        <div className="mls-t__settings-checkbox" style={{
           width: 18, height: 18, borderRadius: 4, flexShrink: 0,
           border: applyToAll ? 'none' : '2px solid #D1D5DC',
           background: applyToAll ? '#4F46E5' : '#FFFFFF',
@@ -252,15 +265,9 @@ export default function MLSTabletLayout({
   );
 
   // ── Export button ──────────────────────────────────────────────────────────
-  // TODO (backend): On click, trigger the export API with this payload:
-  //   photoIds         → Array.from(selectedPhotos)   // string[] of selected photo IDs
-  //   watermarkEnabled → watermarkEnabled             // boolean
-  //   watermarkFile    → watermarkFile                // File | null
-  //   watermarkSize    → watermarkSize                // number 0–100
-  //   applyToAll       → applyToAll                   // boolean
-  //   resizeOption     → selectedResize               // string
   const exportButton = (
     <button
+      className={`mls-t__export-btn${hasSelection ? ' mls-t__export-btn--active' : ''}`}
       disabled={!hasSelection}
       onClick={() => { /* TODO (backend): call export API */ }}
       style={{
@@ -295,7 +302,7 @@ export default function MLSTabletLayout({
       {/* ── TAB BAR ────────────────────────────────────────────────────────── */}
       {/* Figma node: 14654:65154 */}
       <div
-        className="mls-tablet__tab-bar"
+        className="mls-t__tab-bar"
         style={{
           display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
           width: '100%', boxSizing: 'border-box',
@@ -304,7 +311,7 @@ export default function MLSTabletLayout({
         }}
       >
         {/* ── Pill (Horizontal tabs) ── */}
-        <div style={{
+        <div className="mls-t__tab-pill" style={{
           display: 'flex', alignItems: 'center',
           background: '#FAFAFA',
           border: '1px solid #E9EAEB',
@@ -318,7 +325,7 @@ export default function MLSTabletLayout({
             return (
               <button
                 key={tab}
-                className={`mls-tablet__tab${isActive ? ' mls-tablet__tab--active' : ''}`}
+                className={`mls-t__tab-btn${isActive ? ' mls-t__tab-btn--active' : ''}`}
                 onClick={() => {
                   setActiveTab(tab);
                   // Reset warning state on every tab switch (unless AI result already generated)
@@ -353,14 +360,14 @@ export default function MLSTabletLayout({
       {/*  TAB 1: Resize & Watermark                                         */}
       {/* ════════════════════════════════════════════════════════════════════ */}
       {activeTab === 'resize-watermark' && (
-        <div className="mls-tablet__tab-content" style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px 20px 24px' }}>
+        <div className="mls-t__tab-content mls-t__rw-content" style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px 20px 24px' }}>
 
           {/* ── Two cards side by side (Figma node 14654:65036) ────────────── */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, width: '100%', boxSizing: 'border-box' }}>
+          <div className="mls-t__rw-cards-row" style={{ display: 'flex', alignItems: 'flex-start', gap: 16, width: '100%', boxSizing: 'border-box' }}>
 
             {/* ── LEFT CARD: Instagram platform info ──────────────────────── */}
             <div
-              className="mls-tablet__instagram-col"
+              className="mls-t__platform-card"
               style={{
                 flexShrink: 0,
                 background: '#EFF6FF',
@@ -373,11 +380,12 @@ export default function MLSTabletLayout({
             >
               {/* Platform info row: icon + text + chevron */}
               <div
+                className="mls-t__platform-trigger"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 style={{ display: 'flex', alignItems: 'flex-start', gap: 8, cursor: 'pointer' }}
               >
                 {/* Instagram icon — indigo 20×20 rounded square */}
-                <div style={{
+                <div className="mls-t__platform-icon" style={{
                   width: 20, height: 20, borderRadius: 10, flexShrink: 0,
                   background: '#4F46E5',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -390,15 +398,15 @@ export default function MLSTabletLayout({
                 </div>
 
                 {/* Title + subtitle */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
-                  <span style={{
+                <div className="mls-t__platform-text" style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
+                  <span className="mls-t__platform-title" style={{
                     fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
                     color: '#1C398E', lineHeight: '1.4',
                     whiteSpace: 'nowrap',
                   }}>
                     Instagram • Square Post
                   </span>
-                  <span style={{
+                  <span className="mls-t__platform-subtitle" style={{
                     fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
                     color: '#4F46E5', lineHeight: '1.5',
                     whiteSpace: 'nowrap',
@@ -408,7 +416,7 @@ export default function MLSTabletLayout({
                 </div>
 
                 {/* Chevron */}
-                <div style={{
+                <div className="mls-t__platform-chevron" style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   padding: '0 8px', alignSelf: 'stretch',
                 }}>
@@ -423,7 +431,7 @@ export default function MLSTabletLayout({
 
               {/* Dropdown */}
               {dropdownOpen && (
-                <div style={{
+                <div className="mls-t__platform-dropdown" style={{
                   position: 'absolute', top: 'calc(100% + 4px)', left: 0,
                   zIndex: 50, background: '#FFFFFF', minWidth: '100%',
                   border: '1px solid #E9EAEB', borderRadius: 8,
@@ -433,6 +441,7 @@ export default function MLSTabletLayout({
                   {RESIZE_OPTIONS.map((opt) => (
                     <button
                       key={opt}
+                      className={`mls-t__platform-dropdown-item${opt === selectedResize ? ' mls-t__platform-dropdown-item--active' : ''}`}
                       onClick={() => { setSelectedResize(opt); setDropdownOpen(false); }}
                       style={{
                         width: '100%', padding: '9px 12px', textAlign: 'left',
@@ -454,7 +463,7 @@ export default function MLSTabletLayout({
 
             {/* ── RIGHT CARD: Watermark ────────────────────────────────────── */}
             <div
-              className="mls-tablet__watermark-col"
+              className="mls-t__watermark-card"
               style={{
                 flex: '1 0 0', minWidth: 0,
                 background: '#FFFFFF',
@@ -465,15 +474,15 @@ export default function MLSTabletLayout({
               }}
             >
               {/* Label + toggle row */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{
+              <div className="mls-t__watermark-toggle-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <div className="mls-t__watermark-label-group" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span className="mls-t__watermark-title" style={{
                     fontFamily: 'Inter', fontSize: 16, fontWeight: 600,
                     color: '#374151', lineHeight: '1.35',
                   }}>
                     Watermark
                   </span>
-                  <span style={{
+                  <span className="mls-t__watermark-hint" style={{
                     fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
                     color: '#6B7280', lineHeight: '1.4',
                   }}>
@@ -485,13 +494,14 @@ export default function MLSTabletLayout({
 
               {/* Upload + Adjust buttons side by side (when watermark ON) */}
               {watermarkEnabled && (
-                <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', width: '100%' }}>
+                <div className="mls-t__watermark-body" style={{ display: 'flex', gap: 16, alignItems: 'flex-start', width: '100%' }}>
 
                   {/* Left: Upload button + filename chip */}
-                  <div style={{ flex: '1 0 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div className="mls-t__upload-col" style={{ flex: '1 0 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {/* Hidden file input */}
                     <input
                       ref={watermarkInputRef as React.RefObject<HTMLInputElement>}
+                      className="mls-t__upload-input"
                       type="file"
                       accept=".png,.jpeg,.jpg"
                       style={{ display: 'none' }}
@@ -499,6 +509,7 @@ export default function MLSTabletLayout({
                     />
                     <button
                       type="button"
+                      className="mls-t__upload-btn"
                       onClick={() => watermarkInputRef.current?.click()}
                       style={{
                         width: '100%', height: 42,
@@ -519,12 +530,12 @@ export default function MLSTabletLayout({
 
                     {/* Filename chip */}
                     {watermarkFile && (
-                      <div style={{
+                      <div className="mls-t__file-chip" style={{
                         display: 'flex', alignItems: 'center', gap: 4,
                         background: '#FAFAFA', padding: 4,
                         boxSizing: 'border-box',
                       }}>
-                        <span style={{
+                        <span className="mls-t__file-chip-name" style={{
                           fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
                           color: '#858A8E', lineHeight: '1.4',
                           flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -534,7 +545,9 @@ export default function MLSTabletLayout({
                             : watermarkFile.name}
                         </span>
                         <button
-                          type="button" onClick={handleWatermarkClear}
+                          type="button"
+                          className="mls-t__file-chip-remove"
+                          onClick={handleWatermarkClear}
                           style={{
                             background: 'none', border: 'none', cursor: 'pointer',
                             padding: 0, flexShrink: 0, display: 'flex', alignItems: 'center',
@@ -549,9 +562,9 @@ export default function MLSTabletLayout({
                   </div>
 
                   {/* Right: Adjust logo size button */}
-                  <div style={{ flex: '1 0 0', minWidth: 0 }}>
+                  <div className="mls-t__adjust-col" style={{ flex: '1 0 0', minWidth: 0 }}>
                     <button
-                      className="mls-tablet__adjust-logo-btn"
+                      className="mls-t__adjust-logo-btn"
                       type="button"
                       onClick={() => setShowPreview(true)}
                       style={{
@@ -581,7 +594,7 @@ export default function MLSTabletLayout({
           {/* ── Preview section (collapsible) — Figma 14654:65163 ──────── */}
           {watermarkEnabled && (
             <div
-              className="mls-tablet__preview-section"
+              className="mls-t__preview-section"
               style={{
                 width: '100%', background: '#FFFFFF',
                 border: '1px solid #E5E7EB', borderRadius: 10,
@@ -592,20 +605,21 @@ export default function MLSTabletLayout({
             >
               {/* Preview header — always visible, click to toggle */}
               <div
+                className="mls-t__preview-header"
                 onClick={() => setShowPreview(!showPreview)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 24,
                   cursor: 'pointer',
                 }}
               >
-                <span style={{
+                <span className="mls-t__preview-header-title" style={{
                   flex: '1 0 0',
                   fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
                   color: '#000B14', lineHeight: '1.4',
                 }}>
                   Preview
                 </span>
-                <div style={{
+                <div className="mls-t__preview-header-chevron" style={{
                   transform: showPreview ? 'rotate(180deg)' : 'rotate(0deg)',
                   transition: 'transform 0.2s ease',
                   display: 'flex', alignItems: 'center',
@@ -618,13 +632,13 @@ export default function MLSTabletLayout({
               {showPreview && (
                 <>
                   {/* Inner column: Image Settings card + preview image */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div className="mls-t__preview-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     {/* Image Settings card */}
                     {imageSettingsCard}
 
                     {/* Image preview + pagination */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <div style={{
+                    <div className="mls-t__preview-image-col" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div className="mls-t__preview-image-area" style={{
                         position: 'relative', width: '100%',
                         aspectRatio: '1 / 0.8',
                         borderRadius: 10, overflow: 'hidden',
@@ -632,6 +646,7 @@ export default function MLSTabletLayout({
                       }}>
                         {photosToPreview.length > 0 && (
                           <img
+                            className="mls-t__preview-image"
                             src={photosToPreview[previewIndex]?.url ?? ''}
                             alt={photosToPreview[previewIndex]?.label ?? ''}
                             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -653,22 +668,23 @@ export default function MLSTabletLayout({
 
           {/* ── Photo selection section ──────────────────────────────────── */}
           <div
-            className="mls-tablet__photo-section"
+            className="mls-t__photo-section"
             style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}
           >
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
+            <div className="mls-t__photo-section-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
               {/* Left: title */}
-              <span style={{
+              <span className="mls-t__photo-section-title" style={{
                 fontFamily: 'Inter', fontSize: 16, fontWeight: 700,
                 color: '#111827', lineHeight: '1.4', whiteSpace: 'nowrap',
               }}>
                 Select Images to Export
               </span>
               {/* Right: Select all + count */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+              <div className="mls-t__photo-section-actions" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
                 {allSelected ? (
                   <button
+                    className="mls-t__select-all-btn mls-t__select-all-btn--deselect"
                     onClick={() => setSelectedPhotos(new Set())}
                     style={{
                       background: 'none', border: 'none', padding: 0,
@@ -681,6 +697,7 @@ export default function MLSTabletLayout({
                   </button>
                 ) : (
                   <button
+                    className="mls-t__select-all-btn"
                     onClick={toggleSelectAll}
                     style={{
                       background: 'none', border: 'none', padding: 0,
@@ -692,7 +709,7 @@ export default function MLSTabletLayout({
                     Select all
                   </button>
                 )}
-                <span style={{
+                <span className="mls-t__photo-count" style={{
                   fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
                   color: '#6B7280', lineHeight: '1.4', whiteSpace: 'nowrap',
                 }}>
@@ -703,7 +720,7 @@ export default function MLSTabletLayout({
 
             {/* Photo grid — 3 columns, gap 8px, 4:3 aspect */}
             <div
-              className="mls-tablet__photo-grid"
+              className="mls-t__photo-grid"
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
@@ -713,7 +730,7 @@ export default function MLSTabletLayout({
               {MLS_PHOTOS.map((photo) => (
                 <div
                   key={photo.id}
-                  className="mls-tablet__photo-card"
+                  className={`mls-t__photo-card${selectedPhotos.has(photo.id) ? ' mls-t__photo-card--selected' : ''}`}
                   onClick={() => togglePhoto(photo.id)}
                   style={{
                     position: 'relative',
@@ -733,14 +750,14 @@ export default function MLSTabletLayout({
                     style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                   />
                   {/* Dark overlay when selected */}
-                  <div style={{
+                  <div className="mls-t__photo-card-overlay" style={{
                     position: 'absolute', inset: 0,
                     background: selectedPhotos.has(photo.id) ? 'rgba(0,0,0,0.2)' : 'transparent',
                     transition: 'background 0.15s ease',
                   }} />
                   {/* Checkmark badge */}
                   {selectedPhotos.has(photo.id) && (
-                    <div style={{
+                    <div className="mls-t__photo-card-check" style={{
                       position: 'absolute', top: 5, right: 5,
                       width: 18, height: 18, borderRadius: 4,
                       background: '#4F46E5',
@@ -763,10 +780,10 @@ export default function MLSTabletLayout({
       {/*  TAB 2: Smart Description                                          */}
       {/* ════════════════════════════════════════════════════════════════════ */}
       {activeTab === 'smart-description' && (
-        <div className="mls-tablet__tab-content" style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px 20px 24px' }}>
+        <div className="mls-t__tab-content mls-t__sd-content" style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '20px 20px 24px' }}>
 
           {/* Card */}
-          <div style={{
+          <div className="mls-t__sd-card" style={{
             width: '100%', background: '#FFFFFF',
             border: '1px solid #E5E7EB', borderRadius: 12,
             padding: '17px 17px 17px', boxSizing: 'border-box',
@@ -774,7 +791,7 @@ export default function MLSTabletLayout({
           }}>
 
             {/* Description text */}
-            <p style={{
+            <p className="mls-t__sd-description" style={{
               fontFamily: 'Inter', fontSize: 18, fontWeight: 600,
               color: '#858A8E', lineHeight: 1.4, margin: 0,
             }}>
@@ -783,6 +800,7 @@ export default function MLSTabletLayout({
 
             {/* Generate button */}
             <button
+              className="mls-t__sd-generate-btn"
               onClick={handleGenerateClick}
               style={{
                 height: 46, padding: '12px 24px',
@@ -802,17 +820,17 @@ export default function MLSTabletLayout({
 
             {/* Warning + Provide Info – shown after generate click when no info provided */}
             {showNoInfoWarning && !generatedDescription && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              <div className="mls-t__sd-warning-wrap" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
 
                 {/* Warning box */}
-                <div style={{
+                <div className="mls-t__sd-warning" style={{
                   background: '#FFF3CD', border: '1px solid #FFC107',
                   borderRadius: 8, padding: '17px 17px 16px',
                   boxSizing: 'border-box',
                 }}>
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                  <div className="mls-t__sd-warning-body" style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                     {/* Warning icon */}
-                    <div style={{ width: 20, height: 20, flexShrink: 0 }}>
+                    <div className="mls-t__sd-warning-icon" style={{ width: 20, height: 20, flexShrink: 0 }}>
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M8.58 2.91L1.39 15.5C1.14 15.93 1.44 16.47 1.95 16.47H16.33C16.83 16.47 17.14 15.93 16.89 15.5L9.7 2.91C9.44 2.47 8.84 2.47 8.58 2.91Z" stroke="#856404" strokeWidth="1.3" strokeLinejoin="round"/>
                         <path d="M9.14 8V11.5" stroke="#856404" strokeWidth="1.4" strokeLinecap="round"/>
@@ -820,10 +838,10 @@ export default function MLSTabletLayout({
                       </svg>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      <span style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#856404', lineHeight: '21px' }}>
+                      <span className="mls-t__sd-warning-title" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 500, color: '#856404', lineHeight: '21px' }}>
                         No Property Information
                       </span>
-                      <span style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#856404', lineHeight: '19.5px' }}>
+                      <span className="mls-t__sd-warning-subtitle" style={{ fontFamily: 'Inter', fontSize: 13, fontWeight: 400, color: '#856404', lineHeight: '19.5px' }}>
                         Property information was not provided during upload.
                       </span>
                     </div>
@@ -832,6 +850,7 @@ export default function MLSTabletLayout({
 
                 {/* Provide Information Now button */}
                 <button
+                  className="mls-t__sd-provide-btn"
                   onClick={() => setPropertyModalOpen(true)}
                   style={{
                     height: 46, padding: '12px 24px',
@@ -855,6 +874,7 @@ export default function MLSTabletLayout({
             {/* Generated description panel */}
             {generatedDescription && (
               <div
+                className="mls-t__sd-result"
                 onClick={() => setIsEditingDescription(true)}
                 style={{
                   background: '#FAFAFA', borderRadius: 12,
@@ -866,6 +886,7 @@ export default function MLSTabletLayout({
               >
                 {isEditingDescription ? (
                   <textarea
+                    className="mls-t__sd-result-textarea"
                     autoFocus
                     value={generatedDescription}
                     onChange={e => setGeneratedDescription(e.target.value)}
@@ -878,7 +899,7 @@ export default function MLSTabletLayout({
                     }}
                   />
                 ) : (
-                  <p style={{
+                  <p className="mls-t__sd-result-text" style={{
                     fontFamily: 'Inter', fontSize: 14, fontWeight: 400,
                     color: '#0A0A0A', lineHeight: '22px',
                     letterSpacing: '-0.15px', margin: 0,
@@ -898,13 +919,13 @@ export default function MLSTabletLayout({
       {/*  Property Information Modal                                         */}
       {/* ════════════════════════════════════════════════════════════════════ */}
       {propertyModalOpen && (
-        <div style={{
+        <div className="mls-t__prop-overlay" style={{
           position: 'fixed', inset: 0, zIndex: 9999,
           background: 'rgba(0,0,0,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '0 20px', boxSizing: 'border-box',
         }}>
-          <div style={{
+          <div className="mls-t__prop-modal" style={{
             background: '#FFFFFF', borderRadius: 16,
             boxShadow: '0px 25px 50px -12px rgba(0,0,0,0.25)',
             width: '100%', maxWidth: 700,
@@ -912,16 +933,17 @@ export default function MLSTabletLayout({
           }}>
 
             {/* ── Header ──────────────────────────────────────────────────── */}
-            <div style={{
+            <div className="mls-t__prop-header" style={{
               height: 69, borderBottom: '1px solid #E5E7EB',
               background: '#FFFFFF',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '0 24px', boxSizing: 'border-box',
             }}>
-              <span style={{ fontFamily: 'Inter', fontSize: 20, fontWeight: 700, color: '#0A0A0A', lineHeight: '30px' }}>
+              <span className="mls-t__prop-header-title" style={{ fontFamily: 'Inter', fontSize: 20, fontWeight: 700, color: '#0A0A0A', lineHeight: '30px' }}>
                 Property Information
               </span>
               <button
+                className="mls-t__prop-close"
                 onClick={() => setPropertyModalOpen(false)}
                 style={{
                   width: 36, height: 36, borderRadius: 10,
@@ -937,22 +959,22 @@ export default function MLSTabletLayout({
             </div>
 
             {/* ── Form body ───────────────────────────────────────────────── */}
-            <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16, boxSizing: 'border-box' }}>
+            <div className="mls-t__prop-body" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16, boxSizing: 'border-box' }}>
 
               {/* Subtitle */}
-              <p style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#6A7282', lineHeight: '21px', margin: 0 }}>
+              <p className="mls-t__prop-subtitle" style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#6A7282', lineHeight: '21px', margin: 0 }}>
                 Please provide property details to generate an AI-powered marketing description.
               </p>
 
               {/* Fields container */}
-              <div style={{
+              <div className="mls-t__prop-fields" style={{
                 background: '#FAFAFA', borderRadius: 16,
                 padding: 20, display: 'flex', flexDirection: 'column', gap: 16,
                 boxSizing: 'border-box',
               }}>
 
                 {/* Property type */}
-                <div style={{
+                <div className="mls-t__prop-field" style={{
                   background: '#FFFFFF', border: '1px solid #ECEFF0',
                   borderRadius: 16, height: 40,
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -981,7 +1003,7 @@ export default function MLSTabletLayout({
                 </div>
 
                 {/* Intended buyer profile */}
-                <div style={{
+                <div className="mls-t__prop-field" style={{
                   background: '#FFFFFF', border: '1px solid #ECEFF0',
                   borderRadius: 16, height: 40,
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -1011,7 +1033,7 @@ export default function MLSTabletLayout({
                 </div>
 
                 {/* Intended use */}
-                <div style={{
+                <div className="mls-t__prop-field" style={{
                   background: '#FFFFFF', border: '1px solid #ECEFF0',
                   borderRadius: 16, height: 40,
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -1041,7 +1063,7 @@ export default function MLSTabletLayout({
                 </div>
 
                 {/* Property address */}
-                <div style={{
+                <div className="mls-t__prop-field" style={{
                   background: '#FFFFFF', border: '1px solid #ECEFF0',
                   borderRadius: 16, height: 40,
                   display: 'flex', alignItems: 'center',
@@ -1063,7 +1085,7 @@ export default function MLSTabletLayout({
                 </div>
 
                 {/* MLS listing link */}
-                <div style={{
+                <div className="mls-t__prop-field" style={{
                   background: '#FFFFFF', border: '1px solid #ECEFF0',
                   borderRadius: 16, height: 40,
                   display: 'flex', alignItems: 'center',
@@ -1084,11 +1106,12 @@ export default function MLSTabletLayout({
                   />
                 </div>
 
-              </div>{/* /fields container */}
+              </div>{/* /mls-t__prop-fields */}
 
               {/* ── Footer buttons ──────────────────────────────────────── */}
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', alignItems: 'center' }}>
+              <div className="mls-t__prop-footer" style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', alignItems: 'center' }}>
                 <button
+                  className="mls-t__prop-cancel-btn"
                   onClick={() => setPropertyModalOpen(false)}
                   style={{
                     height: 45, padding: '0 20px',
@@ -1101,6 +1124,7 @@ export default function MLSTabletLayout({
                   Cancel
                 </button>
                 <button
+                  className="mls-t__prop-submit-btn"
                   onClick={() => {
                     setGeneratedDescription(DUMMY_DESCRIPTION);
                     setPropertyModalOpen(false);
@@ -1117,7 +1141,7 @@ export default function MLSTabletLayout({
                 </button>
               </div>
 
-            </div>{/* /form body */}
+            </div>{/* /mls-t__prop-body */}
 
           </div>
         </div>
