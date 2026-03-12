@@ -296,10 +296,9 @@ export default function MLSTabletLayout({
         className="mls-tablet__tab-bar"
         style={{
           display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-          borderBottom: '1px solid #E9EAEB',
           width: '100%', boxSizing: 'border-box',
-          padding: '0 20px',
-          background: '#FFFFFF',
+          padding: '20px 20px 0px 20px',
+          background: 'transparent',
         }}
       >
         {/* ── Pill (Horizontal tabs) ── */}
@@ -764,7 +763,7 @@ export default function MLSTabletLayout({
           <div style={{
             width: '100%', background: '#FFFFFF',
             border: '1px solid #E5E7EB', borderRadius: 12,
-            padding: '32px 17px 17px', boxSizing: 'border-box',
+            padding: '17px 17px 17px', boxSizing: 'border-box',
             display: 'flex', flexDirection: 'column', gap: 16,
           }}>
 
@@ -897,12 +896,12 @@ export default function MLSTabletLayout({
           position: 'fixed', inset: 0, zIndex: 9999,
           background: 'rgba(0,0,0,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '0 16px', boxSizing: 'border-box',
+          padding: '0 20px', boxSizing: 'border-box',
         }}>
           <div style={{
             background: '#FFFFFF', borderRadius: 16,
             boxShadow: '0px 25px 50px -12px rgba(0,0,0,0.25)',
-            width: '100%', maxWidth: 500,
+            width: '100%', maxWidth: 700,
             overflow: 'hidden', boxSizing: 'border-box',
           }}>
 
