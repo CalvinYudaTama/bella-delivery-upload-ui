@@ -356,17 +356,21 @@ export default function MLSMarketingHubContent() {
   // Compact (tablet/mobile) : width < 768px
   // Desktop                 : width ≥ 768px
   const containerRef = useRef<HTMLDivElement>(null);
-  // Always start with 1280 so SSR and first client render match,
-  // then update to the real width after mount to avoid hydration mismatch.
+  // Mirror the same isMounted + useState(1280) pattern used in projects/layout.tsx.
+  // Before mount (SSR + first client paint): isMounted=false → always desktop (1280).
+  // After mount: isMounted=true → use real window.innerWidth.
+  // This guarantees SSR HTML == initial client render, eliminating hydration mismatch.
   const [containerWidth, setContainerWidth] = useState<number>(1280);
+  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
+    setIsMounted(true);
     setContainerWidth(window.innerWidth);
     const handleResize = () => setContainerWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  const isCompact = containerWidth < 768;  // tablet + mobile
-  const isMobile  = containerWidth < 480;  // mobile only
+  const isCompact = isMounted && containerWidth < 768;  // tablet + mobile
+  const isMobile  = isMounted && containerWidth < 480;  // mobile only
 
   // ── Refs ───────────────────────────────────────────────────────────────────
   const watermarkInputRef = useRef<HTMLInputElement>(null);
