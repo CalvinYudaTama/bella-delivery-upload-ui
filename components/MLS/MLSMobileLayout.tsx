@@ -334,7 +334,7 @@ export default function MLSMobileLayout({
       {/* ── Unified padded container: gap 16 between all sections ──────── */}
       <div style={{
         display: 'flex', flexDirection: 'column', gap: 16,
-        padding: 20, boxSizing: 'border-box',
+        boxSizing: 'border-box',
       }}>
 
         {/* ── TAB BAR ──────────────────────────────────────────────────── */}
@@ -343,6 +343,7 @@ export default function MLSMobileLayout({
           borderBottom: '1px solid #E9EAEB',
           boxSizing: 'border-box',
           display: 'flex', alignItems: 'flex-start',
+          padding: '0 20px',
         }}>
           {/* Pill */}
           <div style={{
@@ -379,7 +380,7 @@ export default function MLSMobileLayout({
         {/*  TAB 1: Resize & Watermark                                   */}
         {/* ══════════════════════════════════════════════════════════════ */}
         {activeTab === 'resize-watermark' && (
-          <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '0 20px 20px', boxSizing: 'border-box' }}>
             {/* ── Platform selector card ──────────────────────────────── */}
             <div style={{ position: 'relative' }}>
               <div
@@ -671,14 +672,14 @@ export default function MLSMobileLayout({
                 ))}
               </div>
             </div>
-          </>
+          </div>
         )}
 
-      {/* ══════════════════════════════════════════════════════════════════ */}
-      {/*  TAB 2: Smart Description (Page 4)                               */}
+        {/* ══════════════════════════════════════════════════════════════════ */}
+        {/*  TAB 2: Smart Description (Page 4)                               */}
       {/* ══════════════════════════════════════════════════════════════════ */}
         {activeTab === 'smart-description' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '0 20px 20px', boxSizing: 'border-box' }}>
 
           {/* Card */}
           <div style={{
