@@ -307,7 +307,7 @@ export default function MLSTabletLayout({
           display: 'flex', alignItems: 'center',
           background: '#FAFAFA',
           border: '1px solid #E9EAEB',
-          borderRadius: '8px 8px 8px 0',   /* tl tr br — no bl */
+          borderRadius: 8,
           gap: 2,
           boxSizing: 'border-box',
         }}>
@@ -322,13 +322,11 @@ export default function MLSTabletLayout({
                 style={{
                   height: 36,
                   padding: '8px 12px',
-                  /* Active: border on top + sides only, no bottom border */
                   borderTop:    isActive ? '1px solid #D5D7DA' : '1px solid transparent',
                   borderLeft:   isActive ? '1px solid #D5D7DA' : '1px solid transparent',
                   borderRight:  isActive ? '1px solid #D5D7DA' : '1px solid transparent',
-                  borderBottom: 'none',
-                  /* Active: round only top corners */
-                  borderRadius: isActive ? '8px 8px 0 0' : 8,
+                  borderBottom: isActive ? '1px solid #D5D7DA' : '1px solid transparent',
+                  borderRadius: 8,
                   background: isActive ? '#FFFFFF' : 'transparent',
                   boxShadow: isActive ? '0px 1px 2px 0px rgba(10,13,18,0.05)' : 'none',
                   fontFamily: 'Inter', fontSize: 16, fontWeight: 600,
