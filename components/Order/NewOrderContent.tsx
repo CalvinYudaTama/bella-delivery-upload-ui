@@ -176,28 +176,28 @@ export const CheckRChecked = () => (
 );
 
 // ─── Responsive hooks ─────────────────────────────────────────────────────────
-// Breakpoints: Desktop ≥ 768px | Tablet 480–767px | Mobile < 480px
-export function useIsTablet() {
-  const [isTablet, setIsTablet] = React.useState(false);
+// Mirror the isMounted + useState(1280) pattern from MLSMarketingHubContent / projects/layout.tsx.
+// Before mount (SSR + first client paint): isMounted=false → always desktop (1280).
+// After mount: isMounted=true → use real window.innerWidth.
+// This guarantees SSR HTML == initial client render, eliminating hydration mismatch.
+export function useLayout(): 'mobile' | 'tablet' | 'desktop' {
+  const [containerWidth, setContainerWidth] = React.useState<number>(1280);
+  const [isMounted, setIsMounted] = React.useState(false);
   React.useEffect(() => {
-    const check = () => setIsTablet(window.innerWidth <= 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    setIsMounted(true);
+    setContainerWidth(window.innerWidth);
+    const handleResize = () => setContainerWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
-  return isTablet;
+  if (!isMounted) return 'desktop';
+  if (containerWidth < 600) return 'mobile';
+  if (containerWidth < 1024) return 'tablet';
+  return 'desktop';
 }
 
-export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState(false);
-  React.useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 480);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
-  return isMobile;
-}
+export function useIsTablet() { return useLayout() === 'tablet'; }
+export function useIsMobile() { return useLayout() === 'mobile'; }
 
 // ─── Dropdown Component ───────────────────────────────────────────────────────
 
@@ -479,8 +479,19 @@ export default function NewOrderContent() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const isMobile = useIsMobile();
-  const isTablet = useIsTablet();
+  // ── Breakpoint detection — inline like MLSMarketingHubContent ────────────
+  // isMounted=false → render desktop (matches SSR). After mount → real width.
+  const [containerWidth, setContainerWidth] = useState<number>(1280);
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+    setContainerWidth(window.innerWidth);
+    const onResize = () => setContainerWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  const isMobile  = isMounted && containerWidth < 600;
+  const isTablet  = isMounted && containerWidth >= 600 && containerWidth < 1024;
 
   const baseProps: NewOrderLayoutProps = {
     propertyType, setPropertyType,
@@ -501,6 +512,10 @@ export default function NewOrderContent() {
     canSubmit, uploadProgress,
     closeAllDropdowns, handleFileDrop, handleFileSelect,
   };
+
+  if (isMobile) {
+    return <NewOrderMobileLayout {...baseProps} />;
+  }
 
   if (isTablet) {
     return (

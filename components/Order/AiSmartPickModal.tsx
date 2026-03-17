@@ -2,16 +2,21 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-// ─── Responsive hook ──────────────────────────────────────────────────────────
-function useIsTablet() {
-  const [isTablet, setIsTablet] = React.useState(false);
+// ─── Responsive hook — same isMounted + useState(1280) pattern as MLS / projects/layout ──
+function useLayout(): 'mobile' | 'tablet' | 'desktop' {
+  const [containerWidth, setContainerWidth] = React.useState<number>(1280);
+  const [isMounted, setIsMounted] = React.useState(false);
   React.useEffect(() => {
-    const check = () => setIsTablet(window.innerWidth <= 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    setIsMounted(true);
+    setContainerWidth(window.innerWidth);
+    const handleResize = () => setContainerWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
-  return isTablet;
+  if (!isMounted) return 'desktop';
+  if (containerWidth < 600) return 'mobile';
+  if (containerWidth < 1024) return 'tablet';
+  return 'desktop';
 }
 
 // ── Figma asset URLs ──────────────────────────────────────────────────────────
@@ -356,6 +361,7 @@ export function NoInfoView({ onClose }: { onClose: () => void }) {
 // ─── Main Modal Component ─────────────────────────────────────────────────────
 import DesktopOptionsView from './AiSmartPickModalDesktopOptions';
 import TabletOptionsView from './AiSmartPickModalTabletOptions';
+import MobileOptionsView from './AiSmartPickModalMobileOptions';
 
 export default function AiSmartPickModal({
   isOpen,
@@ -365,7 +371,9 @@ export default function AiSmartPickModal({
 }: AiSmartPickModalProps) {
   const [modalState, setModalState] = useState<ModalState>('loading');
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const isTablet = useIsTablet();
+  const layout = useLayout();
+  const isMobile = layout === 'mobile';
+  const isTablet = layout === 'tablet';
 
   // Scroll lock — lock both <html> and <body>, and the root-main scroller
   useEffect(() => {
@@ -445,7 +453,7 @@ export default function AiSmartPickModal({
         position: 'fixed', inset: 0, zIndex: 1000,
         background: 'rgba(0,0,0,0.5)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '24px',
+        padding: isMobile ? '16px' : '24px',
         boxSizing: 'border-box',
       }}
     >
@@ -469,9 +477,11 @@ export default function AiSmartPickModal({
         {modalState === 'loading' && <LoadingView onCancel={onClose} />}
         {modalState === 'no-info' && <NoInfoView onClose={onClose} />}
         {modalState === 'options' && (
-          isTablet
-            ? <TabletOptionsView {...optionsProps} />
-            : <DesktopOptionsView {...optionsProps} />
+          isMobile
+            ? <MobileOptionsView {...optionsProps} />
+            : isTablet
+              ? <TabletOptionsView {...optionsProps} />
+              : <DesktopOptionsView {...optionsProps} />
         )}
       </div>
     </div>
