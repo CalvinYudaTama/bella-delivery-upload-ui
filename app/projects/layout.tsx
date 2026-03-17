@@ -214,10 +214,14 @@ function FloatingTabBar({ projectId }: { projectId?: string }) {
 function ProjectsLayoutInner({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const params = useParams();
+  const pathname = usePathname();
   const pageParam = searchParams.get('page') || '';
 
   // Prefer projectId from URL params (new routes), fallback to prop (old ?page= routes)
   const projectId = (params?.projectId as string) || pageParam.split('/')[0] || undefined;
+
+  // New Order page: rendered without sidebar and floating nav
+  const isNewOrder = pathname?.includes('/new-order') ?? false;
 
   // Detect viewport width to toggle sidebar / floating pill.
   // `isMounted` prevents layout flash: on first render we don't know real width,
@@ -235,6 +239,21 @@ function ProjectsLayoutInner({ children }: { children: React.ReactNode }) {
   // Before mount (SSR / first paint), treat as desktop to match SSR default of 1280.
   // After mount, use real measured width.
   const isDesktop = !isMounted ? true : windowWidth >= 1024;
+
+  // ── New Order: full-width page, no sidebar, no floating nav ───────────────
+  if (isNewOrder) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          minHeight: '100%',
+          backgroundColor: '#F9FAFB',
+        }}
+      >
+        {children}
+      </div>
+    );
+  }
 
   return (
     /*

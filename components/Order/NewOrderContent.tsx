@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { AiPickOption } from './AiSmartPickModal';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const PROPERTY_TYPES = [
+export const PROPERTY_TYPES = [
   'Residential',
   'Commercial',
   'Condo / Apartment',
@@ -13,7 +14,7 @@ const PROPERTY_TYPES = [
   'Multi-Family',
 ];
 
-const BUYER_PROFILES = [
+export const BUYER_PROFILES = [
   'First-Time Buyer',
   'Luxury Buyer',
   'Investor',
@@ -22,113 +23,186 @@ const BUYER_PROFILES = [
   'Empty Nester',
 ];
 
-const INTENDED_USES = [
+export const INTENDED_USES = [
   'For Sale',
   'For Rent',
   'Personal Use',
   'Investment',
 ];
 
-const MAX_PHOTOS = 7;
+export const MAX_PHOTOS = 7;
 
-// Brand style data — images are placeholder-styled cards (Figma assets are localhost-only)
-const BRAND_STYLES = [
+export const FIGMA_ASSET = (hash: string) => `http://localhost:3845/assets/${hash}`;
+
+// Brand style data — background room photos + logo overlay from Figma node 14771:98640
+export const BRAND_STYLES = [
   // Row 1
-  { id: '1',  brand: 'Crate&Barrel',              styles: 'Modern, Mid Century Modern',       bg: '#C8B8A4', dark: false },
-  { id: '2',  brand: 'ARTICLE.',                  styles: 'Modern, Modern Rustic',             bg: '#3D2B1F', dark: true  },
-  { id: '3',  brand: 'EQ3',                       styles: 'Modern Rustic, Traditional',        bg: '#8B7B6B', dark: false },
-  { id: '4',  brand: 'ROVE CONCEPTS',             styles: 'Contemporary, Scandinavian',        bg: '#D4C9BC', dark: false },
+  {
+    id: '1',  brand: 'Crate&Barrel',                 styles: 'Modern, Mid Century Modern',
+    bgImg:   FIGMA_ASSET('57c748413712621c7859ff02e2573a89e26a8830.png'),
+    logoImg: FIGMA_ASSET('756739506d3a97d14a1daec91f0b6904e1a6b2e2.png'),
+  },
+  {
+    id: '2',  brand: 'ARTICLE.',                      styles: 'Modern, Modern Rustic',
+    bgImg:   FIGMA_ASSET('b589c9574c13782da14ce5fc90277025ba571066.png'),
+    logoImg: FIGMA_ASSET('5a5ec30ee5bebba173fc4ce61ab94e71aef11b36.png'),
+  },
+  {
+    id: '3',  brand: 'EQ3',                           styles: 'Modern Rustic, Traditional',
+    bgImg:   FIGMA_ASSET('bf6853081d97c43afedbdc850e03df46b008584e.png'),
+    logoImg: FIGMA_ASSET('5506ca5148eb3d149d8e9e7f723beb4dc6e9bb71.png'),
+  },
+  {
+    id: '4',  brand: 'ROVE CONCEPTS',                 styles: 'Contemporary, Scandinavian',
+    bgImg:   FIGMA_ASSET('e64ef21dab029a1a9921191c2066fca60bf62dbc.png'),
+    logoImg: FIGMA_ASSET('2f6757a0bbc58de232ba340157b96cedde48d1ac.png'),
+  },
   // Row 2
-  { id: '5',  brand: 'Gus*',                      styles: 'Scandinavian, Mid Century Modern',  bg: '#C4956A', dark: false },
-  { id: '6',  brand: 'Mitchell Gold + Bob Williams', styles: 'Rustic',                         bg: '#A0826D', dark: false },
-  { id: '7',  brand: 'rochebobois',               styles: 'Contemporary, Nordic Boho',         bg: '#8FA68E', dark: false },
-  { id: '8',  brand: 'HOOKER',                    styles: 'Rustic',                            bg: '#4A3728', dark: true  },
+  {
+    id: '5',  brand: 'Gus*',                          styles: 'Scandinavian, Mid Century Modern',
+    bgImg:   FIGMA_ASSET('afab1819a49eb987072ba65cc21ea22a3f41f2cb.png'),
+    logoImg: FIGMA_ASSET('368a84a6a208d76d49ae175eacd6ff9ab0f631a7.png'),
+  },
+  {
+    id: '6',  brand: 'Mitchell Gold + Bob Williams',   styles: 'Rustic',
+    bgImg:   FIGMA_ASSET('b82ed35bcd8ff936868e6a269c04871a4400a8d2.png'),
+    logoImg: FIGMA_ASSET('f2ae538a3fb464170248ac18cb865dcfbfca6a0b.png'),
+  },
+  {
+    id: '7',  brand: 'rochebobois',                   styles: 'Contemporary, Nordic Boho',
+    bgImg:   FIGMA_ASSET('2f113554e0a4d15846b500703f59af614d82e060.png'),
+    logoImg: FIGMA_ASSET('3afca4f07a460650fca792ce9448cf98fad5d6cc.png'),
+  },
+  {
+    id: '8',  brand: 'HOOKER',                        styles: 'Rustic',
+    bgImg:   FIGMA_ASSET('dd216899e6c0633590e7f752415f6bc4be064018.png'),
+    logoImg: FIGMA_ASSET('505cbc71acec53e45e2de90a1a33809b7e6906ca.png'),
+  },
   // Row 3
-  { id: '9',  brand: 'ETERNITY MODERN',           styles: 'Mid Century Modern, Contemporary',  bg: '#C17F6B', dark: false },
-  { id: '10', brand: 'sundays',                   styles: 'Scandinavian, Midcentury Modern',   bg: '#D4C4B0', dark: false },
-  { id: '11', brand: 'KING',                      styles: 'Rustic',                            bg: '#F0EBE3', dark: false },
-  { id: '12', brand: 'MOHA',                      styles: 'Modern Rustic, Modern Contemporary',bg: '#2D2D2D', dark: true  },
+  {
+    id: '9',  brand: 'ETERNITY MODERN',               styles: 'Mid Century Modern, Contemporary',
+    bgImg:   FIGMA_ASSET('3aa2430dd087b7735dcb90772eb8492bbd102183.png'),
+    logoImg: FIGMA_ASSET('7fe3d395bc8d7d6a0468fef65375cf6a1f7c4a37.png'),
+  },
+  {
+    id: '10', brand: 'sundays',                       styles: 'Scandinavian, Midcentury Modern',
+    bgImg:   FIGMA_ASSET('3851778119b049f7db769265c53eb958472766a5.png'),
+    logoImg: FIGMA_ASSET('17eb20db37e393f6672d017d559109861fbfc03a.png'),
+  },
+  {
+    id: '11', brand: 'KING',                          styles: 'Rustic',
+    bgImg:   FIGMA_ASSET('0e80e6e98385b4f94098653a95e7472738dc95ea.png'),
+    logoImg: FIGMA_ASSET('137545ec60335cd8f3637af0b0aad1f3033ef2a5.png'),
+  },
+  {
+    id: '12', brand: 'MOHA',                          styles: 'Modern Rustic, Modern Contemporary',
+    bgImg:   FIGMA_ASSET('0a00a0dcfc9fd9c1e752360a111cb67650ee031f.png'),
+    logoImg: FIGMA_ASSET('7ab30ba1a981ba190fc97b21bc16e7d82ff92c14.png'),
+  },
 ];
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
-const ChevronDown = ({ color = '#858A8E' }: { color?: string }) => (
-  <svg width="41" height="41" viewBox="0 0 41 41" fill="none" style={{ flexShrink: 0 }}>
+export const ChevronDown = ({ color = '#858A8E', size = 41 }: { color?: string; size?: number }) => (
+  <svg className="no-icon no-icon--chevron" width={size} height={size} viewBox="0 0 41 41" fill="none" style={{ flexShrink: 0 }}>
     <path d="M14 18L20 24L26 18" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
-const HouseIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+export const HouseIcon = () => (
+  <svg className="no-icon no-icon--house" width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
     <path d="M1.167 6.125L7 1.167L12.833 6.125V11.667C12.833 12.034 12.534 12.333 12.167 12.333H9.333V9.333H4.667V12.333H1.833C1.466 12.333 1.167 12.034 1.167 11.667V6.125Z" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
-const PersonIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+export const PersonIcon = () => (
+  <svg className="no-icon no-icon--person" width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
     <circle cx="7" cy="4.5" r="2.5" stroke="#858A8E" strokeWidth="1.2"/>
     <path d="M1.5 12.5C1.5 10.015 4.015 8 7 8C9.985 8 12.5 10.015 12.5 12.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round"/>
   </svg>
 );
 
-const TagIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+export const TagIcon = () => (
+  <svg className="no-icon no-icon--tag" width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
     <path d="M7.583 1.167H12.833V6.417L7 12.25L1.75 7L7.583 1.167Z" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
     <circle cx="10.5" cy="3.5" r="0.875" fill="#858A8E"/>
   </svg>
 );
 
-const LocationIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+export const LocationIcon = () => (
+  <svg className="no-icon no-icon--location" width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
     <path d="M7 1.167C4.975 1.167 3.5 2.875 3.5 4.667C3.5 7.583 7 12.833 7 12.833C7 12.833 10.5 7.583 10.5 4.667C10.5 2.875 9.025 1.167 7 1.167Z" stroke="#858A8E" strokeWidth="1.2"/>
     <circle cx="7" cy="4.667" r="1.167" stroke="#858A8E" strokeWidth="1.2"/>
   </svg>
 );
 
-const LinkIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+export const LinkIcon = () => (
+  <svg className="no-icon no-icon--link" width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
     <path d="M5.833 8.167L8.167 5.833M6.417 3.5L7.292 2.625C8.31 1.607 9.94 1.607 10.958 2.625L11.375 3.042C12.393 4.06 12.393 5.69 11.375 6.708L10.5 7.583M3.5 6.417L2.625 7.292C1.607 8.31 1.607 9.94 2.625 10.958L3.042 11.375C4.06 12.393 5.69 12.393 6.708 11.375L7.583 10.5" stroke="#858A8E" strokeWidth="1.2" strokeLinecap="round"/>
   </svg>
 );
 
-const PaperclipIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+export const PaperclipIcon = () => (
+  <svg className="no-icon no-icon--paperclip" width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
     <path d="M10.5 5.5L5.5 10.5C4.4 11.6 2.6 11.6 1.5 10.5C0.4 9.4 0.4 7.6 1.5 6.5L7 1C7.8 0.2 9.1 0.2 9.9 1C10.7 1.8 10.7 3.1 9.9 3.9L4.4 9.4C4 9.8 3.4 9.8 3 9.4C2.6 9 2.6 8.4 3 8L7.9 3.1" stroke="#4F46E5" strokeWidth="1.2" strokeLinecap="round"/>
   </svg>
 );
 
-const UploadCloudIcon = () => (
-  <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+export const UploadCloudIcon = () => (
+  <svg className="no-icon no-icon--upload-cloud" width="44" height="44" viewBox="0 0 44 44" fill="none">
     <rect width="44" height="44" rx="10" fill="#F3F4F6"/>
     <path d="M15 29C13.067 29 11.5 27.433 11.5 25.5C11.5 23.834 12.685 22.447 14.261 22.089C14.091 21.58 14 21.051 14 20.5C14 17.462 16.462 15 19.5 15C21.481 15 23.218 16.041 24.199 17.604C24.782 17.218 25.477 17 26.222 17C28.309 17 30 18.685 30 20.778C30 20.852 29.998 20.925 29.994 20.998C31.752 21.448 33 23.036 33 24.944C33 27.184 31.185 29 28.944 29H15Z" stroke="#9CA3AF" strokeWidth="1.4" strokeLinejoin="round"/>
     <path d="M22 33V25M22 25L19 28M22 25L25 28" stroke="#9CA3AF" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
-const ExternalLinkIcon = () => (
-  <svg width="12" height="9" viewBox="0 0 12 9" fill="none" style={{ flexShrink: 0 }}>
+export const ExternalLinkIcon = () => (
+  <svg className="no-icon no-icon--external-link" width="12" height="9" viewBox="0 0 12 9" fill="none" style={{ flexShrink: 0 }}>
     <path d="M11 1V7M11 1H5M11 1L5 7M1 8H3" stroke="#000B14" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
-const CheckRIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+export const CheckRIcon = () => (
+  <svg className="no-icon no-icon--checkbox" width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
     <rect x="0.75" y="0.75" width="16.5" height="16.5" rx="3.25" stroke="#D6D8D9" strokeWidth="1.5"/>
-    <path d="M5 9L7.5 11.5L13 6" stroke="#4F46E5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
-const CheckRChecked = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+export const CheckRChecked = () => (
+  <svg className="no-icon no-icon--checkbox-checked" width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
     <rect width="18" height="18" rx="4" fill="#4F46E5"/>
     <path d="M5 9L7.5 11.5L13 6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
+// ─── Responsive hooks ─────────────────────────────────────────────────────────
+// Breakpoints: Desktop ≥ 768px | Tablet 480–767px | Mobile < 480px
+export function useIsTablet() {
+  const [isTablet, setIsTablet] = React.useState(false);
+  React.useEffect(() => {
+    const check = () => setIsTablet(window.innerWidth <= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isTablet;
+}
+
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState(false);
+  React.useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 480);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
+}
+
 // ─── Dropdown Component ───────────────────────────────────────────────────────
 
-function Dropdown({
-  value, placeholder, options, icon, isOpen, onToggle, onSelect,
+export function Dropdown({
+  value, placeholder, options, icon, isOpen, onToggle, onSelect, compact, mobile,
 }: {
   value: string;
   placeholder: string;
@@ -137,33 +211,39 @@ function Dropdown({
   isOpen: boolean;
   onToggle: () => void;
   onSelect: (val: string) => void;
+  compact?: boolean;
+  mobile?: boolean;
 }) {
   return (
-    <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
+    <div className="no-dropdown" style={{ position: 'relative', flex: 1, minWidth: 0 }}>
       <button
+        className="no-dropdown__trigger"
         type="button"
         onClick={e => { e.stopPropagation(); onToggle(); }}
         style={{
-          width: '100%', height: 42,
+          width: '100%', height: mobile ? 40 : 42,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          background: 'white', border: '2px solid #ECEFF0', borderRadius: 6,
-          padding: '4px 0 4px 16px', cursor: 'pointer', boxSizing: 'border-box',
+          background: 'white',
+          border: mobile ? '1px solid #ECEFF0' : '2px solid #ECEFF0',
+          borderRadius: mobile ? 16 : 6,
+          padding: '4px 0 4px 12px', cursor: 'pointer', boxSizing: 'border-box',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+        <div className="no-dropdown__trigger-inner" style={{ display: 'flex', alignItems: 'center', gap: compact ? 4 : 8, flex: 1, minWidth: 0 }}>
           {icon}
-          <span style={{
-            fontFamily: 'Inter', fontSize: value ? 14 : 16, fontWeight: 400,
+          <span className="no-dropdown__value" style={{
+            fontFamily: 'Inter', fontSize: compact ? 12 : (value ? 14 : 16), fontWeight: 400,
             color: '#858A8E', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {value || placeholder}
           </span>
         </div>
-        <ChevronDown />
+        <ChevronDown size={compact ? 28 : 41} />
       </button>
 
       {isOpen && (
         <div
+          className="no-dropdown__menu"
           onClick={e => e.stopPropagation()}
           style={{
             position: 'absolute', top: 46, left: 0, zIndex: 100,
@@ -175,6 +255,7 @@ function Dropdown({
           {options.map(opt => (
             <button
               key={opt}
+              className="no-dropdown__option"
               type="button"
               onClick={() => onSelect(opt)}
               style={{
@@ -199,57 +280,90 @@ function Dropdown({
 
 // ─── Brand Card ───────────────────────────────────────────────────────────────
 
-function BrandCard({
-  brand,
-  isSelected,
-  onSelect,
-}: {
+export type BrandCardProps = {
   brand: typeof BRAND_STYLES[0];
   isSelected: boolean;
   onSelect: () => void;
-}) {
+  cardWidth?: number | string;
+  cardHeight?: number;
+  footerFontSize?: number;
+  footerLetterSpacing?: string;
+};
+
+export function BrandCard({
+  brand,
+  isSelected,
+  onSelect,
+  cardWidth,
+  cardHeight,
+  footerFontSize,
+  footerLetterSpacing,
+}: BrandCardProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
     <button
+      className={`no-brand-card${isSelected ? ' no-brand-card--selected' : ''}`}
       type="button"
       onClick={onSelect}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      data-brand-id={brand.id}
+      data-brand-name={brand.brand}
       style={{
-        position: 'relative', width: 250, height: 150,
+        position: 'relative',
+        /* Desktop: flex:1 fills the row. Tablet (cardWidth set): fixed width, no flex grow */
+        flex: cardWidth ? `0 0 ${cardWidth}` : 1,
+        width: cardWidth ?? undefined,
+        minWidth: 0, height: cardHeight ?? 195,
         borderRadius: 12, overflow: 'hidden', cursor: 'pointer',
-        border: 'none', padding: 0, flexShrink: 0,
-        outline: isSelected ? '3px solid #4F46E5' : hovered ? '3px solid #C7D2FE' : '3px solid transparent',
-        transition: 'outline 0.15s ease',
+        border: cardWidth
+          ? `2px solid ${isSelected ? '#4F46E5' : '#ECEFF0'}`
+          : 'none',
+        padding: 0,
+        outline: cardWidth
+          ? 'none'
+          : (isSelected ? '3px solid #4F46E5' : hovered ? '3px solid #C7D2FE' : '3px solid transparent'),
+        transition: 'border-color 0.15s ease, outline 0.15s ease',
       }}
     >
-      {/* Placeholder background — replace with real brand images when available */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: brand.bg,
-        display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start',
-        padding: '9px 14px',
-      }}>
-        <span style={{
-          fontFamily: 'Inter', fontSize: 11, fontWeight: 700,
-          color: brand.dark ? 'rgba(255,255,255,0.85)' : 'rgba(0,11,20,0.75)',
-          letterSpacing: '0.06em', textTransform: 'uppercase',
-          lineHeight: 1, userSelect: 'none',
-        }}>
-          {brand.brand}
-        </span>
-      </div>
+      {/* Room photo background */}
+      <img
+        className="no-brand-card__bg"
+        src={brand.bgImg}
+        alt={brand.brand}
+        style={{
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover', objectPosition: 'center',
+          display: 'block',
+        }}
+      />
+
+      {/* Brand logo overlay — top-left */}
+      <img
+        className="no-brand-card__logo"
+        src={brand.logoImg}
+        alt={`${brand.brand} logo`}
+        style={{
+          position: 'absolute', top: 9, left: 14,
+          maxWidth: '70%', maxHeight: 32,
+          objectFit: 'contain', objectPosition: 'left center',
+          display: 'block',
+          filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.25))',
+        }}
+      />
 
       {/* White label footer */}
-      <div style={{
+      <div className="no-brand-card__footer" style={{
         position: 'absolute', bottom: 0, left: -0.5, right: -0.5, height: 27,
         background: 'white',
         display: 'flex', alignItems: 'center', paddingLeft: 14,
       }}>
-        <span style={{
-          fontFamily: 'Inter', fontSize: 12, fontWeight: 400,
-          color: '#000B14', whiteSpace: 'nowrap', letterSpacing: '0.01em',
+        <span className="no-brand-card__style" style={{
+          fontFamily: 'Inter', fontSize: footerFontSize ?? 12, fontWeight: 400,
+          color: '#000B14', whiteSpace: 'nowrap',
+          letterSpacing: footerLetterSpacing ?? '0.01em',
           overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
           {brand.styles}
@@ -259,34 +373,91 @@ function BrandCard({
   );
 }
 
+// ─── Layout Props Interfaces ──────────────────────────────────────────────────
+
+export interface NewOrderLayoutProps {
+  propertyType: string; setPropertyType: (v: string) => void;
+  buyerProfile: string; setBuyerProfile: (v: string) => void;
+  intendedUse: string; setIntendedUse: (v: string) => void;
+  address: string; setAddress: (v: string) => void;
+  mlsLink: string; setMlsLink: (v: string) => void;
+  selectedBrand: string | null; setSelectedBrand: (v: string | null) => void;
+  aiPickResult: AiPickOption | null; setAiPickResult: (v: AiPickOption | null) => void;
+  agreedToTerms: boolean; setAgreedToTerms: React.Dispatch<React.SetStateAction<boolean>>;
+  uploadedFiles: File[]; setUploadedFiles: React.Dispatch<React.SetStateAction<File[]>>;
+  isDragging: boolean; setIsDragging: (v: boolean) => void;
+  isAiModalOpen: boolean; setIsAiModalOpen: (v: boolean) => void;
+  propertyTypeOpen: boolean; setPropertyTypeOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  buyerProfileOpen: boolean; setBuyerProfileOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  intendedUseOpen: boolean; setIntendedUseOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  floorPlanRef: React.RefObject<HTMLInputElement | null>;
+  canSubmit: boolean;
+  uploadProgress: number;
+  closeAllDropdowns: () => void;
+  handleFileDrop: (e: React.DragEvent) => void;
+  handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export interface NewOrderTabletLayoutProps extends NewOrderLayoutProps {
+  aiRoomsScrollRef: React.RefObject<HTMLDivElement | null>;
+  aiRoomsThumbLeft: number;
+  aiRoomsThumbWidth: number;
+  updateAiRoomsThumb: () => void;
+}
+
+// Mobile layout uses the same base props — no extra scroll refs (shows static image + "+2")
+export type NewOrderMobileLayoutProps = NewOrderLayoutProps;
+
 // ─── Main Component ───────────────────────────────────────────────────────────
+import NewOrderDesktopLayout from './NewOrderDesktopLayout';
+import NewOrderTabletLayout from './NewOrderTabletLayout';
+import NewOrderMobileLayout from './NewOrderMobileLayout';
 
 export default function NewOrderContent() {
-  // ── Form state ────────────────────────────────────────────────────────────
   const [propertyType, setPropertyType]   = useState('');
   const [buyerProfile, setBuyerProfile]   = useState('');
   const [intendedUse, setIntendedUse]     = useState('');
   const [address, setAddress]             = useState('');
   const [mlsLink, setMlsLink]             = useState('');
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [aiPickResult, setAiPickResult]   = useState<AiPickOption | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging]       = useState(false);
-
-  // ── Dropdown open state ───────────────────────────────────────────────────
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [propertyTypeOpen, setPropertyTypeOpen]   = useState(false);
   const [buyerProfileOpen, setBuyerProfileOpen]   = useState(false);
   const [intendedUseOpen, setIntendedUseOpen]     = useState(false);
 
-  // ── Refs ──────────────────────────────────────────────────────────────────
-  const fileInputRef    = useRef<HTMLInputElement>(null);
-  const floorPlanRef    = useRef<HTMLInputElement>(null);
+  const fileInputRef     = useRef<HTMLInputElement>(null);
+  const floorPlanRef     = useRef<HTMLInputElement>(null);
+  const aiRoomsScrollRef = useRef<HTMLDivElement>(null);
+  const [aiRoomsThumbLeft,  setAiRoomsThumbLeft]  = useState(0);
+  const [aiRoomsThumbWidth, setAiRoomsThumbWidth] = useState(100);
 
-  // ── Derived ───────────────────────────────────────────────────────────────
+  const updateAiRoomsThumb = useCallback(() => {
+    const el = aiRoomsScrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const ratio = clientWidth / scrollWidth;
+    const tw    = Math.max(ratio * clientWidth, 40);
+    const maxScroll = scrollWidth - clientWidth;
+    const tl    = maxScroll > 0 ? (scrollLeft / maxScroll) * (clientWidth - tw) : 0;
+    setAiRoomsThumbWidth(tw);
+    setAiRoomsThumbLeft(tl);
+  }, []);
+
+  useEffect(() => {
+    if (!aiPickResult) return;
+    updateAiRoomsThumb();
+    const raf = requestAnimationFrame(updateAiRoomsThumb);
+    return () => cancelAnimationFrame(raf);
+  }, [aiPickResult, updateAiRoomsThumb]);
+
   const canSubmit      = uploadedFiles.length > 0 && selectedBrand !== null && agreedToTerms;
   const uploadProgress = Math.min((uploadedFiles.length / MAX_PHOTOS) * 100, 100);
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
   const closeAllDropdowns = () => {
     setPropertyTypeOpen(false);
     setBuyerProfileOpen(false);
@@ -308,392 +479,40 @@ export default function NewOrderContent() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
-  return (
-    <div
-      onClick={closeAllDropdowns}
-      style={{
-        display: 'flex', flexDirection: 'column', gap: 40,
-        padding: '24px 32px',
-        fontFamily: 'Inter, sans-serif',
-        boxSizing: 'border-box', width: '100%',
-      }}
-    >
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
 
-      {/* ── SECTION 1: PROPERTY INFO ────────────────────────────────────── */}
-      <section>
-        {/* Header */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
-          <ol style={{ margin: 0, padding: '0 0 0 27px' }} start={1}>
-            <li style={{
-              fontFamily: 'Inter', fontWeight: 600, fontSize: 18,
-              color: '#000B14', lineHeight: 1.4,
-            }}>
-              PROPERTY INFO
-            </li>
-          </ol>
-          <p style={{
-            fontFamily: 'Inter', fontWeight: 400, fontSize: 16,
-            color: '#858A8E', lineHeight: 1.4, margin: 0,
-          }}>
-            Provide the property information will help AI designer generate better result.
-          </p>
-        </div>
+  const baseProps: NewOrderLayoutProps = {
+    propertyType, setPropertyType,
+    buyerProfile, setBuyerProfile,
+    intendedUse, setIntendedUse,
+    address, setAddress,
+    mlsLink, setMlsLink,
+    selectedBrand, setSelectedBrand,
+    aiPickResult, setAiPickResult,
+    agreedToTerms, setAgreedToTerms,
+    uploadedFiles, setUploadedFiles,
+    isDragging, setIsDragging,
+    isAiModalOpen, setIsAiModalOpen,
+    propertyTypeOpen, setPropertyTypeOpen,
+    buyerProfileOpen, setBuyerProfileOpen,
+    intendedUseOpen, setIntendedUseOpen,
+    fileInputRef, floorPlanRef,
+    canSubmit, uploadProgress,
+    closeAllDropdowns, handleFileDrop, handleFileSelect,
+  };
 
-        {/* Card */}
-        <div style={{
-          background: '#FAFAFA', border: '1px solid #D6D8D9', borderRadius: 16,
-          padding: 30, display: 'flex', flexDirection: 'column', gap: 16,
-          boxSizing: 'border-box',
-        }}>
+  if (isTablet) {
+    return (
+      <NewOrderTabletLayout
+        {...baseProps}
+        aiRoomsScrollRef={aiRoomsScrollRef}
+        aiRoomsThumbLeft={aiRoomsThumbLeft}
+        aiRoomsThumbWidth={aiRoomsThumbWidth}
+        updateAiRoomsThumb={updateAiRoomsThumb}
+      />
+    );
+  }
 
-          {/* Row 1: 3 dropdowns */}
-          <div style={{ display: 'flex', gap: 16 }}>
-            <Dropdown
-              value={propertyType}
-              placeholder="Select a property type"
-              options={PROPERTY_TYPES}
-              icon={<HouseIcon />}
-              isOpen={propertyTypeOpen}
-              onToggle={() => { closeAllDropdowns(); setPropertyTypeOpen(v => !v); }}
-              onSelect={v => { setPropertyType(v); setPropertyTypeOpen(false); }}
-            />
-            <Dropdown
-              value={buyerProfile}
-              placeholder="Intended buyer profile"
-              options={BUYER_PROFILES}
-              icon={<PersonIcon />}
-              isOpen={buyerProfileOpen}
-              onToggle={() => { closeAllDropdowns(); setBuyerProfileOpen(v => !v); }}
-              onSelect={v => { setBuyerProfile(v); setBuyerProfileOpen(false); }}
-            />
-            <Dropdown
-              value={intendedUse}
-              placeholder="Intended use"
-              options={INTENDED_USES}
-              icon={<TagIcon />}
-              isOpen={intendedUseOpen}
-              onToggle={() => { closeAllDropdowns(); setIntendedUseOpen(v => !v); }}
-              onSelect={v => { setIntendedUse(v); setIntendedUseOpen(false); }}
-            />
-          </div>
-
-          {/* Row 2: 2 text inputs */}
-          <div style={{ display: 'flex', gap: 16 }}>
-            <div style={{
-              flex: 1, height: 42, display: 'flex', alignItems: 'center', gap: 8,
-              background: 'white', border: '2px solid #ECEFF0', borderRadius: 6,
-              padding: '4px 16px', boxSizing: 'border-box',
-            }}>
-              <LocationIcon />
-              <input
-                type="text"
-                placeholder="Property address"
-                value={address}
-                onChange={e => setAddress(e.target.value)}
-                style={{
-                  flex: 1, border: 'none', outline: 'none', background: 'transparent',
-                  fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#858A8E',
-                }}
-              />
-            </div>
-            <div style={{
-              flex: 1, height: 42, display: 'flex', alignItems: 'center', gap: 8,
-              background: 'white', border: '2px solid #ECEFF0', borderRadius: 6,
-              padding: '4px 16px', boxSizing: 'border-box',
-            }}>
-              <LinkIcon />
-              <input
-                type="text"
-                placeholder="MLS listing link if applicable"
-                value={mlsLink}
-                onChange={e => setMlsLink(e.target.value)}
-                style={{
-                  flex: 1, border: 'none', outline: 'none', background: 'transparent',
-                  fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#858A8E',
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Attach floor plan */}
-          <div>
-            <input
-              ref={floorPlanRef}
-              type="file"
-              style={{ display: 'none' }}
-              onChange={() => {/* TODO: handle floor plan upload */}}
-            />
-            <button
-              type="button"
-              onClick={() => floorPlanRef.current?.click()}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 3,
-                padding: '8px 16px', border: '1px solid #4F46E5',
-                borderRadius: 6, background: 'white', cursor: 'pointer',
-                fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: '#4F46E5',
-              }}
-            >
-              <PaperclipIcon />
-              Attach a floor plan
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 2: UPLOAD PHOTOS ─────────────────────────────────────── */}
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* Header */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <ol style={{ margin: 0, padding: '0 0 0 27px' }} start={2}>
-            <li style={{
-              fontFamily: 'Inter', fontWeight: 600, fontSize: 18,
-              color: '#000B14', lineHeight: 1.4,
-            }}>
-              UPLOAD PHOTOS*
-            </li>
-          </ol>
-          <p style={{
-            fontFamily: 'Inter', fontWeight: 400, fontSize: 16,
-            color: '#858A8E', lineHeight: 1.4, margin: 0,
-          }}>
-            Minimum upload dimension size: 1000×1000 pixels. Accepted file formats: png, jpeg, jpg
-          </p>
-        </div>
-
-        {/* Card */}
-        <div style={{
-          background: '#FAFAFA', border: '1px solid #D6D8D9', borderRadius: 16,
-          padding: 30, display: 'flex', flexDirection: 'column', gap: 16,
-          boxSizing: 'border-box',
-        }}>
-          {/* Card header row */}
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-
-            {/* Left: title + counter + progress */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <h3 style={{
-                fontFamily: 'Inter', fontWeight: 600, fontSize: 18, color: '#000B14',
-                margin: 0, lineHeight: 1.4,
-              }}>
-                Virtual Staging
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <span style={{
-                  fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#4F46E5',
-                  lineHeight: 1.4,
-                }}>
-                  {uploadedFiles.length}/ {MAX_PHOTOS} Uploaded
-                </span>
-                {/* Progress bar */}
-                <div style={{ width: 198, height: 8, display: 'flex', alignItems: 'center' }}>
-                  <div style={{ position: 'relative', width: '100%', height: 5, background: '#D9D9D9', borderRadius: 99 }}>
-                    {uploadedFiles.length > 0 && (
-                      <div style={{
-                        position: 'absolute', left: 0, top: 0, height: '100%',
-                        width: `${uploadProgress}%`, background: '#4F46E5',
-                        borderRadius: 99, transition: 'width 0.3s ease',
-                      }} />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: paste a link */}
-            <button type="button" style={{
-              display: 'flex', alignItems: 'center', gap: 4, background: 'none',
-              border: 'none', cursor: 'pointer', padding: 0,
-              fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#000B14',
-              textDecoration: 'underline',
-            }}>
-              Or paste a link to upload
-              <ExternalLinkIcon />
-            </button>
-          </div>
-
-          {/* Drop zone */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".png,.jpeg,.jpg"
-            multiple
-            style={{ display: 'none' }}
-            onChange={handleFileSelect}
-          />
-          <button
-            type="button"
-            onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleFileDrop}
-            onClick={() => fileInputRef.current?.click()}
-            style={{
-              width: '100%', height: 315,
-              background: isDragging ? '#F5F3FF' : 'white',
-              border: `2px dashed ${isDragging ? '#4F46E5' : '#D6D8D9'}`,
-              borderRadius: 16, cursor: 'pointer',
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              gap: 16, padding: 24, boxSizing: 'border-box',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <UploadCloudIcon />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-              <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#4F46E5' }}>
-                Drag &amp; drop to upload photos
-              </span>
-              <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 400, color: '#4F46E5' }}>
-                OR
-              </span>
-            </div>
-            <div style={{
-              background: '#4F46E5', borderRadius: 6, padding: '8px 16px',
-            }}>
-              <span style={{ fontFamily: 'Inter', fontSize: 16, fontWeight: 700, color: '#FFFDFF' }}>
-                Select files to upload
-              </span>
-            </div>
-          </button>
-
-          {/* Uploaded file chips */}
-          {uploadedFiles.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {uploadedFiles.map((file, i) => (
-                <div key={i} style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  background: '#F5F3FF', borderRadius: 6, padding: '4px 10px',
-                  border: '1px solid #C7D2FE',
-                }}>
-                  <span style={{
-                    fontFamily: 'Inter', fontSize: 12, color: '#4F46E5',
-                    maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  }}>
-                    {file.name}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={e => {
-                      e.stopPropagation();
-                      setUploadedFiles(prev => prev.filter((_, idx) => idx !== i));
-                    }}
-                    style={{
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      padding: 0, color: '#6B7280', fontSize: 14, lineHeight: 1,
-                      display: 'flex', alignItems: 'center',
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ── AI SMART PICK BUTTON ─────────────────────────────────────────── */}
-      <button
-        type="button"
-        style={{
-          width: '100%', height: 54, background: '#4F46E5',
-          border: 'none', borderRadius: 6, cursor: 'pointer',
-          fontFamily: 'Inter', fontSize: 16, fontWeight: 700, color: '#FFFDFF',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          letterSpacing: '-0.01em',
-        }}
-      >
-        AI Smart Pick
-      </button>
-
-      {/* ── SECTION 3: CHOOSE A BRAND WITH ITS STYLE ────────────────────── */}
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* Header */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <ol style={{ margin: 0, padding: '0 0 0 27px' }} start={3}>
-            <li style={{
-              fontFamily: 'Inter', fontWeight: 600, fontSize: 18, color: '#000B14',
-              lineHeight: 1.35,
-            }}>
-              CHOOSE A BRAND WITH ITS STYLE*
-            </li>
-          </ol>
-          <p style={{
-            fontFamily: 'Inter', fontWeight: 400, fontSize: 16,
-            color: '#858A8E', lineHeight: 1.4, margin: 0, maxWidth: 1089,
-          }}>
-            {`Select a brand using choose Style to present your preferences. We'll stage your uploaded photo to reflect that same furniture and aesthetic.`}
-          </p>
-        </div>
-
-        {/* Brand grid */}
-        <div style={{
-          background: '#FAFAFA', padding: 30,
-          display: 'flex', flexDirection: 'column', gap: 24,
-          boxSizing: 'border-box',
-        }}>
-          {[0, 4, 8].map(startIdx => (
-            <div
-              key={startIdx}
-              style={{
-                display: 'flex', justifyContent: 'space-between',
-                gap: 7, padding: '3px 0', flexWrap: 'wrap',
-              }}
-            >
-              {BRAND_STYLES.slice(startIdx, startIdx + 4).map(brand => (
-                <BrandCard
-                  key={brand.id}
-                  brand={brand}
-                  isSelected={selectedBrand === brand.id}
-                  onSelect={() => setSelectedBrand(brand.id === selectedBrand ? null : brand.id)}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── TERMS CHECKBOX ───────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', width: '100%' }}>
-        <button
-          type="button"
-          onClick={() => setAgreedToTerms(v => !v)}
-          style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', marginTop: 1 }}
-          aria-label="Agree to terms and services"
-        >
-          {agreedToTerms ? <CheckRChecked /> : <CheckRIcon />}
-        </button>
-        <p style={{
-          fontFamily: 'Inter', fontSize: 14, fontWeight: 400, color: '#000B14',
-          lineHeight: 1.4, margin: 0,
-        }}>
-          By clicking, you are confirming that you have read, understand and agree to{' '}
-          <a href="#" style={{ color: '#000B14', textDecoration: 'underline', fontFamily: 'Inter', fontWeight: 400, fontSize: 14 }}>
-            Terms and Services
-          </a>
-        </p>
-      </div>
-
-      {/* ── SUBMIT BUTTON ────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', width: '100%' }}>
-        <button
-          type="button"
-          disabled={!canSubmit}
-          style={{
-            width: 300,
-            background: canSubmit ? '#4F46E5' : '#C1C2C3',
-            border: 'none', borderRadius: 6,
-            padding: '12px 32px',
-            fontFamily: 'Inter', fontSize: 16, fontWeight: 500, color: 'white',
-            cursor: canSubmit ? 'pointer' : 'not-allowed',
-            letterSpacing: '0.01em', lineHeight: '20px',
-            transition: 'background 0.2s ease',
-          }}
-        >
-          Submit
-        </button>
-      </div>
-
-    </div>
-  );
+  return <NewOrderDesktopLayout {...baseProps} />;
 }
